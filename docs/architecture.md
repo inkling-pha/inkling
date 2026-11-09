@@ -41,6 +41,6 @@ Update at each integration gate (Nov 15, Nov 19, Dec 4).
 | signals: Google Health client | real | pulls and caches raw Fitbit data; not yet parsed into `DailyRecord` (see docs/data.md) |
 | rag: retrieve | stub | placeholder evidence |
 | agent: respond | stub | wires stubs; no LLM, no routing, no safety checks yet |
-| app | stub | Streamlit renders `AgentResponse`; no check-in, no Cycle Clock |
+| app | partial | Today (Cycle Clock, source, coverage, limit), check-in with Undo, Ask, and failure/red-flag previews run on the stubs. Check-ins last one session (D13). Red-flag, sync and fallback states are demo previews until the router and fallbacks exist. |
 | evals (all layers) | not started | planned metrics in the timeline's Sprint 2 row |
 | Storage | not started | open decision |
