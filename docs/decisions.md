@@ -251,3 +251,14 @@ Newest at the bottom. One entry per decision. To change a decided item, add a ne
   - No fertility timing (D25): no "safe days" or best days to try.
 - **Why:** Keeps Inkling a cycle app, avoids overclaiming (D4), and stays on the right side of D25.
   Each rule becomes a key point in the eval (`evals/rag/README.md`).
+
+### D28. Confidence is shown in words until it's validated
+- **Date:** 2026-11-02 · **Status:** proposed
+- **Decision:** The UI shows the likely window, a word (Low / Medium / Higher), coverage ("2 of 3 nights
+  recorded") and a limit line ("Accuracy not validated yet"). It shows no number and no filling bar.
+  `PhaseEstimate.confidence` stays in the contract and drives the word.
+- **Why:** HCI lecture (slides-08 p.27): use numeric confidence only when its meaning and reliability
+  are validated for that output. Coverage describes what arrived, not correctness (p.26). A bar reads
+  as a measurement, and we have no calibration results before Sprint 2.
+- **Revisit:** after the held-out calibration eval (Nov 21–25). If the range is calibrated, say so.
+- **Alternatives:** Keep the Lab 8 bar (over-reliance risk, p.46); remove the word and show only the window.
