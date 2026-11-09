@@ -5,13 +5,22 @@ contracts, so real layers can replace the stubs without touching this file. What
 is labeled on screen.
 """
 
-import streamlit as st
+import sys
+from pathlib import Path
 
-from agent.stub import respond
-from app.cycle_clock import cycle_clock_svg, nights_svg
-from app.summary import LIMIT, coverage_line, long_date, short_date, today_summary
-from contracts import AgentResponse, CheckIn, DailyRecord, Escalation, PhaseEstimate
-from signals.stub import estimate_phase, get_daily_records
+# Streamlit Cloud runs `streamlit run app/streamlit_app.py`, which doesn't put the repo root on
+# the import path. Add it so `agent`, `contracts` and `signals` import the same way everywhere.
+ROOT = Path(__file__).resolve().parents[1]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+
+import streamlit as st  # noqa: E402
+
+from agent.stub import respond  # noqa: E402
+from app.cycle_clock import cycle_clock_svg, nights_svg  # noqa: E402
+from app.summary import LIMIT, coverage_line, long_date, short_date, today_summary  # noqa: E402
+from contracts import AgentResponse, CheckIn, DailyRecord, Escalation, PhaseEstimate  # noqa: E402
+from signals.stub import estimate_phase, get_daily_records  # noqa: E402
 
 USER_ID = "synthetic-maya"
 VIEWS = ["Today", "Check-in", "Ask"]
