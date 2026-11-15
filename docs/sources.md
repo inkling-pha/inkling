@@ -34,6 +34,9 @@ never health claims.
 
 - Each document has a `doc_type`: `page`, `research` or `device_docs`.
 - Research is phrased as "studies found, on average", never applied to one person as a diagnosis.
+- Each paper's manifest row says who was studied (`population`). Answers that cite a paper say so
+  and note when it may not fit the user (e.g. a study of medical students only).
+- Fertility-review decisions are recorded in the manifest `notes`, as text to exclude, not chunk ids.
 - At indexing time, chunks mainly about fertility timing are flagged for review by a person.
 - Only documents in the manifest are indexed; links found on pages are never followed.
 
