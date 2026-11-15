@@ -157,6 +157,8 @@ def test_manifest_is_valid():
         assert r["doc_type"] in {"page", "research", "device_docs"}, r["doc_id"]
         assert r["license"] in {"public domain", "CC BY", "CC BY-NC", "CC BY 4.0"}, r["doc_id"]
         assert r["v0"] in {"yes", "no"}, r["doc_id"]
+        if r["doc_type"] == "research":
+            assert r["population"].strip(), f"{r['doc_id']}: say who was studied"
 
 
 PAPER_XML = b"""<article><front><article-meta>
