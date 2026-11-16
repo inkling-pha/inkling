@@ -1,6 +1,6 @@
 """Trusted corpus: fetch the documents in manifest.csv, extract their text, split it into chunks.
 
-Run from the repo root: python -m rag.corpus (v0 documents) or python -m rag.corpus --all
+Run from the repo root: python -m rag.corpus
 Fetched text goes to data/raw/corpus/ (gitignored). Only documents in the manifest are indexed
 (D26), and links found on pages are never followed.
 
@@ -232,10 +232,10 @@ def chunk_text(text: str) -> list[str]:
     return chunks
 
 
-def manifest(path: Path = MANIFEST, v0_only: bool = True) -> list[dict]:
-    """The manifest's documents: only the v0 ones unless v0_only is False."""
+def manifest(path: Path = MANIFEST) -> list[dict]:
+    """The manifest's documents."""
     with path.open(encoding="utf-8", newline="") as f:
-        return [row for row in csv.DictReader(f) if not v0_only or row["v0"] == "yes"]
+        return list(csv.DictReader(f))
 
 
 def robots_allow(url: str, cache: dict[str, RobotFileParser]) -> bool:
@@ -281,12 +281,12 @@ def fetch_text(row: dict, robots: dict[str, RobotFileParser]) -> tuple[str, str]
     return title, "\n".join(text for _, text in blocks)
 
 
-def fetch_all(corpus_dir: Path = CORPUS_DIR, v0_only: bool = True) -> dict[str, str]:
+def fetch_all(corpus_dir: Path = CORPUS_DIR) -> dict[str, str]:
     """Fetch the documents and return {doc_id: "ok" or why not}. A failure keeps the old copy."""
     corpus_dir.mkdir(parents=True, exist_ok=True)
     status = {}
     robots: dict[str, RobotFileParser] = {}
-    for row in manifest(v0_only=v0_only):
+    for row in manifest():
         doc_id = row["doc_id"]
         try:
             title, text = fetch_text(row, robots)
@@ -314,9 +314,9 @@ def fetch_all(corpus_dir: Path = CORPUS_DIR, v0_only: bool = True) -> dict[str, 
     return status
 
 
-def load_chunks(corpus_dir: Path = CORPUS_DIR, v0_only: bool = True) -> list[Chunk]:
+def load_chunks(corpus_dir: Path = CORPUS_DIR) -> list[Chunk]:
     chunks = []
-    for row in manifest(v0_only=v0_only):
+    for row in manifest():
         path = corpus_dir / f"{row['doc_id']}.json"
         if not path.exists():
             continue
@@ -345,7 +345,6 @@ def tokenize(text: str) -> list[str]:
 
 
 if __name__ == "__main__":
-    v0_only = "--all" not in sys.argv[1:]
-    results = fetch_all(v0_only=v0_only)
-    flagged = fertility_flags(load_chunks(v0_only=v0_only))
+    results = fetch_all()
+    flagged = fertility_flags(load_chunks())
     print(json.dumps({"status": results, "review_fertility_timing": flagged}, indent=2))

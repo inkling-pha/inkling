@@ -182,7 +182,6 @@ def test_manifest_is_valid():
         assert r["url"].startswith("https://"), r["doc_id"]
         assert r["doc_type"] in {"page", "research", "device_docs"}, r["doc_id"]
         assert r["license"] in {"public domain", "CC BY", "CC BY-NC", "CC BY 4.0"}, r["doc_id"]
-        assert r["v0"] in {"yes", "no"}, r["doc_id"]
         if r["doc_type"] == "research":
             assert r["population"].strip(), f"{r['doc_id']}: say who was studied"
 
@@ -244,9 +243,3 @@ def test_research_rows_are_fetched_from_europe_pmc(monkeypatch):
     title, text = corpus.fetch_text(row, {})
     assert requested == [corpus.EUROPE_PMC.format(pmcid="PMC123")]
     assert "HRV was lower." in text and "We recruited" not in text
-
-
-def test_all_documents_are_available_beyond_v0():
-    every = manifest(v0_only=False)
-    v0_ids = {r["doc_id"] for r in manifest()}
-    assert v0_ids < {r["doc_id"] for r in every}
