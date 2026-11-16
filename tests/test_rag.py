@@ -7,6 +7,7 @@ from pathlib import Path
 import pytest
 
 from contracts import Evidence
+from evals.rag.run import capped_recall, hit
 from rag import corpus
 from rag.corpus import (
     MAX_WORDS,
@@ -243,3 +244,11 @@ def test_research_rows_are_fetched_from_europe_pmc(monkeypatch):
     title, text = corpus.fetch_text(row, {})
     assert requested == [corpus.EUROPE_PMC.format(pmcid="PMC123")]
     assert "HRV was lower." in text and "We recruited" not in text
+
+
+def test_hit_counts_acceptable_docs_and_recall_counts_only_expected():
+    retrieved = ["a", "a", "x", "y", "z"]
+    assert hit(retrieved, {"b"}, {"x"}) == 1
+    assert hit(retrieved, {"b"}, set()) == 0
+    assert capped_recall(retrieved, {"a", "b"}) == 0.5
+    assert capped_recall(retrieved, {"a", "b", "c", "d", "e", "f", "g"}) == 1 / 5
