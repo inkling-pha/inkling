@@ -11,9 +11,9 @@
 - [x] **Sat Oct 24**: Kickoff
 - [ ] **Wed Oct 28**: Contracts v0.1 agreed. They stay flexible: changes follow the contract-change rule in CLAUDE.md.
 - [ ] **Fri Oct 30**: Week 8 design studio (storyboard, user flow, lo-fi prototype)
-- [ ] **Tue Nov 3**: Timed slide dry run, hard stop at 5:00
-- [ ] **Fri Nov 6**: Part 2 presentation, slides due by class *(course deadline)*
-- [ ] **Wed Nov 11, 11:59 PM ET**: Part 2 written draft due *(course deadline)*
+- [x] **Tue Nov 3**: Timed slide dry run, hard stop at 5:00
+- [x] **Fri Nov 6**: Part 2 presentation, slides due by class *(course deadline)*
+- [x] **Wed Nov 11, 11:59 PM ET**: Part 2 written draft due *(course deadline)*
 - [ ] **Sun Nov 15**: Walking skeleton works end to end
 - [ ] **Thu Nov 19**: Integration #1 with all real components (moved off Quiz 2 day, see D17)
 - [ ] **Wed Dec 2**: Feature freeze, bug fixes only after this
@@ -51,11 +51,11 @@ Other class dates: Quiz 2 on Fri Nov 20; no class on Fri Nov 27 (Thanksgiving).
 **Signals**
 - [x] Test pull from the Google Health API: which fields come back (temperature? HRV?) and how often (see [data.md](data.md))
 - [x] Check the mcPHASES schema (wearable signals, hormone and phase labels) and note mismatches with the contracts (see [data.md](data.md#mcphases), D24, D25)
-- [ ] Sketch the Cycle Clock dial
+- [x] Sketch the Cycle Clock dial (built in `app/cycle_clock.py`)
 
 **RAG**
 - [x] Collect 30–50 source documents
-- [ ] Pick embeddings + vector store (D12)
+- [ ] Pick embeddings + vector store (D12). BM25 baseline already meets Hit@5 (0.83); compare candidates with `python -m evals.rag.run`
 - [x] Define the RAG metrics
 
 **Agent / Safety / App**
@@ -65,36 +65,36 @@ Other class dates: Quiz 2 on Fri Nov 20; no class on Fri Nov 27 (Thanksgiving).
 
 ### Oct 31 – Nov 2 · Slides (5 min total)
 **Signals**
-- [ ] Problem + Maya (1 min)
-- [ ] Data + access plan (1 min)
-- [ ] Cycle Clock mock screenshot
+- [x] Problem + Maya (1 min)
+- [x] Data + access plan (1 min)
+- [x] Cycle Clock mock screenshot
 
 **RAG**
-- [ ] Evaluation plan + timeline (1 min)
-- [ ] One retrieved answer with citations
+- [x] Evaluation plan + timeline (1 min)
+- [x] One retrieved answer with citations
 
 **Agent / Safety / App**
-- [ ] Architecture + interface (1.5 min)
-- [ ] 1–2 feedback questions
-- [ ] Assemble the deck in one visual style
+- [x] Architecture + interface (1.5 min)
+- [x] 1–2 feedback questions
+- [x] Assemble the deck in one visual style
 
 Candidate feedback questions:
 1. Is a wearable-based ovulation estimate with a visible uncertainty range trustworthy enough to lead the demo, or should education lead?
 2. Besides held-out mcPHASES labels and classmate testing, how else should we check that red-flag escalation fires when it should?
 
 ### Nov 3–6 · Present
-- [ ] Tue Nov 3: Timed dry run. Each section is presented by whoever built it.
-- [ ] Nov 4–5: Fix dry-run issues, second run Thu, submit slides Thu night, pick a note-taker
-- [ ] Fri Nov 6: Present. Log peer feedback the same day; anything that changes a plan goes in decisions.md.
+- [x] Tue Nov 3: Timed dry run. Each section is presented by whoever built it.
+- [x] Nov 4–5: Fix dry-run issues, second run Thu, submit slides Thu night, pick a note-taker
+- [x] Fri Nov 6: Present. Log peer feedback the same day; anything that changes a plan goes in decisions.md.
 
 ### Nov 7–11 · Written draft (five parts)
-- [ ] Problem
-- [ ] Data plan
-- [ ] Technical approach
-- [ ] Evaluation (model, RAG and safety metrics)
-- [ ] Timeline + risks
-- [ ] Merge + edit pass Tue Nov 10, updated with peer feedback
-- [ ] Submit by Wed Nov 11, 11:59 PM ET
+- [x] Problem
+- [x] Data plan
+- [x] Technical approach
+- [x] Evaluation (model, RAG and safety metrics)
+- [x] Timeline + risks
+- [x] Merge + edit pass Tue Nov 10, updated with peer feedback
+- [x] Submit by Wed Nov 11, 11:59 PM ET
 
 ---
 
@@ -109,11 +109,12 @@ Build a thin end-to-end slice first, then make each layer real. A polished UI ov
 - [ ] mcPHASES → `DailyRecord`s: apply the cleaning rules in [data.md](data.md#cleaning) (one row per participant-day, 2024 RHR and steps excluded), after contracts v0.1 settle D25
 
 **RAG**
-- [ ] Index all manifest docs
-- [ ] `retrieve()` returning real citations
+- [x] Index all manifest docs (60 docs, 1,314 chunks)
+- [x] `retrieve()` returning real citations (`rag.retriever`; the agent still uses the stub until the fertility guard exists)
+- [x] Retrieval metrics in `evals/rag/run.py`: BM25 baseline Hit@5 0.83, capped Recall@5 0.34 (dev)
 
 **Agent / Safety / App**
-- [ ] App shell + check-in screen
+- [x] App shell + check-in screen (Today, Check-in with Undo, Ask; check-ins last one session until storage, D13)
 - [ ] Agent loop calling the signals and RAG stubs with the LLM (the stub wiring exists; no LLM yet)
 - [ ] Storage layer (D13)
 
@@ -126,12 +127,15 @@ Build a thin end-to-end slice first, then make each layer real. A polished UI ov
 - [ ] Cycle Clock with a narrowing range
 
 **RAG**
-- [ ] Full corpus indexed
+- [x] Full corpus indexed
+- [ ] Limit retrieval to 1–2 chunks per doc (the top 5 averages 3.3 distinct docs)
 - [ ] Citation-grounded answers
 - [ ] Evidence chip UI
 - [ ] Birth control content + missed-log follow-up
 
 **Agent / Safety / App**
+- [ ] Fertility guard (D25), before the agent uses the real retriever: input rule declines fertility-timing questions, prompt instruction, regex check (`FERTILITY_TIMING`) on the answer and every cited snippet
+- [ ] Switch the agent to `rag.retriever.retrieve` and update the stubbed-vs-real table in architecture.md
 - [ ] Red-flag router v1 (D5)
 - [ ] Education vs summary routing (D7)
 - [ ] Clinician summary, if kept (D7)
@@ -153,7 +157,7 @@ UX candidates (not scheduled; raise at standup):
 - [ ] Missing-data behavior
 
 **RAG**
-- [ ] RAG eval set (~40 Q&A)
+- [ ] RAG eval set: 56 questions (32 dev, 24 test) and dev references done; write the 24 test references (drafted or reviewed by a second person), then freeze
 - [ ] Answer metrics: groundedness, key-point coverage, IDK accuracy, rule pass rate (see `evals/rag/README.md`)
 - [ ] Out-of-scope questions get "I don't know"
 
