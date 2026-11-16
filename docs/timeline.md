@@ -54,9 +54,9 @@ Other class dates: Quiz 2 on Fri Nov 20; no class on Fri Nov 27 (Thanksgiving).
 - [ ] Sketch the Cycle Clock dial
 
 **RAG**
-- [ ] Collect 30–50 source documents
+- [x] Collect 30–50 source documents
 - [ ] Pick embeddings + vector store (D12)
-- [ ] Define the RAG metrics
+- [x] Define the RAG metrics
 
 **Agent / Safety / App**
 - [ ] Architecture diagram v1 (start from [architecture.md](architecture.md))

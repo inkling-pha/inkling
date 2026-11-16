@@ -147,6 +147,32 @@ def test_every_category_on_both_sides():
 
 
 MANIFEST = Path(__file__).resolve().parents[1] / "rag" / "manifest.csv"
+REFERENCES = QUESTIONS.parent / "references" / "dev.jsonl"
+REF_FIELDS = {
+    "id",
+    "expected_doc_ids",
+    "acceptable_doc_ids",
+    "key_points",
+    "behaviors",
+    "expected_safety",
+    "idk_expected",
+    "notes",
+}
+
+
+def test_dev_references_match_questions_and_manifest():
+    refs = [json.loads(line) for line in REFERENCES.read_text().splitlines() if line.strip()]
+    doc_ids = {r["doc_id"] for r in csv.DictReader(MANIFEST.open())}
+    assert sorted(r["id"] for r in refs) == sorted(q["id"] for q in load_questions("dev"))
+    for r in refs:
+        assert set(r) == REF_FIELDS, r["id"]
+        assert r["expected_safety"] in {"none", "caution", "red_flag"}, r["id"]
+        assert isinstance(r["idk_expected"], bool), r["id"]
+        expected, acceptable = set(r["expected_doc_ids"]), set(r["acceptable_doc_ids"])
+        assert expected | acceptable <= doc_ids, r["id"]
+        assert not expected & acceptable, f"{r['id']}: a doc is both expected and acceptable"
+        points = r["key_points"] + r["behaviors"]
+        assert points and all(p.strip() for p in points), r["id"]
 
 
 def test_manifest_is_valid():

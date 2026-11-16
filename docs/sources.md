@@ -27,6 +27,7 @@ never health claims.
 - **Copyrighted text:** MedlinePlus Medical Encyclopedia and drug pages, AHA, Mayo Clinic,
   Cleveland Clinic, ACOG, and Google's help center. These may come back later as link-only
   "read more" sources (see the timeline).
+- **OpenStax textbooks:** CC BY-NC-SA, and the pages forbid ingestion into LLMs or generative AI.
 - **NHS:** openly licensed, but UK guidance. Replaced with US equivalents.
 - **Forums, marketing pages, low-quality journals.**
 
