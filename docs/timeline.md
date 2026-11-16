@@ -60,7 +60,8 @@ Other class dates: Quiz 2 on Fri Nov 20; no class on Fri Nov 27 (Thanksgiving).
 
 **Agent / Safety / App**
 - [ ] Architecture diagram v1 (start from [architecture.md](architecture.md))
-- [ ] Red-flag list from ACOG guidance, with citations (D5)
+- [x] Red-flag list from ACOG guidance, with citations (D5) (sourced from D26's whitelist instead
+  of ACOG — CDC/FDA/OWH/NICHD; see [safety_rules.md](safety_rules.md), D29)
 - [ ] Storyboard + lo-fi prototype for the studio
 
 ### Oct 31 – Nov 2 · Slides (5 min total)
@@ -134,9 +135,9 @@ Build a thin end-to-end slice first, then make each layer real. A polished UI ov
 - [ ] Birth control content + missed-log follow-up
 
 **Agent / Safety / App**
-- [ ] Fertility guard (D25), before the agent uses the real retriever: input rule declines fertility-timing questions, prompt instruction, regex check (`FERTILITY_TIMING`) on the answer and every cited snippet
-- [ ] Switch the agent to `rag.retriever.retrieve` and update the stubbed-vs-real table in architecture.md
-- [ ] Red-flag router v1 (D5)
+- [x] Fertility guard (D25), before the agent uses the real retriever: input rule declines fertility-timing questions, regex check (`FERTILITY_TIMING`) on the answer and every cited snippet (`agent/fertility_guard.py`; no prompt instruction yet, since there's no LLM)
+- [x] Switch the agent to `rag.retriever.retrieve` and update the stubbed-vs-real table in architecture.md (`agent/router.py`, with a canned fallback if the corpus isn't fetched)
+- [x] Red-flag router v1 (D5) (`agent/safety.py` + `agent/router.py`; rule list proposed as D29, keyword extraction v1 pending an LLM extractor, D14)
 - [ ] Education vs summary routing (D7)
 - [ ] Clinician summary, if kept (D7)
 - [ ] Live Fitbit sync in the app
