@@ -33,6 +33,7 @@ _WORDS_TO_NUM = {
 class SafetyFacts:
     soaking_hourly_or_big_clots: bool = False
     tss_combo: bool = False  # rash + vomiting/diarrhea + dizziness/fainting together
+    tss_rash_alone: bool = False  # rash + tampon use, no other sign yet
     feels_feverish: bool = False
     reported_temp_f: float | None = None
     fainting_or_severe_dizziness: bool = False
@@ -98,18 +99,29 @@ def extract_facts(text: str) -> SafetyFacts:
     faint_or_dizzy = _has(
         t, r"faint(ed|ing)?|pass(ed|ing)? out|black(ed)? out|dizz(y|iness)|light.?headed"
     )
+    tampon = _has(t, r"\btampon\b")
+    # FDA's tampon-safety page lists sudden high fever, rash, vomiting, diarrhea, and
+    # fainting/dizziness as TSS signs, any one of which alone is "seek medical attention
+    # immediately" — not a required combination. A lone rash during tampon use gets its own
+    # red_flag below; fainting/dizziness alone already has its own rule further down.
     tss_combo = rash and gi and faint_or_dizzy
+    tss_rash_alone = rash and tampon and not tss_combo
 
     feels_feverish = _has(
         t, r"feverish|running a fever|have a fever|feel(ing)?\b.{0,20}\b(warm|hot|feverish)\b"
     )
-    temp_match = re.search(r"(\d{2,3}(?:\.\d)?)\s*(?:°|degrees)?\s*f\b", t) or re.search(
-        r"temp(erature)?.{0,15}?(\d{2,3}(?:\.\d)?)", t
+    temp_match = (
+        re.search(r"(\d{2,3}(?:\.\d)?)\s*(?:°|degrees)?\s*f\b", t)
+        or re.search(r"temp(erature)?.{0,15}?(\d{2,3}(?:\.\d)?)", t)
+        or re.search(r"fever.{0,30}?(\d{2,3}(?:\.\d)?)", t)
     )
     reported_temp = None
     if temp_match:
         digits = next(g for g in reversed(temp_match.groups()) if g and re.match(r"^\d", g))
         reported_temp = float(digits)
+    # A reported number is its own evidence — FDA's TSS fever sign (102°F+) and the CDC general
+    # threshold (100.4°F) don't require "feverish" wording too.
+    feels_feverish = feels_feverish or (reported_temp is not None and reported_temp >= 100.4)
 
     days_since = _number_before(t, "days?")
     months_since = _number_before(t, "months?")
@@ -137,9 +149,11 @@ def extract_facts(text: str) -> SafetyFacts:
         r"post.?menopaus(e|al).{0,15}bleed",
     )
 
+    # Phrase-matched only — v1 doesn't parse stated cycle lengths into numbers. OWH's own page
+    # calls 24-38 days normal, so a numeric version of this rule should use 38+, not the 21-35
+    # folk range.
     irregular = _has(
         t,
-        r"35\+?\s*days? apart",
         r"irregular.{0,20}(months|cycle)",
         r"cycles?.{0,20}(all over|varying|unpredictable|different (lengths|every))",
     )
@@ -157,6 +171,7 @@ def extract_facts(text: str) -> SafetyFacts:
     return SafetyFacts(
         soaking_hourly_or_big_clots=soaking,
         tss_combo=tss_combo,
+        tss_rash_alone=tss_rash_alone,
         feels_feverish=feels_feverish and not tss_combo,
         reported_temp_f=reported_temp,
         fainting_or_severe_dizziness=faint_or_dizzy and not tss_combo,
@@ -188,6 +203,14 @@ def assess(facts: SafetyFacts) -> SafetyResult:
             "with or without a fever.",
             "FDA: The facts on tampons and tampon safety",
         )
+    if facts.tss_rash_alone:
+        return SafetyResult(
+            "red_flag",
+            "A sunburn-like rash during or soon after tampon use is itself a toxic shock "
+            "syndrome warning sign, even with nothing else going on — FDA says to stop using "
+            "the tampon and get care now, not wait for other symptoms.",
+            "FDA: The facts on tampons and tampon safety",
+        )
     if facts.feels_feverish and facts.reported_temp_f is None:
         return SafetyResult(
             "red_flag",
@@ -195,16 +218,12 @@ def assess(facts: SafetyFacts) -> SafetyResult:
             "if you've taken it? Without a number or another sign, this isn't enough to judge.",
             None,
         )
-    if (
-        facts.feels_feverish
-        and facts.reported_temp_f is not None
-        and facts.reported_temp_f >= 100.4
-    ):
+    if facts.reported_temp_f is not None and facts.reported_temp_f >= 100.4:
         return SafetyResult(
             "red_flag",
             f"A temperature of {facts.reported_temp_f:.0f}°F during your period, especially with "
             "feeling unwell, is worth same-day care.",
-            "CDC general fever threshold (100.4°F) + FDA tampon safety",
+            "FDA tampon safety (102°F+ is a TSS sign) / CDC's general fever threshold (100.4°F)",
         )
     if facts.fainting_or_severe_dizziness:
         return SafetyResult(
@@ -221,7 +240,9 @@ def assess(facts: SafetyFacts) -> SafetyResult:
             "red_flag",
             "No period for 90+ days, without pregnancy, breastfeeding or perimenopause to explain "
             "it, is worth a clinician's look.",
-            "NICHD: Amenorrhea",
+            "OWH: Your menstrual cycle (verbatim: \"if you don't have a period for 90 days "
+            "(three months)... talk to your doctor\"). NICHD's own threshold is 6 months / 3 "
+            "periods in a row, stricter than this.",
         )
     if facts.severe_unrelieved_pelvic_pain:
         return SafetyResult(
@@ -241,9 +262,11 @@ def assess(facts: SafetyFacts) -> SafetyResult:
     if facts.irregular_cycle_pattern:
         return SafetyResult(
             "caution",
-            "Cycles that are persistently 35+ days apart, or irregular for 3+ months, are worth "
+            "Cycles outside the usual 24-38 day range, or irregular for a few months, are worth "
             "mentioning to a clinician.",
-            "OWH: Polycystic ovary syndrome / NICHD: PCOS",
+            "OWH: Your menstrual cycle (24-38 days is the stated normal range) / "
+            "OWH & NICHD PCOS pages (irregular periods is a listed PCOS symptom, no cycle-length "
+            "number given there)",
         )
     if facts.new_discharge_symptom:
         return SafetyResult(
@@ -257,7 +280,9 @@ def assess(facts: SafetyFacts) -> SafetyResult:
             "caution",
             "Missing 2 or more combined pills in a row changes what you should do next — worth a "
             "quick check with a clinician or pharmacist.",
-            "CDC US SPR: missed combined pills flowchart",
+            "CDC US SPR: combined hormonal contraceptives (the specific missed-pills flowchart "
+            "doc cited originally was dropped from rag/manifest.csv in a later cleanup; this "
+            "page's missed-pill guidance hasn't been re-verified against the new doc)",
         )
     if facts.pmdd_level_mood:
         return SafetyResult(

@@ -87,6 +87,22 @@ def test_tss_combo_is_red_flag_without_a_temperature():
     assert safety.assess(facts).safety == "red_flag"
 
 
+def test_lone_rash_with_tampon_is_red_flag():
+    """FDA lists each TSS sign as independently actionable, not a required combination."""
+    result = safety.assess(safety.extract_facts("i have a weird rash and i used a tampon today"))
+    assert result.safety == "red_flag"
+
+
+def test_a_rash_with_no_tampon_mention_is_not_flagged_as_tss():
+    result = safety.assess(safety.extract_facts("i have a rash on my arm"))
+    assert result.safety == "none"
+
+
+def test_a_bare_fever_number_is_red_flag_without_feverish_wording():
+    result = safety.assess(safety.extract_facts("i had a fever last night, around 101"))
+    assert result.safety == "red_flag"
+
+
 def test_feeling_feverish_alone_asks_rather_than_concludes():
     result = safety.assess(safety.extract_facts("i feel kind of warm today, is that normal"))
     assert result.safety == "red_flag"

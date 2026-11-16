@@ -283,3 +283,7 @@ Newest at the bottom. One entry per decision. To change a decided item, add a ne
 - **Open:** team sign-off on the rule list itself (drafted solo, see safety_rules.md); whether to
   add `CheckIn` fields later instead of agent-layer extraction; `evals/rag/references/*.jsonl`'s
   `expected_safety` labels still follow the CLAUDE.md list and need a pass against this rule list.
+- **Verification note (2026-11-16):** a spot-check against the actual fetched source text (not
+  just the conversational draft) found and fixed four citation/grounding errors — see
+  safety_rules.md's "Verification pass" section. This was a spot-check of the highest-traffic
+  rules, not exhaustive; still worth a second pass, and a reason this stays "proposed."
