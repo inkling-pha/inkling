@@ -154,7 +154,7 @@ UX candidates (not scheduled; raise at standup):
 
 **RAG**
 - [ ] RAG eval set (~40 Q&A)
-- [ ] Groundedness + citation accuracy
+- [ ] Answer metrics: groundedness, key-point coverage, IDK accuracy, rule pass rate (see `evals/rag/README.md`)
 - [ ] Out-of-scope questions get "I don't know"
 
 **Agent / Safety / App**
