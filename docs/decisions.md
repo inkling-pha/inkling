@@ -16,7 +16,7 @@ How this log works:
 | D4 | Uncertainty | decided | Every estimate has a window and a confidence |
 | D5 | Red flags | proposed / open | Rules before the LLM. Rule list still open |
 | D6 | Fallbacks | decided | Every outside dependency has a visible fallback |
-| D7 | Agent modes | decided | Education and summary. Routing in D29 |
+| D7 | Agent modes | decided | Education and summary. Routing in D30 |
 | D8 | LLM provider | decided | OpenAI. Model still open |
 | D9 | App framework | decided | Streamlit |
 | D10 | Environment | decided | venv + requirements.txt |
@@ -38,10 +38,11 @@ How this log works:
 | D26 | Source whitelist | decided | US government pages, open-access papers, Google Health docs |
 | D27 | Answer scope | decided | Cycle + app signals. Interpret, don't coach. No fertility timing |
 | D28 | Confidence in words | proposed | A word + coverage + a limit line. No number |
-| D29 | Question pipeline | proposed | One fixed pipeline, one LLM call |
-| D30 | Output checks | team choice | Code checks, or code checks + an LLM judge |
-| D31 | Trends tab | proposed | Her data lined up by cycle day |
-| D32 | Escalation + contracts v0.2 | proposed | On-screen clinician summary. New response fields |
+| D29 | Red-flag rule list v1 | proposed | Annika, on the `red-flag-router` branch (not merged yet). See `docs/safety_rules.md` there |
+| D30 | Question pipeline | proposed | One fixed pipeline, one LLM call |
+| D31 | Output checks | team choice | Code checks, or code checks + an LLM judge |
+| D32 | Trends tab | proposed | Her data lined up by cycle day |
+| D33 | Escalation + contracts v0.2 | proposed | On-screen clinician summary. New response fields |
 
 ---
 
@@ -83,9 +84,10 @@ How this log works:
   - Unclear or negated message ("I'm not soaking…") → a yes/no chip. Negation never cancels a hit on its own.
   - Follow-up questions only when needed ("soaking a pad every hour?" only when Bleeding = Heavy).
     No new daily questions.
-  - Banned phrases in answers ("you have…", "you are ovulating") are checked in D30.
-- **Still open:** the rule list (drafted from ACOG and MedlinePlus, with citations). What "caution" vs
-  "red_flag" means.
+  - Banned phrases in answers ("you have…", "you are ovulating") are checked in D31.
+- **Rule list:** proposed in D29 (Annika, `red-flag-router` branch, not merged yet), with an
+  extractor that pulls facts and code rules that decide. Same approach as above.
+- **Still open:** agreeing on that list. What "caution" vs "red_flag" means.
 - **Stretch:** the LLM pulls facts from chat, and the same code rules decide. It can only add a hit.
 - **Measured by:** the red-team set (recall and false alarms).
 - **Considered:** keyword matching alone (brittle). Check-in rules alone (misses chat).
@@ -106,8 +108,8 @@ How this log works:
   - **Summary:** her own data ("what's going on with me", weekly synthesis).
   - Both share safety checks and return `AgentResponse`.
 - **Why:** Her data and general education need different grounding and prompts.
-- **Routing:** proposed in D29 (one pipeline, mode taken from what the answer cites).
-- **Clinician summary:** proposed in D32.
+- **Routing:** proposed in D30 (one pipeline, mode taken from what the answer cites).
+- **Clinician summary:** proposed in D33.
 
 ### D8. LLM provider: OpenAI, a personal key per person
 - **Date:** 2026-10-24 · **Status:** decided. Model name still open.
@@ -146,7 +148,7 @@ How this log works:
   - Holds check-ins and parsed `DailyRecord`s.
   - Raw Fitbit JSON stays in the D20 file cache: used to re-parse, and as the API-down fallback.
   - New functions: `save_checkin(...)` and `sync(user_id)`.
-- **Why:** Saving by date and pulling date ranges is simple. History rules (D5) and Trends (D31) need it.
+- **Why:** Saving by date and pulling date ranges is simple. History rules (D5) and Trends (D32) need it.
 - **Considered:** JSON files (easy to read, awkward to update and query).
 
 ### D14. What reaches the LLM: a context card
@@ -160,7 +162,7 @@ How this log works:
   - Never on the card: raw JSON, names or ids, correlations, a future fertile window (D25),
     temperature-shift forecasts (D27).
   - Answers cite fact ids. Cited facts become "From your data" chips.
-- **Why:** Code computes and the LLM narrates, so numbers can't be made up and are checkable (D30).
+- **Why:** Code computes and the LLM narrates, so numbers can't be made up and are checkable (D31).
   Less of her data leaves the machine.
 - **Considered:** raw or lightly processed records (more to leak, and the LLM does the math).
 - **Example card:** see `docs/architecture.md`, section 6.
@@ -304,11 +306,11 @@ How this log works:
 - **Revisit:** after the held-out calibration eval (Nov 21–25).
 - **Considered:** the Lab 8 bar (over-reliance risk, p.46). Only the window, no word.
 
-### D29. One fixed question pipeline, no router
+### D30. One fixed question pipeline, no router
 - **Date:** 2026-11-16 · **Status:** proposed (pending team)
 - **Proposal:**
   - Every question: red-flag rules → fertility rule → context card (if opted in) → retrieve (always)
-    → one LLM call returning JSON → output checks (D30) → regenerate once → safe fallback.
+    → one LLM call returning JSON → output checks (D31) → regenerate once → safe fallback.
   - `mode` comes from what the answer cites: education, summary or both. The user toggle goes away.
   - The last 1–2 chat turns are passed for follow-ups. Chat is session-only in v1.
 - **Why:** No routing errors to evaluate. Mixed questions work naturally. One call. Safety checks run
@@ -318,7 +320,7 @@ How this log works:
 - **Stretch:** rewrite the question before retrieval. Keep only if dev Hit@5 improves.
 - **Open:** chat memory across visits (touches D13, D14).
 
-### D30. Output checks
+### D31. Output checks
 - **Date:** 2026-11-16 · **Status:** team choice
 - **Both options:** fail → regenerate once → safe fallback. Checks can only make answers stricter.
   The eval is graded by a different model or by hand, so it isn't circular.
@@ -336,7 +338,7 @@ How this log works:
   - Cons: an extra LLM call per answer. Results vary run to run. A judge error counts as a fail, so an
     LLM outage hits twice. A same-model judge may share blind spots. Wrong fails → more fallbacks.
 
-### D31. A cycle-aligned Trends tab
+### D32. A cycle-aligned Trends tab
 - **Date:** 2026-11-16 · **Status:** proposed (pending team)
 - **Proposal:** Default view: this cycle vs previous ones, by cycle day, with check-in markers.
   By-date view with phase bands (the default for new users). Trends and the agent use the same
@@ -345,7 +347,7 @@ How this log works:
   read period dates. That view is Inkling's own.
 - **Considered:** a Fitbit-style metrics tab by date (duplicates Fitbit).
 
-### D32. Escalation details and contracts v0.2
+### D33. Escalation details and contracts v0.2
 - **Date:** 2026-11-16 · **Status:** proposed (pending team). Escalation was only briefly discussed.
 - **Escalation:** clinician summary on screen and copyable, built from her data with no LLM (PDF is a
   stretch). Nearby care = fixed links (NPI Registry lookup is a stretch).

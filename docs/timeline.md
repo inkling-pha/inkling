@@ -124,7 +124,7 @@ Build a thin end-to-end slice first, then make each layer real. A polished UI ov
 **Signals**
 - [ ] Baselines + temperature-shift / RHR-rise detector
 - [ ] Phase rules v1 tuned on mcPHASES (D15: rules first, ML is a stretch)
-- [ ] Cycle history (`CycleHistory`): feeds the Trends tab and the context card (D31, D14)
+- [ ] Cycle history (`CycleHistory`): feeds the Trends tab and the context card (D32, D14)
 - [ ] Cycle Clock with a narrowing range
 
 **RAG**
@@ -135,18 +135,18 @@ Build a thin end-to-end slice first, then make each layer real. A polished UI ov
 - [ ] Birth control content + missed-log follow-up
 
 **All**
-- [ ] Team picks: output checks (D30) and retrieval method (D12). Comment in the architecture PR or team doc
-- [ ] Contracts v0.2 PR (D32): `response_type`, `decline_reason`, `CycleHistory`, `save_checkin`, `sync`
+- [ ] Team picks: output checks (D31) and retrieval method (D12). Comment in the architecture PR or team doc
+- [ ] Contracts v0.2 PR (D33): `response_type`, `decline_reason`, `CycleHistory`, `save_checkin`, `sync`
 
 **Agent / Safety / App**
 - [ ] Fertility guard (D25), before the agent uses the real retriever: input rule declines fertility-timing questions, prompt instruction, regex check (`FERTILITY_TIMING`) on the answer and every cited snippet
 - [ ] Switch the agent to `rag.retriever.retrieve` and update the stubbed-vs-real table in architecture.md
 - [ ] Red-flag router v1 (D5: rules on check-in save, history and messages, before any LLM call)
-- [ ] Education vs summary routing (D7). D29 proposes one fixed pipeline instead, with mode taken from citations
+- [ ] Education vs summary routing (D7). D30 proposes one fixed pipeline instead, with mode taken from citations
 - [ ] Past-period logging / "last period start" onboarding, so the phase estimate has a cycle day 1 (D15)
 - [ ] Context card + "Use my data in answers" opt-in (D14)
-- [ ] Output checks, after the team picks (D30)
-- [ ] Clinician summary: on screen, built from her data, no LLM (D32)
+- [ ] Output checks, after the team picks (D31)
+- [ ] Clinician summary: on screen, built from her data, no LLM (D33)
 - [ ] Live Fitbit sync in the app
 
 RAG candidates (later, after the basic RAG works):
@@ -155,7 +155,7 @@ RAG candidates (later, after the basic RAG works):
 UX candidates (not scheduled; raise at standup):
 - Select-to-ask: tap a card or number and ask about it; the app passes the item as `user_context`, so the user doesn't type the referent.
 - Clarifying chips: when a question is ambiguous (e.g. "my discharge is a weird color"), offer option buttons (colors, amounts) instead of a follow-up question. Could also feed red-flag rules (D5).
-- Find care near me (`Escalation.nearby_care`, stretch per D32): the user enters a ZIP code and we look up OB-GYNs via the public NPI Registry API (no key). Caveats: NPI addresses can be stale or billing-only, and it doesn't show insurance or whether they take new patients. Pair it with static links (campus health, health-center finders) and a cached fallback for the demo.
+- Find care near me (`Escalation.nearby_care`, stretch per D33): the user enters a ZIP code and we look up OB-GYNs via the public NPI Registry API (no key). Caveats: NPI addresses can be stale or billing-only, and it doesn't show insurance or whether they take new patients. Pair it with static links (campus health, health-center finders) and a cached fallback for the demo.
 
 **Gate, Thu Nov 19:** Integration #1. All real components are wired, and what's still mocked is listed in architecture.md.
 
@@ -189,8 +189,8 @@ parameters + mcPHASES replay eval, LLM red-flag fact extraction, decline review,
 
 **Agent / Safety / App**
 - [ ] "Real vs synthetic" label on every data view
-- [ ] Trends tab: cycle-day overlay + by-date view with phase bands (D31)
-- [ ] Decline cards with a next step for each `decline_reason` (D32)
+- [ ] Trends tab: cycle-day overlay + by-date view with phase bands (D32)
+- [ ] Decline cards with a next step for each `decline_reason` (D33)
 - [ ] Record a full fallback demo video
 - [ ] Demo script
 

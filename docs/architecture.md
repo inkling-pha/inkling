@@ -1,7 +1,7 @@
 # Architecture
 
 > **Status: v0.2 draft for team review, not final.**
-> - Reworked from Grace's diagram on 2026-11-16. Matching decisions: D5, D12–D15 (updated) and D29–D32 (new) in [decisions.md](decisions.md).
+> - Reworked from Grace's diagram on 2026-11-16. Matching decisions: D5, D12–D15 (updated) and D30–D33 (new). D29 is Annika's red-flag rule list in [decisions.md](decisions.md).
 > - **Proposed**: Grace agreed, team hasn't reviewed yet. **Team choice**: options, no recommendation.
 >   **Stretch**: only with spare time, or if an eval calls for it. **Open**: not settled.
 > - Before building on an unsettled part, raise it at standup or in an issue. Record the outcome in
@@ -22,15 +22,15 @@ In short:
 | 1 | Offline vs runtime | Build and evaluate offline. Run on demand at app load | Proposed | D15 |
 | 2 | Phase estimate v1 | Rules over her baseline, anchored on check-in period starts. Calendar fallback | Proposed | D15 |
 | 3 | Storage | SQLite (built into Python), owned by signals. Raw Fitbit JSON stays in the file cache | Proposed | D13 |
-| 4 | Answering a question | One fixed pipeline, one LLM call. No router, no tool calling | Proposed | D29 |
+| 4 | Answering a question | One fixed pipeline, one LLM call. No router, no tool calling | Proposed | D30 |
 | 5 | Red flags | Rules before the LLM. Rule list still open | Proposed / Open | D5 |
 | 6 | What reaches the LLM | Opt-in context card of facts computed in code | Proposed | D14 |
-| 7 | Output checks | Option 1 code checks, or Option 2 code checks + LLM judge | Team choice | D30 |
+| 7 | Output checks | Option 1 code checks, or Option 2 code checks + LLM judge | Team choice | D31 |
 | 8 | Retrieval method | A BM25, B embeddings, C hybrid | Team choice | D12 |
-| 9 | App | New Trends tab. Changes to Check-in and Ask | Proposed | D31 |
+| 9 | App | New Trends tab. Changes to Check-in and Ask | Proposed | D32 |
 | 10 | Fallbacks | One per dependency. Red flags never need the LLM | Proposed | D6 |
-| 11 | Escalation | On-screen clinician summary, fixed care links | Proposed (briefly discussed) | D32 |
-| 12 | Contracts v0.2 | `response_type`, `decline_reason`, `CycleHistory` (separate PR) | Proposed | D32 |
+| 11 | Escalation | On-screen clinician summary, fixed care links | Proposed (briefly discussed) | D33 |
+| 12 | Contracts v0.2 | `response_type`, `decline_reason`, `CycleHistory` (separate PR) | Proposed | D33 |
 
 ## 1–3. Data side
 
@@ -94,7 +94,7 @@ education, both) come from what the answer cites, so nothing has to route them.
 - No new daily questions. A longer check-in gets skipped, and missed period starts hurt the estimate.
 - Rare flags (fainting, fever with pain) → caught by message patterns.
 - The banner stays for the session. Works with the LLM down.
-- **Open (D5):** the rule list and check-in fields, from ACOG and MedlinePlus.
+- **Rule list:** proposed in D29 (Annika, `red-flag-router` branch, not merged yet). Check-in fields still open (D5).
 - *Stretch:* the LLM pulls facts from chat, and the same code rules decide. It can only add a hit.
 - Measured by the red-team set: recall and false alarms, negated phrasings included.
 

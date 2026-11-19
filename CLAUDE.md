@@ -65,5 +65,5 @@ JSON dict of metrics (aggregate only, never data rows).
 - Tests live in `tests/test_<layer>.py`.
 - Prefer simple code. Plain functions over classes; no framework unless the team has agreed to it.
 - Ask before adding a dependency or framework, and log the choice in `docs/decisions.md`.
-- Don't pick the LLM model (D8), the retrieval method (D12) or the output checks (D30) on your own. Check
+- Don't pick the LLM model (D8), the retrieval method (D12) or the output checks (D31) on your own. Check
   `docs/decisions.md` for what's open.
