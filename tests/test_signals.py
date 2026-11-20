@@ -1,5 +1,5 @@
 import json
-from datetime import date
+from datetime import date, timedelta
 
 import pandas as pd
 import pytest
@@ -7,11 +7,18 @@ import requests
 
 from contracts import CheckIn, DailyRecord, PhaseEstimate
 from signals import google_health as gh
-from signals import parse, store
+from signals import parse, store, sync
 from signals.mcphases import load
 from signals.stub import estimate_phase, get_daily_records
 
 START, END = date(2026, 10, 1), date(2026, 10, 3)
+
+
+@pytest.fixture(autouse=True)
+def temp_db(monkeypatch, tmp_path):
+    """Every test gets its own store; tests never touch data/inkling.db."""
+    monkeypatch.setattr(store, "DB_PATH", tmp_path / "inkling.db")
+    return tmp_path / "inkling.db"
 
 
 def test_stub_matches_contract():
@@ -321,36 +328,33 @@ def _record(d: date, **values) -> DailyRecord:
     return DailyRecord(user_id="maya", date=d, source="synthetic", **values)
 
 
-def test_store_round_trip_keeps_none(tmp_path):
-    db = tmp_path / "t.db"
+def test_store_round_trip_keeps_none():
     saved = [_record(D1, rhr_bpm=60.0, steps=5000), _record(D2, hrv_rmssd_ms=42.5)]
-    store.save_daily_records(saved, db_path=db)
-    assert store.load_daily_records("maya", D1, D3, db_path=db) == saved
-    assert store.load_daily_records("someone_else", D1, D3, db_path=db) == []
+    store.save_daily_records(saved)
+    assert store.load_daily_records("maya", D1, D3) == saved
+    assert store.load_daily_records("someone_else", D1, D3) == []
 
 
-def test_store_resave_replaces_values_but_keeps_checkins(tmp_path):
-    db = tmp_path / "t.db"
-    store.save_checkin("maya", D1, CheckIn(bleeding="light", pain=3), db_path=db)
-    store.save_daily_records([_record(D1, rhr_bpm=60.0, steps=5000)], db_path=db)
-    store.save_daily_records([_record(D1, rhr_bpm=61.0)], db_path=db)
-    [day] = store.load_daily_records("maya", D1, D2, db_path=db)
+def test_store_resave_replaces_values_but_keeps_checkins():
+    store.save_checkin("maya", D1, CheckIn(bleeding="light", pain=3))
+    store.save_daily_records([_record(D1, rhr_bpm=60.0, steps=5000)])
+    store.save_daily_records([_record(D1, rhr_bpm=61.0)])
+    [day] = store.load_daily_records("maya", D1, D2)
     assert (day.rhr_bpm, day.steps) == (61.0, None)
     assert day.checkin == CheckIn(bleeding="light", pain=3)
 
 
-def test_checkins_replace_per_day_and_range_is_half_open(tmp_path):
-    db = tmp_path / "t.db"
-    store.save_checkin("maya", D1, CheckIn(energy=2), db_path=db)
-    store.save_checkin("maya", D1, CheckIn(energy=4), db_path=db)
-    store.save_checkin("maya", D2, CheckIn(bleeding="none"), source="synthetic", db_path=db)
-    assert store.load_checkins("maya", D1, D3, db_path=db) == {
+def test_checkins_replace_per_day_and_range_is_half_open():
+    store.save_checkin("maya", D1, CheckIn(energy=2))
+    store.save_checkin("maya", D1, CheckIn(energy=4))
+    store.save_checkin("maya", D2, CheckIn(bleeding="none"), source="synthetic")
+    assert store.load_checkins("maya", D1, D3) == {
         D1: CheckIn(energy=4),
         D2: CheckIn(bleeding="none"),
     }
-    assert list(store.load_checkins("maya", D1, D2, db_path=db)) == [D1]  # end is exclusive
+    assert list(store.load_checkins("maya", D1, D2)) == [D1]  # end is exclusive
     # A check-in-only day still comes back, with its own source and no wearable values.
-    [day] = store.load_daily_records("maya", D2, D3, db_path=db)
+    [day] = store.load_daily_records("maya", D2, D3)
     assert day.source == "synthetic" and day.checkin == CheckIn(bleeding="none")
     assert all(getattr(day, f) is None for f in store.WEARABLE_FIELDS)
 
@@ -400,8 +404,7 @@ def test_sleep_min_subtracts_short_awakenings_like_mcphases():
     assert parse.parse_sleep([no_stages]) == {D2: 400}
 
 
-def test_store_sleep_stages_round_trip_and_replace(tmp_path):
-    db = tmp_path / "t.db"
+def test_store_sleep_stages_round_trip_and_replace():
     night = parse.parse_sleep_stages(
         [
             sleep_session(
@@ -414,9 +417,118 @@ def test_store_sleep_stages_round_trip_and_replace(tmp_path):
             )
         ]
     )
-    store.save_sleep_stages("maya", night, db_path=db)
-    assert store.load_sleep_stages("maya", D1, D2, db_path=db) == night
+    store.save_sleep_stages("maya", night)
+    assert store.load_sleep_stages("maya", D1, D2) == night
     shorter = {D1: night[D1][:2]}  # re-parsed night replaces the old segments, no leftovers
-    store.save_sleep_stages("maya", shorter, db_path=db)
-    assert store.load_sleep_stages("maya", D1, D3, db_path=db) == shorter
-    assert store.load_sleep_stages("maya", D2, D3, db_path=db) == {}
+    store.save_sleep_stages("maya", shorter)
+    assert store.load_sleep_stages("maya", D1, D3) == shorter
+    assert store.load_sleep_stages("maya", D2, D3) == {}
+
+
+def test_get_daily_records_prefers_stored_days_over_the_fixture():
+    assert all(r.source == "synthetic" for r in get_daily_records("new-user"))  # fixture
+    stored = [DailyRecord(user_id="me", date=D1, rhr_bpm=60.0, source="real")]
+    store.save_daily_records(stored)
+    assert get_daily_records("me") == stored
+
+
+# --- sync: fake Fitbit, no network ----------------------------------------------------------
+
+TODAY = date(2026, 10, 10)
+
+
+@pytest.fixture
+def fake_fitbit(monkeypatch, tmp_path):
+    """Serve fixed points per type; types in `failing` raise like a 503. Records every pull."""
+    monkeypatch.setattr(gh, "RAW_DIR", tmp_path / "fitbit")
+    state = {"points": {}, "failing": set(), "auth_fails": False, "calls": []}
+
+    def token():
+        if state["auth_fails"]:
+            raise requests.HTTPError(response=FakeResponse(status=401))
+        return "test-token"
+
+    def list_points(data_type, start, end):
+        state["calls"].append((data_type, start, end))
+        if data_type in state["failing"]:
+            raise requests.HTTPError(response=FakeResponse(status=503))
+        return state["points"].get(data_type, [])
+
+    monkeypatch.setattr(gh, "_access_token", token)
+    monkeypatch.setattr(gh, "list_points", list_points)
+    return state
+
+
+def _night(wake: date, short=()):
+    """A main sleep ending 07:00 local (UTC-5) on `wake`, with 12 HRV samples and stages."""
+    w = wake.isoformat()
+    stages = [
+        ("LIGHT", f"{w}T04:00:00Z", f"{w}T08:00:00Z"),
+        ("DEEP", f"{w}T08:00:00Z", f"{w}T12:00:00Z"),
+    ]
+    session = sleep_session(f"{w}T04:00:00Z", f"{w}T12:00:00Z", 480, stages=stages, short=short)
+    samples = [hrv_sample(f"{w}T05:{5 * i:02d}:00Z", 40.0) for i in range(12)]
+    return session, samples
+
+
+def test_first_sync_pulls_recent_days_saves_and_logs(fake_fitbit):
+    session, samples = _night(TODAY)
+    fake_fitbit["points"] = {
+        "daily-resting-heart-rate": [daily("dailyRestingHeartRate", TODAY, beatsPerMinute="60")],
+        "sleep": [session],
+        "heart-rate-variability": samples,
+        "steps": [step(TODAY, 0, 500), step(date(2026, 9, 1), 0, 9)],  # outside the window: dropped
+    }
+    status = sync.sync("me", TODAY)
+    assert status.mode == "live" and status.failed_types == [] and status.error is None
+    assert (status.start, status.end_exclusive) == (date(2026, 10, 7), date(2026, 10, 11))
+    hrv_call = next(c for c in fake_fitbit["calls"] if c[0] == "heart-rate-variability")
+    assert hrv_call[1] == date(2026, 10, 6)  # one extra day: samples start the evening before
+    [day] = store.load_daily_records("me", date(2026, 1, 1), date(2027, 1, 1))
+    assert (day.date, day.rhr_bpm, day.sleep_min, day.steps, day.hrv_rmssd_ms) == (
+        TODAY,
+        60.0,
+        480,
+        500,
+        40.0,
+    )
+    assert day.skin_temp_dev_c is None and day.source == "real"
+    assert list(store.load_sleep_stages("me", TODAY, date(2026, 10, 11))) == [TODAY]
+    assert status.last_synced_at is not None
+    assert len(list(gh.RAW_DIR.glob("*.json"))) == len(parse.DATA_TYPES)  # raw pulls cached
+
+
+def test_next_sync_starts_three_days_before_last_stored_day_and_caps_long_gaps(fake_fitbit):
+    store.save_daily_records(
+        [DailyRecord(user_id="me", date=date(2026, 10, 8), steps=1, source="real")]
+    )
+    assert sync.sync("me", TODAY).start == date(2026, 10, 5)
+    store.save_daily_records(
+        [DailyRecord(user_id="u2", date=date(2025, 1, 1), steps=1, source="real")]
+    )
+    assert sync.sync("u2", TODAY).start == TODAY - timedelta(days=sync.MAX_GAP_DAYS)
+
+
+def test_failed_auth_keeps_stored_data_and_reports_cached(fake_fitbit):
+    fake_fitbit["points"] = {"steps": [step(TODAY, 0, 500)]}
+    sync.sync("me", TODAY)
+    fake_fitbit["auth_fails"] = True
+    status = sync.sync("me", TODAY)
+    assert status.mode == "cached" and status.error == "HTTPError (HTTP 401)"
+    assert status.last_synced_at is not None  # from the earlier live sync
+    assert get_daily_records("me")[0].steps == 500
+
+
+def test_one_failed_type_keeps_its_stored_values(fake_fitbit):
+    fake_fitbit["points"] = {
+        "daily-resting-heart-rate": [daily("dailyRestingHeartRate", TODAY, beatsPerMinute="60")],
+        "steps": [step(TODAY, 0, 500)],
+    }
+    sync.sync("me", TODAY)
+    fake_fitbit["points"]["steps"] = [step(TODAY, 0, 800)]
+    fake_fitbit["failing"] = {"daily-resting-heart-rate"}
+    status = sync.sync("me", TODAY)
+    assert status.mode == "partial" and status.failed_types == ["daily-resting-heart-rate"]
+    assert "HTTP 503" in status.error
+    [day] = store.load_daily_records("me", TODAY, date(2026, 10, 11))
+    assert (day.rhr_bpm, day.steps) == (60.0, 800)  # RHR kept, steps updated

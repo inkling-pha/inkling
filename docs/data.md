@@ -30,6 +30,35 @@ Last checked: 2026-10-26, Fitbit Air, `notebooks/fitbit_test_pull.ipynb`. Parsin
   - Client: `signals/google_health.py`
   - Test pull: `notebooks/fitbit_test_pull.ipynb`
   - Raw pulls are cached as `data/raw/fitbit/<type>_<start>_<end>.json` (gitignored, `"source": "real"`).
+  - Parser: `signals/parse.py`. Store: `signals/store.py`. Sync: `signals/sync.py` (below).
+
+### Sync
+
+Pulls Fitbit data into the store. Built 2026-11-19 on D13 (proposed).
+
+- **On app open, once per session:** `sync(user_id)` pulls from 3 days before the last stored day up
+  to today. Overnight values arrive late and today's steps are partial, so the last few days are
+  re-pulled and replaced. After a long absence it pulls at most 90 days.
+- **History, once, by hand:** `python -m signals.sync --backfill 90`. Kept out of app load so it
+  stays fast. Without `--backfill`, the same command runs a normal sync.
+- **What it pulls:** resting HR, temperature, HRV samples (from one day earlier, since a night's
+  samples start the evening before), sleep and steps. Each pull is cached raw, then only that window
+  is parsed and saved.
+- **Failures never raise.** No token or no network → `cached`: nothing stored changes. One type fails
+  → `partial`: the rest are saved, and the fields that type feeds keep their stored values instead of
+  becoming None. Every attempt is logged (`sync_log` table: time, mode, error), which gives "last
+  synced". Errors record only the data type, error type and HTTP status, never bodies or tokens.
+- **One Fitbit account per machine, saved as user `me`:** the tokens in `.env` belong to one account,
+  and there is no login, so its data goes under the user id `me` (`--user` to override). Each
+  teammate's `me` is their own data in their own gitignored DB. Without tokens, sync reports `cached`
+  and the app shows the synthetic demo user. Multi-user is out of scope.
+- **Switching Fitbit accounts on one machine?** Delete `data/inkling.db` and `data/raw/fitbit/` first,
+  or both accounts' data ends up mixed under `me`.
+- **Status for the app:** `sync` returns a signals-internal `SyncStatus` (mode, last successful sync,
+  window, days saved, failed types). Showing it in the app needs a `SyncStatus` contract and an app
+  hook (both pending: contracts v0.2 and the app owner).
+- **Reading:** `get_daily_records(user_id)` returns the stored days. A user with nothing stored (such
+  as the demo user) still gets the synthetic fixture, labeled `synthetic`.
 
 ### Endpoint
 
