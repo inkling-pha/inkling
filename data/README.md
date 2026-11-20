@@ -4,6 +4,8 @@ Everything in `data/` is gitignored except this file and `data/synthetic/`.
   - `data/raw/mcphases/`: your own mcPHASES download (PhysioNet terms forbid redistribution).
     Claude is denied this folder; see CLAUDE.md.
   - `data/raw/fitbit/`: real Fitbit pulls (label `source: real`).
+- `data/inkling.db`: the signals SQLite store (parsed daily records, check-ins, sleep stages).
+  Local only; created on first save. See [docs/data.md](../docs/data.md#mapping-to-dailyrecord).
 - `data/synthetic/`: generated data that is safe to commit. Label it `source: synthetic`.
 
 How each source is accessed and structured: [docs/data.md](../docs/data.md).
