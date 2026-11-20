@@ -262,3 +262,28 @@ Newest at the bottom. One entry per decision. To change a decided item, add a ne
   as a measurement, and we have no calibration results before Sprint 2.
 - **Revisit:** after the held-out calibration eval (Nov 21–25). If the range is calibrated, say so.
 - **Alternatives:** Keep the Lab 8 bar (over-reliance risk, p.46); remove the word and show only the window.
+
+### D29. Red-flag/caution rule list v1, and D5's "approach" question
+- **Date:** 2026-11-16 · **Status:** proposed
+- **Decision:** D5's second approach — an extractor pulls a few structured facts from free text
+  (bleeding amount, pad-soak rate, fainting, fever/temperature, days since last period, pelvic
+  pain, pill misses), then **coded rules, not the extractor, decide the safety level.** The
+  extractor can only fail to find a fact, never override one. v1's extractor is keyword/regex
+  matching (D5's third, fallback-safety-net option) — swap it for an LLM call once D14 (what
+  reaches the LLM) is settled; the rules in `agent/safety.py` don't need to change.
+  Full rule list, citations and the fever/TSS and discharge-color reasoning are in
+  [safety_rules.md](safety_rules.md). Implemented in `agent/safety.py` (rules),
+  `agent/fertility_guard.py` (D25's input/output guard), and wired through `agent/router.py`,
+  which replaces `agent.stub` for "education" mode. A red flag short-circuits before retrieval —
+  no RAG call, no LLM call, matching CLAUDE.md's "rules decide first".
+- **Why:** The eval questions are free text ("i almost passed out... feel feverish"), not taps on
+  structured fields, so rules on structured check-in fields alone (D5's first option) would miss
+  most of them. `CheckIn` (contracts/models.py) still has no fever/fainting/pad-soak-rate fields;
+  these stay agent-layer-only facts for now rather than a contract change.
+- **Open:** team sign-off on the rule list itself (drafted solo, see safety_rules.md); whether to
+  add `CheckIn` fields later instead of agent-layer extraction; `evals/rag/references/*.jsonl`'s
+  `expected_safety` labels still follow the CLAUDE.md list and need a pass against this rule list.
+- **Verification note (2026-11-16):** a spot-check against the actual fetched source text (not
+  just the conversational draft) found and fixed four citation/grounding errors — see
+  safety_rules.md's "Verification pass" section. This was a spot-check of the highest-traffic
+  rules, not exhaustive; still worth a second pass, and a reason this stays "proposed."
