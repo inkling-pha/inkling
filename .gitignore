@@ -20,6 +20,12 @@ token.pickle
 data/*
 !data/README.md
 !data/synthetic/
+# The signals SQLite store (data/inkling.db) holds real data; never commit a DB from anywhere.
+*.db
+*.db-journal
+*.db-wal
+*.sqlite
+*.sqlite3
 
 # Models and generated artifacts
 models/

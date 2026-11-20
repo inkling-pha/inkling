@@ -11,7 +11,7 @@ Handling rules are in [CLAUDE.md](../CLAUDE.md) and decisions D18–D25 in [deci
 
 ## Fitbit via the Google Health API
 
-Last checked: 2026-10-26, Fitbit Air, `notebooks/fitbit_test_pull.ipynb`.
+Last checked: 2026-10-26, Fitbit Air, `notebooks/fitbit_test_pull.ipynb`. Parsing quirks added 2026-11-19.
 
 ### Access
 
@@ -61,7 +61,7 @@ records that type, not how much any one person has.
 | Resp. rate by sleep stage | `respiratory-rate-sleep-summary` | `respiratory_rate_sleep_summary.sample_time.civil_time` | `deepSleepStats`, `lightSleepStats`, `remSleepStats`, `fullSleepStats`, each with `breathsPerMinute`, `standardDeviation`, `signalToNoise` | about 1 per night |
 | SpO2 | `daily-oxygen-saturation` | `daily_oxygen_saturation.date` | `averagePercentage`, `lowerBoundPercentage`, `upperBoundPercentage`, `standardDeviationPercentage` | 1 per night |
 | SpO2 samples | `oxygen-saturation` | `oxygen_saturation.sample_time.civil_time` | `percentage` | every minute during sleep |
-| Sleep | `sleep` | `sleep.interval.civil_end_time` | `interval` (start/end), `type` (e.g. `STAGES`), `stages[]` (`startTime`, `endTime`, `type` e.g. `AWAKE`), `summary`, `metadata` | per session; naps add sessions |
+| Sleep | `sleep` | `sleep.interval.civil_end_time` | `interval` (start/end), `type` (e.g. `STAGES`), `stages[]` (`startTime`, `endTime`, `type` e.g. `AWAKE`), `shortAwakenings[]` (`startTime`, `endTime`), `summary`, `metadata` | per session; naps add sessions |
 | Steps | `steps` | `steps.interval.civil_start_time` | `count`\*, `interval` | 1-minute intervals |
 | Heart rate | `heart-rate` | `heart_rate.sample_time.civil_time` | not inspected yet | every ~3 s (~33k points/day) |
 
@@ -122,18 +122,53 @@ What this means for Inkling:
   the deviation is nightly minus baseline. The first night or so after setup may have no value.
 - **Filter field names** in snake_case (as in Lab 3) work. The docs also show camelCase
   (`dailyHeartRateVariability.date`).
+- **`"NaN"` as a string.** `baselineTemperatureCelsius` and `relativeNightlyStddev30dCelsius` can be
+  the string `"NaN"`, seemingly before a baseline exists. Treat it as missing. SQLite would otherwise
+  store a NaN as NULL without saying so.
+- **Numbers as strings, per field.** Within one type some fields are numbers and others strings
+  (temperature: `nightlyTemperatureCelsius` is a number, `baselineTemperatureCelsius` a string).
+  `sleep.summary.minutesAsleep` and `steps.count` are strings too.
+- **Sleep has no civil time.** Only UTC `interval.startTime`/`endTime` plus `endUtcOffset`. The wake-up
+  day is the local date of `endTime + endUtcOffset`.
+- **Sleep flags overlap.** `metadata.mainSleep` and `metadata.nap` are independent: a session can be
+  flagged both, and a nap may have no `mainSleep` at all. We go by `mainSleep`.
+- **`minutesAsleep` counts short awakenings as sleep.** `summary.minutesAsleep` equals the sum of the
+  non-`AWAKE` stage durations for every session checked. Brief wakes are listed separately in
+  `shortAwakenings[]` (start/end), and every one checked fell *inside* a non-`AWAKE` stage. So the
+  summary includes them as sleep, unlike mcPHASES (see below). We compute `sleep_min` ourselves.
+- **Phone and watch steps don't overlap.** In one month of `all-sources` data, no minute had both a
+  phone and a watch count. Phone steps fill time the watch was off, and some days are phone-only.
 
-### Mapping to `DailyRecord` (proposal, not decided)
+### Mapping to `DailyRecord`
 
-| Contract field | Proposed source | Open question |
+Decided 2026-11-19 (Grace) for the parser in `signals/parse.py`. Every value is dated by the day it
+belongs to, sleep-derived values by the wake-up day. A day with no data for a signal gets `None`,
+never 0. Records are `source: "real"`.
+
+| Contract field | Source | Choice and trade-off |
 |---|---|---|
-| `rhr_bpm` | `daily-resting-heart-rate.beatsPerMinute` | none |
-| `hrv_rmssd_ms` | `daily-heart-rate-variability`: the average or the deep-sleep RMSSD | Pick whichever matches mcPHASES, so the model transfers |
-| `skin_temp_dev_c` | `nightlyTemperatureCelsius − baselineTemperatureCelsius` | Keep `relativeNightlyStddev30dCelsius` for confidence? |
-| `sleep_min` | Sum of non-`AWAKE` stages across that day's sessions | Count naps? |
-| `steps` | Sum of `steps.count` per civil day | Watch only, or include the phone? |
-| (new?) | `daily-respiratory-rate.breathsPerMinute` | Add to the contract (v0.2)? |
-| `date` | Wake-up day for sleep-derived values | none |
+| `rhr_bpm` | `daily-resting-heart-rate.beatsPerMinute`, by its `date` | none |
+| `hrv_rmssd_ms` | Mean of the 5-min `heart-rate-variability` RMSSD samples inside the main sleep session, by wake-up day. Needs 12+ samples (1 h), else `None` | Our own nightly mean, not Fitbit's `averageHeartRateVariabilityMilliseconds`, so it is computed the same way as mcPHASES (D25). It won't match the number in the Fitbit app |
+| `skin_temp_dev_c` | `nightlyTemperatureCelsius − baselineTemperatureCelsius`, by its `date`. `None` if either is missing or `"NaN"` | `relativeNightlyStddev30dCelsius` is not kept: no contract field |
+| `sleep_min` | Main sleep (`mainSleep: true`; the longest if several), by wake-up day: asleep-stage minutes (`LIGHT`, `DEEP`, `REM`, `ASLEEP`) minus the `shortAwakenings` inside them. Falls back to `summary.minutesAsleep` if a session has no stages | Computed like mcPHASES `minutesasleep` (decided 2026-11-19, for consistency). It reads lower than the Fitbit app's number, so the UI must not call it "what Fitbit says". Naps are not counted, matching the mcPHASES cleaning rule; a day with a big nap reads as short sleep |
+| `steps` | Sum of `steps.count` per `civilStartTime` day, watch and phone together | Matches the Fitbit app's total, and no double counting was seen. mcPHASES steps are watch-only |
+| (new?) | `daily-respiratory-rate.breathsPerMinute` | Not parsed. Needs a contract change (v0.2?) |
+
+Parsed records and check-ins are stored in SQLite (`signals/store.py`, `data/inkling.db`,
+gitignored). Re-saving a day replaces it. Check-ins are kept in their own table, so re-parsing
+Fitbit data never overwrites them.
+
+**Check-ins are stored as whole JSON**, one per user per day (the latest wins), not one column per
+question, because the questions are not final (D5, D25). Adding a `CheckIn` field needs no change
+here. A contract change that removes, renames or rescales a field needs a conversion step for stored
+check-ins in the same PR (each stored check-in keeps its `schema_version`).
+
+**Sleep stages (signals-internal, not in the contracts).** The main sleep's `stages[]` segments
+(`LIGHT`, `DEEP`, `REM`, `AWAKE`, each with a UTC start and end) and its `shortAwakenings[]` (stored as
+stage `SHORT_AWAKENING`, overlapping the stage they sit in) are kept per wake-up day in their own
+table, because mcPHASES `sleep.levels` has the same detail (see
+[Sleep stage detail](#sleep-stage-detail-sleeplevels)). If the app or the agent needs stage minutes,
+that becomes a `DailyRecord` change through the contract process.
 
 ---
 
@@ -208,10 +243,33 @@ Access is under PhysioNet's **restricted-access DUA**:
 | RHR | `resting_heart_rate.value` | 1 | 64–74 bpm\* | `daily-resting-heart-rate` |
 | HRV | `heart_rate_variability_details.rmssd`, 5-min samples | ~90 (~7.5 h) | 31–69 ms | `heart-rate-variability` (same 5-min RMSSD) |
 | Respiratory rate | `respiratory_rate_summary.full_sleep_breathing_rate` | 1 per sleep session | 14.4–16.8 /min | `respiratory-rate-sleep-summary` |
-| Sleep | `sleep.minutesasleep`, `mainsleep` | 1+ (naps) | 297–459 min asleep | `sleep.summary.minutesAsleep`, `metadata.mainSleep` |
+| Sleep | `sleep.minutesasleep`, `mainsleep` | 1+ (naps) | 297–459 min asleep | `stages[]` minus `shortAwakenings[]`, `metadata.mainSleep` (not `summary.minutesAsleep`, which counts short wakes as sleep) |
 
 HRV and respiratory rate cover 40 of the 42 participants; the rest cover all 42.
 \* Includes the unusable 2024 copies; the 2022-only range is in notebook section 6d.
+
+#### Sleep stage detail (`sleep.levels`)
+
+Checked 2026-11-19 with a script that prints aggregates only (14,765 sleep rows, before deduplication).
+
+- **Stored as text in two encodings:** 10,654 rows are JSON, 4,111 are Python-literal (single
+  quotes). A loader must accept both.
+- **Shape:** a dict with `summary` and `data`, plus `shortData` on stages nights. Every entry is
+  `{dateTime, level, seconds}`. Segments vary in length (p5/p50/p95: 90 / 780 / 3,360 s), always a
+  multiple of 30 s, so they line up with the API's `stages[]` without resampling.
+- **Two night types:**
+  - `stages` (12,328, 83%): levels `deep`, `light`, `rem`, `wake`. Same as the API's `DEEP`, `LIGHT`,
+    `REM`, `AWAKE`.
+  - `classic` (2,437, 17%): levels `asleep`, `restless`, `awake`, no stage detail. Leave these out of
+    stage comparisons.
+  - 24 entries have level `unknown`.
+- **`shortData` = the API's `shortAwakenings`:** brief `wake` entries laid over the `data` segments.
+- **`minutesasleep` excludes short wakes.** On stages nights it equals asleep-level seconds in `data`
+  minus the `shortData` wake seconds inside them (10,525 of 12,328 nights within 1 min, median
+  difference 0). Counting only `data` overestimates by a median ~20 min (p25–p75: 15–26). Classic nights
+  match on `asleep` seconds alone (2,403 of 2,437). The ~15% of stages nights that still differ have
+  not been explained (possibly the 2024 duplicates). This is why our Fitbit `sleep_min` is computed
+  the same way rather than taken from the API summary.
 
 ### Activity (confounder, and activity by phase)
 
@@ -291,9 +349,9 @@ still hold several rows per day silently multiplies rows and misaligns labels, a
 |---|---|---|
 | `PhaseEstimate.phase` | `Menstrual`→`menstrual`, `Follicular`→`follicular`, `Fertility`→`ovulatory`, `Luteal`→`luteal` | Is "ovulatory" honest for a fertile window, and how do we keep the UI from reading as contraception advice? |
 | `DailyRecord.skin_temp_dev_c` | nightly mean deviation (above) | Confirm it matches the API's nightly minus baseline |
-| `DailyRecord.hrv_rmssd_ms` | nightly mean of 5-min `rmssd` (drop low `coverage`) | Compute the same way from API samples, not the API's daily average |
+| `DailyRecord.hrv_rmssd_ms` | nightly mean of 5-min `rmssd` (drop low `coverage`) | Decided: the Fitbit parser computes the same nightly mean from API samples. The API has no `coverage`, so it needs 12+ samples instead |
 | `DailyRecord.rhr_bpm` | `resting_heart_rate.value`, **2022 round only** | Leaves about 3,700 participant-days |
-| `DailyRecord.sleep_min` | `minutesasleep` of the main sleep | Count naps? |
+| `DailyRecord.sleep_min` | `minutesasleep` of the main sleep | Decided: main sleep only, no naps. Same definition as our Fitbit parser (short wakes excluded) |
 | `DailyRecord.steps` | per-minute `steps` summed per day, **2022 round only** | none |
 | `CheckIn.bleeding` | `flow_volume`: Not at all→none, Spotting→spot, Light + Somewhat Light→light, Moderate→medium, Somewhat Heavy + Heavy + Very Heavy→heavy | none |
 | `CheckIn.pain` (0–10) | `cramps` (6 text levels) | Rescale, or change the contract to the same 6 levels? |
