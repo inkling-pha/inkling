@@ -15,8 +15,10 @@ cycle using Fitbit data and trusted sources. It is a course project and **not a 
 ## Architecture
 - `docs/timeline.md` is the source of truth for schedule and progress. Check it to see what's next. It's flexible:
   anyone can move or change tasks and internal dates; only course deadlines are fixed.
-- `docs/architecture.md` is a **draft for discussion**. Don't treat it as settled. If a task depends on an open
+- `docs/architecture.md` is a **draft for discussion** (v0.2, pending team review). Don't treat it as settled. If a task depends on an open
   decision or would change the architecture, stop and propose it to the team first rather than implementing.
+- `docs/decisions.md` starts with an index of every decision and its status. Anything marked **proposed**,
+  **open** or **team choice** isn't settled: don't build on it until the team agrees.
 - Layers: `signals/`, `rag/`, `agent/`, `app/`. They talk only through the models in `contracts/models.py`.
 - Contracts, fixtures and stubs are a **v0.1 draft** and will change as we learn what data is accessible.
 - Work on whichever layer your task touches. Keep changes to a layer's internals inside that layer.
@@ -63,4 +65,5 @@ JSON dict of metrics (aggregate only, never data rows).
 - Tests live in `tests/test_<layer>.py`.
 - Prefer simple code. Plain functions over classes; no framework unless the team has agreed to it.
 - Ask before adding a dependency or framework, and log the choice in `docs/decisions.md`.
-- Don't pick the LLM model, embeddings, or vector store on your own: check `docs/decisions.md` for what's open.
+- Don't pick the LLM model (D8), the retrieval method (D12) or the output checks (D31) on your own. Check
+  `docs/decisions.md` for what's open.
