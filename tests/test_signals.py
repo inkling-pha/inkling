@@ -6,8 +6,8 @@ import pytest
 import requests
 
 from contracts import CheckIn, DailyRecord, PhaseEstimate
+from signals import cycle, parse, store, sync
 from signals import google_health as gh
-from signals import parse, store, sync
 from signals.mcphases import load
 from signals.stub import estimate_phase, get_daily_records
 
@@ -532,3 +532,94 @@ def test_one_failed_type_keeps_its_stored_values(fake_fitbit):
     assert "HTTP 503" in status.error
     [day] = store.load_daily_records("me", TODAY, date(2026, 10, 11))
     assert (day.rhr_bpm, day.steps) == (60.0, 800)  # RHR kept, steps updated
+
+
+# --- cycle: period starts and the calendar estimate (synthetic check-ins) ---
+
+NOV_1 = date(2026, 11, 1)
+
+
+def log_bleeding(user_id: str, first: date, levels: list[str | None]) -> None:
+    """One check-in per day from `first`, with these bleeding answers."""
+    for i, level in enumerate(levels):
+        store.save_checkin(user_id, first + timedelta(days=i), CheckIn(bleeding=level))
+
+
+def test_spotting_alone_never_starts_a_period_and_mid_cycle_flow_is_not_a_new_one():
+    log_bleeding("u1", date(2026, 9, 1), ["spot", "light", "heavy", "medium", "light", "spot"])
+    log_bleeding("u1", date(2026, 9, 14), ["spot", "spot"])  # mid-cycle spotting
+    log_bleeding("u1", date(2026, 9, 10), ["light"])  # within MIN_GAP_DAYS of the last flow
+    log_bleeding("u1", date(2026, 10, 1), ["light", "medium", None, "spot"])  # one skipped day
+    assert cycle.periods("u1", NOV_1) == [
+        (date(2026, 9, 2), date(2026, 9, 6)),
+        (date(2026, 10, 1), date(2026, 10, 4)),
+    ]
+    assert cycle.cycle_lengths("u1", NOV_1) == [29]
+
+
+def test_no_period_logged_means_unknown_not_a_guess():
+    # Fitbit data, no check-ins.
+    store.save_daily_records([DailyRecord(user_id="u1", date=NOV_1, rhr_bpm=60.0, source="real")])
+    est = estimate_phase("u1")
+    assert (est.phase, est.cycle_day, est.confidence, est.source) == ("unknown", None, 0.0, "real")
+    assert cycle.days_since_last_period("u1", NOV_1) is None
+
+
+def test_stub_uses_the_fixture_only_when_nothing_is_stored():
+    assert estimate_phase("u1").source == "synthetic"
+    store.save_checkin("u1", NOV_1, CheckIn(bleeding="none"))
+    assert estimate_phase("u1").method == "calendar"
+
+
+@pytest.mark.parametrize(
+    ("day", "phase"),
+    [
+        (1, "menstrual"),
+        (6, "menstrual"),
+        (7, "follicular"),
+        (15, "follicular"),
+        (16, "ovulatory"),
+        (18, "ovulatory"),
+        (19, "luteal"),
+        (36, "luteal"),
+        (37, "unknown"),
+    ],
+)
+def test_one_period_counts_from_the_default_29_day_cycle(day, phase):
+    log_bleeding("u1", date(2026, 9, 1), ["heavy", "medium", "light"])
+    est = cycle.estimate_phase("u1", date(2026, 9, 1) + timedelta(days=day - 1))
+    assert (est.phase, est.cycle_day) == (phase, day)
+    assert est.confidence == (0.0 if phase == "unknown" else cycle.CALENDAR_CONFIDENCE)
+    assert est.ovulation_est_date is None and est.ovulation_window is None  # D25
+
+
+def test_her_own_cycles_set_the_usual_length_capped_at_38_days():
+    for start in (date(2026, 6, 1), date(2026, 7, 6), date(2026, 8, 10)):  # 35-day cycles
+        log_bleeding("u1", start, ["medium", "medium", "light", "light"])
+    start = date(2026, 8, 10)
+    assert cycle.estimate_phase("u1", start + timedelta(days=22)).phase == "ovulatory"  # 35 - 12
+    assert cycle.estimate_phase("u1", start + timedelta(days=37)).phase == "luteal"  # day 38
+    assert cycle.estimate_phase("u1", start + timedelta(days=38)).phase == "unknown"  # day 39
+
+
+def test_still_bleeding_past_the_usual_length_is_menstrual():
+    log_bleeding("u1", date(2026, 10, 1), ["heavy"] * 7)
+    assert cycle.estimate_phase("u1", date(2026, 10, 7)).phase == "menstrual"
+
+
+def test_days_since_last_period_is_none_when_she_stopped_answering():
+    log_bleeding("u1", date(2026, 7, 1), ["heavy", "medium"])
+    log_bleeding("u1", date(2026, 10, 1), ["none"] + [None] * 30)  # checked in, skipped bleeding
+    assert cycle.days_since_last_period("u1", date(2026, 10, 10)) == 101
+    assert cycle.days_since_last_period("u1", date(2026, 10, 16)) is None
+
+
+def test_recent_birth_control_makes_the_phase_unknown_but_keeps_period_tracking():
+    log_bleeding("u1", date(2026, 9, 1), ["heavy", "medium", "light"])
+    store.save_checkin("u1", date(2026, 9, 5), CheckIn(bleeding="none", bc_taken=True))
+    est = cycle.estimate_phase("u1", date(2026, 9, 10))
+    assert (est.phase, est.cycle_day, est.confidence) == ("unknown", None, 0.0)
+    assert cycle.days_since_last_period("u1", date(2026, 9, 10)) == 9
+    # Over BC_LOOKBACK_DAYS after the last bc_taken, the calendar count applies again.
+    log_bleeding("u1", date(2026, 10, 1), ["heavy", "medium"])
+    assert cycle.estimate_phase("u1", date(2026, 10, 15)).phase == "follicular"

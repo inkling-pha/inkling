@@ -5,6 +5,7 @@ and the quirks we've hit. It holds **no one's actual values**. Real data never g
 Handling rules are in [CLAUDE.md](../CLAUDE.md) and decisions D18–D25 in [decisions.md](decisions.md).
 
 - [Fitbit via the Google Health API](#fitbit-via-the-google-health-api): live data for the app
+- [Periods from check-ins](#periods-from-check-ins): how logged bleeding becomes cycle history
 - [mcPHASES](#mcphases): labeled research data for building and evaluating the phase model
 
 ---
@@ -201,6 +202,48 @@ that becomes a `DailyRecord` change through the contract process.
 
 ---
 
+## Periods from check-ins
+
+Fitbit's period log can't be read through the API (write-only, see [Data types](#data-types)), so
+cycle history comes only from the bleeding answer in check-ins (`signals/cycle.py`). The numbers are
+named constants there, set from mcPHASES (see [Cycles and periods](#cycles-and-periods-hormones_and_selfreport)).
+
+| What | Rule | Why |
+|---|---|---|
+| Period start (day 1) | A `light`, `medium` or `heavy` day with no such day in the 10 days before | Spotting alone can be mid-cycle, so it never starts a period. On mcPHASES it found 101 of 116 of Mira's period starts, and 111 of the 117 starts it found matched one |
+| Period end | The last bleeding day (spotting included) no more than 2 days after the previous one | One skipped check-in doesn't split a period |
+| Usual cycle and period length | Medians of her last 6, once she has 2. Until then 29 and 6 days | The mcPHASES medians |
+| Phase | The standard four phases. Menstrual through her period length (longer if she's still bleeding). Ovulatory = (usual length − 12) ± 1 day. Follicular before it, luteal after | Calendar method. 12 sits between the textbook 14 and mcPHASES, where Mira's fertile window ends a median 10 days before the next period. Ovulatory stays narrow on purpose: Mira's fertile window is wider, but matching it would read as fertile days (D25), so the eval will score lower on that phase |
+| Later than usual | Past her usual length + 7 days, or past 38 days: phase `unknown`. It never wraps into a new cycle | A late period isn't a new cycle |
+| No period logged | Phase `unknown`, `cycle_day` None, confidence 0 | No guessing from a default day 1 |
+| `days_since_last_period` | Days since day 1 (0 on day 1). None with no start, or when the bleeding question hasn't been answered in 14 days | For the 90+ day rule: not logging is not the same as not bleeding |
+
+- **Confidence** is a fixed 0.3 ("Low", D28) for every calendar estimate. Her history doesn't raise
+  it, because accuracy isn't measured yet. The held-out eval sets it later.
+- **No fertility timing (D25, D27).** The ovulation day is estimated only to place the phase
+  boundaries. `ovulation_est_date` and `ovulation_window` are always None. The demo fixture still
+  has them filled in.
+- **Birth control (interim rule).** If any check-in in the last 35 days has `bc_taken=True`, the
+  phase is `unknown` and `cycle_day` is None. Period starts and `days_since_last_period` still work,
+  since they describe bleeding, not hormones. Why, from the trusted corpus:
+  - Combined pill, patch and ring work mainly by stopping ovulation, and the bleed in the
+    hormone-free days is a withdrawal bleed that follows the pack (CDC US SPR, pmid-34367655).
+  - Progestin-only pills: norethindrone/norgestrel stop ovulation in about half of cycles, varying
+    widely by person; drospirenone pills mainly stop it (CDC US SPR).
+  - Shot, implant and IUDs list missed, irregular or lighter periods as expected effects (OWH). The
+    corpus doesn't say which LARC methods stop ovulation.
+  - Copper IUD and barrier methods have no hormones, so phases apply.
+  - On combined pills, HRV and resting heart rate follow the pill pack, not a natural cycle
+    (pmid-34367655, pmid-41545627). mcPHASES excludes hormonal contraception, so the eval can't test this.
+
+  Limits: `bc_taken` ("taken today", yes/no) only fits pills and can't tell combined from
+  progestin-only. A per-method rule needs a "which method" question, which is a contract change.
+- **Cycle lengths assume she logs every period.** A missed period start reads as one long cycle.
+- **The demo user** (nothing stored) keeps the fixture estimate. A user with anything stored gets the
+  calendar estimate, which is `unknown` until she logs a period.
+
+---
+
 ## mcPHASES
 
 Last checked: 2026-10-27, mcPHASES v1.0.0, `notebooks/mcphases_eda.ipynb` (section 6 reproduces
@@ -262,6 +305,33 @@ Access is under PhysioNet's **restricted-access DUA**:
   `Moderate`, `Somewhat Heavy`, `Heavy`, `Very Heavy`.
 - `flow_color` includes `Bright Red`, `Dark Brown / Dark Red`, `Pink`, `Orange`, `Yellow`, `Grey`,
   `Black`, `Other`.
+
+### Cycles and periods (`hormones_and_selfreport`)
+
+Checked 2026-11-19 with a person-run aggregate script. Reference periods are runs of Mira's
+`Menstrual` label; runs cut off at the start or end of a round are left out.
+
+| What | p10 | p25 | p50 | p75 | p90 | n |
+|---|---|---|---|---|---|---|
+| Cycle length (days) | 23 | 27 | 29 | 32 | 36 | 119 |
+| Period (`Menstrual` run) length | 3 | 5 | 6 | 7 | 8 | 170 |
+| Days from the end of the `Fertility` window to the next period | 5 | 9 | 10 | 12 | 13 | 162 |
+| SD of cycle length within one person's round | 0.7 | 1.4 | 2.8 | 4.2 | 9.2 | 47 |
+
+- **16 of 119 cycles (13%) were outside 24–38 days**, in people with no known cycle problems. A
+  caution that fires on one such cycle will fire often.
+- **The diary covers 116 of 181 Mira period starts** (a logged day within ±2 days).
+- **The first logged bleeding day is a median 1 day after Mira's start**, and it is spotting in 29 of
+  110 periods.
+- **Day-1 rule** (a start must match a Mira start within ±2 days):
+
+| Rule | Found | Correct |
+|---|---|---|
+| Light or heavier, 10-day gap (**used**) | 101 / 116 | 111 / 117 |
+| Light or heavier, 7-day gap | 101 / 116 | 111 / 119 |
+| Light or heavier, 3-day gap | 104 / 116 | 115 / 138 |
+| Spotting or heavier, 10-day gap | 102 / 116 | 113 / 120 |
+| Light or heavier, 14-day gap | 98 / 116 | 108 / 114 |
 
 ### Wearable signals and how they line up with the Google Health API
 

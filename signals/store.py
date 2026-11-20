@@ -192,6 +192,17 @@ def last_record_date(user_id: str) -> date | None:
     return date.fromisoformat(day) if day else None
 
 
+def data_sources(user_id: str) -> set[str]:
+    """The `source` labels of everything stored for this user (wearable days and check-ins)."""
+    with closing(_connect()) as conn:
+        rows = conn.execute(
+            "SELECT source FROM daily_records WHERE user_id = ? "
+            "UNION SELECT source FROM checkins WHERE user_id = ?",
+            (user_id, user_id),
+        ).fetchall()
+    return {r["source"] for r in rows}
+
+
 def log_sync(user_id: str, synced_at: datetime, mode: str, error: str | None = None) -> None:
     """Record one sync attempt: live, partial or cached."""
     with closing(_connect()) as conn, conn:
