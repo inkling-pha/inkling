@@ -43,6 +43,8 @@ How this log works:
 | D31 | Output checks | team choice | Code checks, or code checks + an LLM judge |
 | D32 | Trends tab | proposed | Her data lined up by cycle day |
 | D33 | Escalation + contracts v0.2 | proposed | On-screen clinician summary. New response fields |
+| D34 | Ovulation dates and the likely window | proposed | Ovulation only looks back. A next-period window is the likely window |
+| D35 | Birth control method | proposed | Asked at onboarding, editable in settings, kept with start dates |
 
 ---
 
@@ -303,7 +305,8 @@ How this log works:
   `PhaseEstimate.confidence` stays in the contract and drives the word.
 - **Why:** HCI lecture (slides-08 p.27): show a number only when its meaning is validated. Coverage
   describes what arrived, not correctness (p.26). A bar reads as a measurement.
-- **Revisit:** after the held-out calibration eval (Nov 21–25).
+- **Revisit:** after the held-out calibration eval (Nov 21–25). D34 proposes that the likely window
+  becomes a next-period window.
 - **Considered:** the Lab 8 bar (over-reliance risk, p.46). Only the window, no word.
 
 ### D30. One fixed question pipeline, no router
@@ -358,3 +361,53 @@ How this log works:
   - New `CycleHistory` contract. New functions `save_checkin` and `sync`.
 - **Open:** `CheckIn` red-flag fields (D5). An optional, labeled `general_tips` slot for the
   coaching-tips idea (not decided).
+
+### D34. Ovulation dates look back only; a next-period window is the likely window
+- **Date:** 2026-11-20 · **Status:** proposed (pending team). Updates D28's "likely window".
+- **Proposal:**
+  - All four phases stay, `ovulatory` included. "You're in your ovulatory phase" describes today.
+  - **No future ovulation dates.** `ovulation_window` is filled only when all its days are past, i.e.
+    after her next period starts ("ovulation likely happened Oct 17–19"). Roughly 11–14 days before
+    that period from the calendar now; the wearable method (temperature rise) can tighten it later.
+  - **New `next_period_window`:** last period start + her usual cycle length, widened by how much
+    her cycles vary (mcPHASES spread 27–32 days until she has 2 cycles). This is the "likely window"
+    on the Today card and the cycle clock (D28), with the confidence word.
+  - **Drop `ovulation_est_date`:** a single date overstates the precision. The window carries it.
+- **Why:**
+  - A future ovulation window works as a fertile-window calendar, which D25 and D27 rule out. A past
+    one explains her signals (temperature and RHR rise after ovulation) without being plannable.
+  - The calendar can't place ovulation before it happens: a typical person's cycle varies about
+    3 days (mcPHASES), but the time from ovulation to the next period is steadier (fertile window
+    ends 9–12 days before it in the middle half of cycles).
+  - A next-period window keeps D4/D28's "show a range, not a number" on something safe and useful.
+- **Considered:** keep both fields as they are (conflicts with D25/D27). Remove both (simplest, but
+  loses the look-back that explains wearable patterns).
+- **Changes (one contracts PR):** `PhaseEstimate` gets `next_period_window`, loses
+  `ovulation_est_date`; `OvulationWindow` becomes a general `DateWindow`. Fixture + `SCHEMA_VERSION`.
+  Signals computes both windows. App: the Today card is driven by the phase, not the ovulation
+  window (today a real user always sees "Not enough data yet"), and shows "Next period likely …".
+  Agent: describes a look-back window only as past.
+
+### D35. Birth control method, asked at onboarding and editable in settings
+- **Date:** 2026-11-20 · **Status:** proposed (pending team). Touches D5 (check-in questions).
+- **Proposal:**
+  - Onboarding asks "Which birth control do you use, if any?". Settings lets her change it when she
+    starts, stops or switches.
+  - Stored as a history: each method with the date it started. Cycles before a start still count
+    as natural cycles; cycles after it don't.
+  - Options: none · combined pill · patch · ring · progestin-only pill · shot · implant ·
+    hormonal IUD · copper IUD · condoms or other barrier · other / prefer not to say.
+  - Signals: phase `unknown` on combined methods, shot, implant and hormonal IUD; "uncertain"
+    (`unknown` for now) on the progestin-only pill; phases as normal on copper IUD, barrier or none.
+    Period tracking works on all of them.
+  - Red flags (D29): the 90+ days rule gets a birth control exception. Missed periods are an
+    expected effect of the shot, implant, IUDs and extended pill use (OWH).
+- **Why:** Most hormonal methods stop ovulation, and the bleed in a pill break is a withdrawal bleed,
+  not a period (CDC US SPR, OWH). On combined pills, HRV and resting heart rate follow the pill pack
+  (pmid-34367655). `CheckIn.bc_taken` ("taken today", yes/no) can't tell these apart and doesn't fit
+  methods that aren't taken daily. Research summary: `docs/data.md`, "Periods from check-ins".
+- **Interim (on `signals`):** `bc_taken=True` in the last 35 days makes the phase `unknown`.
+- **Considered:** keep `bc_taken` only (can't tell methods apart). Ask daily (more questions than needed).
+- **Open:** where the history lives in the contracts (a new profile model, or a `CheckIn` field).
+  The corpus doesn't say which IUDs and implants stop ovulation: the RAG corpus needs CDC US SPR
+  pages for those before answers can rely on it.

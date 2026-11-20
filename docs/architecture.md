@@ -50,8 +50,10 @@ Built offline from mcPHASES. Runs on her own data each time the app loads.
 **Phase estimate v1**
 - Rules: a temperature shift or RHR rise over her own baseline.
 - Cycle day 1 = a period start from her check-ins. The API can't read period dates.
-- No wearable data → calendar count.
+- No wearable data → calendar count (built on `signals`, PR #9).
 - To build: log a past period, or ask "when did your last period start?" at onboarding. Without it, phase = `unknown`.
+- Ovulation dates only look back; the likely window is a next-period window (D34).
+- Birth control method from onboarding/settings decides whether phases apply (D35).
 - *Stretch:* ML model. Only if it beats the rules on held-out participants.
 - *Stretch:* per-user numbers updated each cycle (cycle length, shift size). Test by replaying mcPHASES cycle by cycle.
 
@@ -134,7 +136,7 @@ Computed by Inkling. Cite facts by id. Don't calculate new numbers.
 [f11] Fatigue logged: 3 of the last 5 days (cycle days 18-22)
 [f12] Fatigue logged, same days last cycle: 2 of 5
 [f13] Cramps logged: 0 of the last 5 days
-[f14] Birth control: none (from check-in)
+[f14] Birth control: none (from settings, D35)
 ```
 
 How an answer uses it, for "Why am I so tired this week?":
@@ -250,6 +252,8 @@ All handoffs are Pydantic models in `contracts/models.py`. Example payloads are 
 - `AgentResponse.response_type`: answer, decline or escalate. Escalate always means `safety = "red_flag"`.
 - `AgentResponse.decline_reason`: the reasons in section 9.
 - `mode`: education, summary or both. Matches the eval set.
+- `PhaseEstimate`: add `next_period_window`, drop `ovulation_est_date`, `ovulation_window` past dates only (D34).
+- Birth control method history (D35). Where it lives is open.
 - **Open:** `CheckIn` red-flag fields. They wait on D5.
 - **Open:** an optional, labeled `general_tips` slot for the coaching-tips idea. Hidden on caution or red flag. Not decided.
 
@@ -277,11 +281,13 @@ Update at each integration gate (Nov 15, Nov 19, Dec 4).
 | Component | Status | Notes |
 |---|---|---|
 | Contracts + fixtures | real | v0.1. v0.2 proposed above |
-| signals: records + phase estimate | stub | Fixture data, synthetic |
-| signals: Google Health client | real | Pulls and caches raw Fitbit data. Not yet parsed into `DailyRecord` (see docs/data.md) |
+| signals: records | real | Fitbit parsed into `DailyRecord` and stored (PR #8). Users with nothing stored get the fixture |
+| signals: sync | real, not wired | `sync(user_id)` pulls new days (PR #9). The app doesn't call it yet |
+| signals: phase estimate | real (calendar) | From logged periods; `unknown` without one (PR #9). Wearable rules not started. Ovulation fields stay empty (D34) |
+| signals: Google Health client | real | Pulls and caches raw Fitbit data |
 | rag: retrieve | real, not wired | `rag.retriever`: BM25 over all 60 docs (1,314 chunks), real citations. The agent still uses `rag.stub` until the fertility guard (D25) exists |
 | agent: respond | stub | Wires stubs. No LLM, no pipeline, no safety checks yet |
 | app | partial | Today, Check-in with Undo, Ask, and failure/red-flag previews run on the stubs. Check-ins last one session. Red-flag, sync and fallback states are demo previews |
 | evals: rag | partial | 56 questions, 32 dev references. `python -m evals.rag.run` gives Hit@5 and capped Recall@5. Answer metrics wait for generation (see `evals/rag/README.md`) |
 | evals: signals, agent | not started | Planned in the timeline's Sprint 2 |
-| Storage | not started | SQLite proposed (D13) |
+| Storage | real, not wired | SQLite (D13), PRs #8–#9. The app doesn't save check-ins to it yet |
