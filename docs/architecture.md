@@ -38,6 +38,7 @@ Update at each integration gate (Nov 15, Nov 19, Dec 4).
 |---|---|---|
 | Contracts + fixtures | real | v0.1 |
 | signals: records + phase estimate | stub | fixture data, synthetic |
+| signals: synthetic Maya | real, not wired | `signals.synthetic` + `data/synthetic/maya.json`: 158 days, 4 cycles + a late current cycle, from mcPHASES aggregates (see docs/data.md). The app still reads the 3-day fixture; switch `get_daily_records` for `synthetic-maya` once #9 merges. |
 | signals: Google Health client | real | pulls and caches raw Fitbit data; not yet parsed into `DailyRecord` (see docs/data.md) |
 | rag: retrieve | real, not wired | `rag.retriever`: BM25 over all 60 manifest docs (1,314 chunks), real citations. The agent still imports `rag.stub` until the fertility guard (D25) exists. |
 | agent: respond | stub | wires stubs; no LLM, no routing, no safety checks yet |

@@ -1,0 +1,3688 @@
+{
+ "about": "Synthetic demo persona 'Maya'. Not a real person. Built from mcPHASES aggregates only (signals/synthetic.py). 'truth' is for tests; never show it in the app.",
+ "seed": 20,
+ "end": "2026-12-11",
+ "records": [
+  {
+   "schema_version": "0.1",
+   "user_id": "synthetic-maya",
+   "date": "2026-07-07",
+   "rhr_bpm": 63.0,
+   "hrv_rmssd_ms": 54.2,
+   "skin_temp_dev_c": -0.18,
+   "sleep_min": 389,
+   "steps": 2560,
+   "checkin": {
+    "schema_version": "0.1",
+    "energy": 5,
+    "bleeding": "medium",
+    "pain": 5,
+    "symptoms": [
+     "cramps"
+    ],
+    "bc_taken": null
+   },
+   "source": "synthetic"
+  },
+  {
+   "schema_version": "0.1",
+   "user_id": "synthetic-maya",
+   "date": "2026-07-08",
+   "rhr_bpm": 67.1,
+   "hrv_rmssd_ms": 51.9,
+   "skin_temp_dev_c": -0.3,
+   "sleep_min": 421,
+   "steps": 6216,
+   "checkin": {
+    "schema_version": "0.1",
+    "energy": 5,
+    "bleeding": "heavy",
+    "pain": 5,
+    "symptoms": [
+     "cramps"
+    ],
+    "bc_taken": null
+   },
+   "source": "synthetic"
+  },
+  {
+   "schema_version": "0.1",
+   "user_id": "synthetic-maya",
+   "date": "2026-07-09",
+   "rhr_bpm": 66.9,
+   "hrv_rmssd_ms": 54.8,
+   "skin_temp_dev_c": -0.07,
+   "sleep_min": 387,
+   "steps": 2923,
+   "checkin": {
+    "schema_version": "0.1",
+    "energy": 4,
+    "bleeding": "medium",
+    "pain": 2,
+    "symptoms": [],
+    "bc_taken": null
+   },
+   "source": "synthetic"
+  },
+  {
+   "schema_version": "0.1",
+   "user_id": "synthetic-maya",
+   "date": "2026-07-10",
+   "rhr_bpm": null,
+   "hrv_rmssd_ms": null,
+   "skin_temp_dev_c": null,
+   "sleep_min": null,
+   "steps": null,
+   "checkin": {
+    "schema_version": "0.1",
+    "energy": 3,
+    "bleeding": "light",
+    "pain": 0,
+    "symptoms": [],
+    "bc_taken": null
+   },
+   "source": "synthetic"
+  },
+  {
+   "schema_version": "0.1",
+   "user_id": "synthetic-maya",
+   "date": "2026-07-11",
+   "rhr_bpm": 66.6,
+   "hrv_rmssd_ms": 52.9,
+   "skin_temp_dev_c": -0.03,
+   "sleep_min": 407,
+   "steps": 3830,
+   "checkin": {
+    "schema_version": "0.1",
+    "energy": 3,
+    "bleeding": "light",
+    "pain": 1,
+    "symptoms": [],
+    "bc_taken": null
+   },
+   "source": "synthetic"
+  },
+  {
+   "schema_version": "0.1",
+   "user_id": "synthetic-maya",
+   "date": "2026-07-12",
+   "rhr_bpm": 64.8,
+   "hrv_rmssd_ms": 52.0,
+   "skin_temp_dev_c": -0.02,
+   "sleep_min": 471,
+   "steps": 5032,
+   "checkin": {
+    "schema_version": "0.1",
+    "energy": 4,
+    "bleeding": "spot",
+    "pain": 1,
+    "symptoms": [],
+    "bc_taken": null
+   },
+   "source": "synthetic"
+  },
+  {
+   "schema_version": "0.1",
+   "user_id": "synthetic-maya",
+   "date": "2026-07-13",
+   "rhr_bpm": 64.2,
+   "hrv_rmssd_ms": 45.6,
+   "skin_temp_dev_c": -0.12,
+   "sleep_min": 385,
+   "steps": 6111,
+   "checkin": {
+    "schema_version": "0.1",
+    "energy": 3,
+    "bleeding": "none",
+    "pain": 2,
+    "symptoms": [],
+    "bc_taken": null
+   },
+   "source": "synthetic"
+  },
+  {
+   "schema_version": "0.1",
+   "user_id": "synthetic-maya",
+   "date": "2026-07-14",
+   "rhr_bpm": 64.1,
+   "hrv_rmssd_ms": 44.9,
+   "skin_temp_dev_c": 0.12,
+   "sleep_min": 296,
+   "steps": 3929,
+   "checkin": null,
+   "source": "synthetic"
+  },
+  {
+   "schema_version": "0.1",
+   "user_id": "synthetic-maya",
+   "date": "2026-07-15",
+   "rhr_bpm": 63.8,
+   "hrv_rmssd_ms": 50.3,
+   "skin_temp_dev_c": -0.15,
+   "sleep_min": 471,
+   "steps": 5505,
+   "checkin": null,
+   "source": "synthetic"
+  },
+  {
+   "schema_version": "0.1",
+   "user_id": "synthetic-maya",
+   "date": "2026-07-16",
+   "rhr_bpm": 65.5,
+   "hrv_rmssd_ms": 47.8,
+   "skin_temp_dev_c": 0.07,
+   "sleep_min": 456,
+   "steps": 8285,
+   "checkin": {
+    "schema_version": "0.1",
+    "energy": 3,
+    "bleeding": "none",
+    "pain": 0,
+    "symptoms": [],
+    "bc_taken": null
+   },
+   "source": "synthetic"
+  },
+  {
+   "schema_version": "0.1",
+   "user_id": "synthetic-maya",
+   "date": "2026-07-17",
+   "rhr_bpm": 64.1,
+   "hrv_rmssd_ms": 52.3,
+   "skin_temp_dev_c": -0.14,
+   "sleep_min": 457,
+   "steps": 7317,
+   "checkin": null,
+   "source": "synthetic"
+  },
+  {
+   "schema_version": "0.1",
+   "user_id": "synthetic-maya",
+   "date": "2026-07-18",
+   "rhr_bpm": 66.7,
+   "hrv_rmssd_ms": 50.5,
+   "skin_temp_dev_c": 0.05,
+   "sleep_min": 415,
+   "steps": 7226,
+   "checkin": {
+    "schema_version": "0.1",
+    "energy": 3,
+    "bleeding": "none",
+    "pain": 0,
+    "symptoms": [],
+    "bc_taken": null
+   },
+   "source": "synthetic"
+  },
+  {
+   "schema_version": "0.1",
+   "user_id": "synthetic-maya",
+   "date": "2026-07-19",
+   "rhr_bpm": null,
+   "hrv_rmssd_ms": null,
+   "skin_temp_dev_c": null,
+   "sleep_min": null,
+   "steps": null,
+   "checkin": {
+    "schema_version": "0.1",
+    "energy": 4,
+    "bleeding": "none",
+    "pain": 0,
+    "symptoms": [],
+    "bc_taken": null
+   },
+   "source": "synthetic"
+  },
+  {
+   "schema_version": "0.1",
+   "user_id": "synthetic-maya",
+   "date": "2026-07-20",
+   "rhr_bpm": 64.8,
+   "hrv_rmssd_ms": 52.2,
+   "skin_temp_dev_c": -0.09,
+   "sleep_min": 426,
+   "steps": 6646,
+   "checkin": {
+    "schema_version": "0.1",
+    "energy": 4,
+    "bleeding": "none",
+    "pain": 0,
+    "symptoms": [],
+    "bc_taken": null
+   },
+   "source": "synthetic"
+  },
+  {
+   "schema_version": "0.1",
+   "user_id": "synthetic-maya",
+   "date": "2026-07-21",
+   "rhr_bpm": 66.1,
+   "hrv_rmssd_ms": 56.0,
+   "skin_temp_dev_c": -0.15,
+   "sleep_min": 425,
+   "steps": 7446,
+   "checkin": {
+    "schema_version": "0.1",
+    "energy": 4,
+    "bleeding": "none",
+    "pain": 0,
+    "symptoms": [],
+    "bc_taken": null
+   },
+   "source": "synthetic"
+  },
+  {
+   "schema_version": "0.1",
+   "user_id": "synthetic-maya",
+   "date": "2026-07-22",
+   "rhr_bpm": 64.9,
+   "hrv_rmssd_ms": 49.1,
+   "skin_temp_dev_c": 0.1,
+   "sleep_min": 404,
+   "steps": 5485,
+   "checkin": null,
+   "source": "synthetic"
+  },
+  {
+   "schema_version": "0.1",
+   "user_id": "synthetic-maya",
+   "date": "2026-07-23",
+   "rhr_bpm": 64.2,
+   "hrv_rmssd_ms": 61.7,
+   "skin_temp_dev_c": -0.11,
+   "sleep_min": 395,
+   "steps": 6001,
+   "checkin": {
+    "schema_version": "0.1",
+    "energy": 5,
+    "bleeding": "none",
+    "pain": 0,
+    "symptoms": [],
+    "bc_taken": null
+   },
+   "source": "synthetic"
+  },
+  {
+   "schema_version": "0.1",
+   "user_id": "synthetic-maya",
+   "date": "2026-07-24",
+   "rhr_bpm": null,
+   "hrv_rmssd_ms": null,
+   "skin_temp_dev_c": null,
+   "sleep_min": null,
+   "steps": null,
+   "checkin": {
+    "schema_version": "0.1",
+    "energy": 3,
+    "bleeding": "none",
+    "pain": 1,
+    "symptoms": [],
+    "bc_taken": null
+   },
+   "source": "synthetic"
+  },
+  {
+   "schema_version": "0.1",
+   "user_id": "synthetic-maya",
+   "date": "2026-07-25",
+   "rhr_bpm": 64.8,
+   "hrv_rmssd_ms": 37.3,
+   "skin_temp_dev_c": 0.09,
+   "sleep_min": 506,
+   "steps": 5797,
+   "checkin": {
+    "schema_version": "0.1",
+    "energy": 4,
+    "bleeding": "none",
+    "pain": 0,
+    "symptoms": [],
+    "bc_taken": null
+   },
+   "source": "synthetic"
+  },
+  {
+   "schema_version": "0.1",
+   "user_id": "synthetic-maya",
+   "date": "2026-07-26",
+   "rhr_bpm": 69.5,
+   "hrv_rmssd_ms": 46.9,
+   "skin_temp_dev_c": 0.34,
+   "sleep_min": 368,
+   "steps": 6141,
+   "checkin": {
+    "schema_version": "0.1",
+    "energy": 3,
+    "bleeding": "none",
+    "pain": 2,
+    "symptoms": [],
+    "bc_taken": null
+   },
+   "source": "synthetic"
+  },
+  {
+   "schema_version": "0.1",
+   "user_id": "synthetic-maya",
+   "date": "2026-07-27",
+   "rhr_bpm": 68.6,
+   "hrv_rmssd_ms": 44.6,
+   "skin_temp_dev_c": 0.07,
+   "sleep_min": 426,
+   "steps": 4304,
+   "checkin": {
+    "schema_version": "0.1",
+    "energy": 4,
+    "bleeding": "none",
+    "pain": 1,
+    "symptoms": [],
+    "bc_taken": null
+   },
+   "source": "synthetic"
+  },
+  {
+   "schema_version": "0.1",
+   "user_id": "synthetic-maya",
+   "date": "2026-07-28",
+   "rhr_bpm": 67.0,
+   "hrv_rmssd_ms": 53.8,
+   "skin_temp_dev_c": 0.05,
+   "sleep_min": 396,
+   "steps": 3199,
+   "checkin": {
+    "schema_version": "0.1",
+    "energy": 3,
+    "bleeding": "none",
+    "pain": 0,
+    "symptoms": [
+     "bloating"
+    ],
+    "bc_taken": null
+   },
+   "source": "synthetic"
+  },
+  {
+   "schema_version": "0.1",
+   "user_id": "synthetic-maya",
+   "date": "2026-07-29",
+   "rhr_bpm": 66.7,
+   "hrv_rmssd_ms": 50.3,
+   "skin_temp_dev_c": 0.28,
+   "sleep_min": 441,
+   "steps": 5977,
+   "checkin": {
+    "schema_version": "0.1",
+    "energy": 5,
+    "bleeding": "none",
+    "pain": 2,
+    "symptoms": [],
+    "bc_taken": null
+   },
+   "source": "synthetic"
+  },
+  {
+   "schema_version": "0.1",
+   "user_id": "synthetic-maya",
+   "date": "2026-07-30",
+   "rhr_bpm": 67.0,
+   "hrv_rmssd_ms": 36.3,
+   "skin_temp_dev_c": 0.25,
+   "sleep_min": 316,
+   "steps": 2955,
+   "checkin": {
+    "schema_version": "0.1",
+    "energy": 3,
+    "bleeding": "none",
+    "pain": 1,
+    "symptoms": [],
+    "bc_taken": null
+   },
+   "source": "synthetic"
+  },
+  {
+   "schema_version": "0.1",
+   "user_id": "synthetic-maya",
+   "date": "2026-07-31",
+   "rhr_bpm": 67.9,
+   "hrv_rmssd_ms": 41.9,
+   "skin_temp_dev_c": -0.01,
+   "sleep_min": 452,
+   "steps": 8831,
+   "checkin": {
+    "schema_version": "0.1",
+    "energy": 5,
+    "bleeding": "none",
+    "pain": 0,
+    "symptoms": [],
+    "bc_taken": null
+   },
+   "source": "synthetic"
+  },
+  {
+   "schema_version": "0.1",
+   "user_id": "synthetic-maya",
+   "date": "2026-08-01",
+   "rhr_bpm": 68.9,
+   "hrv_rmssd_ms": 48.7,
+   "skin_temp_dev_c": 0.2,
+   "sleep_min": 410,
+   "steps": 3560,
+   "checkin": {
+    "schema_version": "0.1",
+    "energy": 3,
+    "bleeding": "none",
+    "pain": 2,
+    "symptoms": [],
+    "bc_taken": null
+   },
+   "source": "synthetic"
+  },
+  {
+   "schema_version": "0.1",
+   "user_id": "synthetic-maya",
+   "date": "2026-08-02",
+   "rhr_bpm": 69.5,
+   "hrv_rmssd_ms": 41.2,
+   "skin_temp_dev_c": 0.23,
+   "sleep_min": 466,
+   "steps": 3270,
+   "checkin": {
+    "schema_version": "0.1",
+    "energy": 4,
+    "bleeding": "none",
+    "pain": 1,
+    "symptoms": [
+     "bloating"
+    ],
+    "bc_taken": null
+   },
+   "source": "synthetic"
+  },
+  {
+   "schema_version": "0.1",
+   "user_id": "synthetic-maya",
+   "date": "2026-08-03",
+   "rhr_bpm": null,
+   "hrv_rmssd_ms": null,
+   "skin_temp_dev_c": null,
+   "sleep_min": null,
+   "steps": null,
+   "checkin": {
+    "schema_version": "0.1",
+    "energy": 3,
+    "bleeding": "none",
+    "pain": 0,
+    "symptoms": [
+     "bloating"
+    ],
+    "bc_taken": null
+   },
+   "source": "synthetic"
+  },
+  {
+   "schema_version": "0.1",
+   "user_id": "synthetic-maya",
+   "date": "2026-08-04",
+   "rhr_bpm": 68.0,
+   "hrv_rmssd_ms": 37.8,
+   "skin_temp_dev_c": -0.01,
+   "sleep_min": 449,
+   "steps": 5636,
+   "checkin": {
+    "schema_version": "0.1",
+    "energy": 4,
+    "bleeding": "none",
+    "pain": 1,
+    "symptoms": [],
+    "bc_taken": null
+   },
+   "source": "synthetic"
+  },
+  {
+   "schema_version": "0.1",
+   "user_id": "synthetic-maya",
+   "date": "2026-08-05",
+   "rhr_bpm": 66.3,
+   "hrv_rmssd_ms": 55.8,
+   "skin_temp_dev_c": -0.15,
+   "sleep_min": 439,
+   "steps": 4124,
+   "checkin": {
+    "schema_version": "0.1",
+    "energy": 3,
+    "bleeding": "medium",
+    "pain": 4,
+    "symptoms": [
+     "cramps"
+    ],
+    "bc_taken": null
+   },
+   "source": "synthetic"
+  },
+  {
+   "schema_version": "0.1",
+   "user_id": "synthetic-maya",
+   "date": "2026-08-06",
+   "rhr_bpm": 66.5,
+   "hrv_rmssd_ms": 49.5,
+   "skin_temp_dev_c": -0.12,
+   "sleep_min": 412,
+   "steps": 6150,
+   "checkin": {
+    "schema_version": "0.1",
+    "energy": 5,
+    "bleeding": "heavy",
+    "pain": 6,
+    "symptoms": [
+     "cramps"
+    ],
+    "bc_taken": null
+   },
+   "source": "synthetic"
+  },
+  {
+   "schema_version": "0.1",
+   "user_id": "synthetic-maya",
+   "date": "2026-08-07",
+   "rhr_bpm": 66.2,
+   "hrv_rmssd_ms": 61.5,
+   "skin_temp_dev_c": -0.3,
+   "sleep_min": 444,
+   "steps": 3180,
+   "checkin": {
+    "schema_version": "0.1",
+    "energy": 5,
+    "bleeding": "medium",
+    "pain": 0,
+    "symptoms": [],
+    "bc_taken": null
+   },
+   "source": "synthetic"
+  },
+  {
+   "schema_version": "0.1",
+   "user_id": "synthetic-maya",
+   "date": "2026-08-08",
+   "rhr_bpm": 66.2,
+   "hrv_rmssd_ms": 48.5,
+   "skin_temp_dev_c": -0.22,
+   "sleep_min": 424,
+   "steps": 6236,
+   "checkin": {
+    "schema_version": "0.1",
+    "energy": 4,
+    "bleeding": "light",
+    "pain": 1,
+    "symptoms": [],
+    "bc_taken": null
+   },
+   "source": "synthetic"
+  },
+  {
+   "schema_version": "0.1",
+   "user_id": "synthetic-maya",
+   "date": "2026-08-09",
+   "rhr_bpm": 64.7,
+   "hrv_rmssd_ms": 55.2,
+   "skin_temp_dev_c": -0.17,
+   "sleep_min": 387,
+   "steps": 10483,
+   "checkin": {
+    "schema_version": "0.1",
+    "energy": 5,
+    "bleeding": "light",
+    "pain": 0,
+    "symptoms": [],
+    "bc_taken": null
+   },
+   "source": "synthetic"
+  },
+  {
+   "schema_version": "0.1",
+   "user_id": "synthetic-maya",
+   "date": "2026-08-10",
+   "rhr_bpm": null,
+   "hrv_rmssd_ms": null,
+   "skin_temp_dev_c": null,
+   "sleep_min": null,
+   "steps": null,
+   "checkin": {
+    "schema_version": "0.1",
+    "energy": 3,
+    "bleeding": "spot",
+    "pain": 0,
+    "symptoms": [],
+    "bc_taken": null
+   },
+   "source": "synthetic"
+  },
+  {
+   "schema_version": "0.1",
+   "user_id": "synthetic-maya",
+   "date": "2026-08-11",
+   "rhr_bpm": 64.1,
+   "hrv_rmssd_ms": 53.8,
+   "skin_temp_dev_c": 0.01,
+   "sleep_min": 417,
+   "steps": 7438,
+   "checkin": {
+    "schema_version": "0.1",
+    "energy": 3,
+    "bleeding": "none",
+    "pain": 0,
+    "symptoms": [],
+    "bc_taken": null
+   },
+   "source": "synthetic"
+  },
+  {
+   "schema_version": "0.1",
+   "user_id": "synthetic-maya",
+   "date": "2026-08-12",
+   "rhr_bpm": 65.8,
+   "hrv_rmssd_ms": 49.0,
+   "skin_temp_dev_c": -0.26,
+   "sleep_min": 392,
+   "steps": 2982,
+   "checkin": {
+    "schema_version": "0.1",
+    "energy": 3,
+    "bleeding": "none",
+    "pain": 0,
+    "symptoms": [],
+    "bc_taken": null
+   },
+   "source": "synthetic"
+  },
+  {
+   "schema_version": "0.1",
+   "user_id": "synthetic-maya",
+   "date": "2026-08-13",
+   "rhr_bpm": 65.3,
+   "hrv_rmssd_ms": 45.1,
+   "skin_temp_dev_c": -0.04,
+   "sleep_min": 391,
+   "steps": 3824,
+   "checkin": {
+    "schema_version": "0.1",
+    "energy": 5,
+    "bleeding": "none",
+    "pain": 0,
+    "symptoms": [],
+    "bc_taken": null
+   },
+   "source": "synthetic"
+  },
+  {
+   "schema_version": "0.1",
+   "user_id": "synthetic-maya",
+   "date": "2026-08-14",
+   "rhr_bpm": null,
+   "hrv_rmssd_ms": null,
+   "skin_temp_dev_c": null,
+   "sleep_min": null,
+   "steps": null,
+   "checkin": null,
+   "source": "synthetic"
+  },
+  {
+   "schema_version": "0.1",
+   "user_id": "synthetic-maya",
+   "date": "2026-08-15",
+   "rhr_bpm": null,
+   "hrv_rmssd_ms": null,
+   "skin_temp_dev_c": null,
+   "sleep_min": null,
+   "steps": null,
+   "checkin": null,
+   "source": "synthetic"
+  },
+  {
+   "schema_version": "0.1",
+   "user_id": "synthetic-maya",
+   "date": "2026-08-16",
+   "rhr_bpm": 63.2,
+   "hrv_rmssd_ms": 60.1,
+   "skin_temp_dev_c": -0.06,
+   "sleep_min": 439,
+   "steps": 5294,
+   "checkin": {
+    "schema_version": "0.1",
+    "energy": 4,
+    "bleeding": "none",
+    "pain": 0,
+    "symptoms": [],
+    "bc_taken": null
+   },
+   "source": "synthetic"
+  },
+  {
+   "schema_version": "0.1",
+   "user_id": "synthetic-maya",
+   "date": "2026-08-17",
+   "rhr_bpm": null,
+   "hrv_rmssd_ms": null,
+   "skin_temp_dev_c": null,
+   "sleep_min": null,
+   "steps": null,
+   "checkin": {
+    "schema_version": "0.1",
+    "energy": 3,
+    "bleeding": "none",
+    "pain": 0,
+    "symptoms": [],
+    "bc_taken": null
+   },
+   "source": "synthetic"
+  },
+  {
+   "schema_version": "0.1",
+   "user_id": "synthetic-maya",
+   "date": "2026-08-18",
+   "rhr_bpm": 66.2,
+   "hrv_rmssd_ms": 51.1,
+   "skin_temp_dev_c": 0.02,
+   "sleep_min": 403,
+   "steps": 5776,
+   "checkin": {
+    "schema_version": "0.1",
+    "energy": 3,
+    "bleeding": "none",
+    "pain": 2,
+    "symptoms": [],
+    "bc_taken": null
+   },
+   "source": "synthetic"
+  },
+  {
+   "schema_version": "0.1",
+   "user_id": "synthetic-maya",
+   "date": "2026-08-19",
+   "rhr_bpm": 66.5,
+   "hrv_rmssd_ms": 46.4,
+   "skin_temp_dev_c": -0.22,
+   "sleep_min": 388,
+   "steps": 2639,
+   "checkin": {
+    "schema_version": "0.1",
+    "energy": 4,
+    "bleeding": "none",
+    "pain": 1,
+    "symptoms": [],
+    "bc_taken": null
+   },
+   "source": "synthetic"
+  },
+  {
+   "schema_version": "0.1",
+   "user_id": "synthetic-maya",
+   "date": "2026-08-20",
+   "rhr_bpm": 67.6,
+   "hrv_rmssd_ms": 52.0,
+   "skin_temp_dev_c": -0.04,
+   "sleep_min": 411,
+   "steps": 3759,
+   "checkin": {
+    "schema_version": "0.1",
+    "energy": 3,
+    "bleeding": "none",
+    "pain": 1,
+    "symptoms": [],
+    "bc_taken": null
+   },
+   "source": "synthetic"
+  },
+  {
+   "schema_version": "0.1",
+   "user_id": "synthetic-maya",
+   "date": "2026-08-21",
+   "rhr_bpm": 69.0,
+   "hrv_rmssd_ms": 49.6,
+   "skin_temp_dev_c": 0.04,
+   "sleep_min": 454,
+   "steps": 5440,
+   "checkin": {
+    "schema_version": "0.1",
+    "energy": 5,
+    "bleeding": "none",
+    "pain": 1,
+    "symptoms": [],
+    "bc_taken": null
+   },
+   "source": "synthetic"
+  },
+  {
+   "schema_version": "0.1",
+   "user_id": "synthetic-maya",
+   "date": "2026-08-22",
+   "rhr_bpm": 63.5,
+   "hrv_rmssd_ms": 58.0,
+   "skin_temp_dev_c": -0.07,
+   "sleep_min": 458,
+   "steps": 5902,
+   "checkin": null,
+   "source": "synthetic"
+  },
+  {
+   "schema_version": "0.1",
+   "user_id": "synthetic-maya",
+   "date": "2026-08-23",
+   "rhr_bpm": 62.5,
+   "hrv_rmssd_ms": 52.5,
+   "skin_temp_dev_c": -0.11,
+   "sleep_min": 429,
+   "steps": 11805,
+   "checkin": {
+    "schema_version": "0.1",
+    "energy": 4,
+    "bleeding": "none",
+    "pain": 0,
+    "symptoms": [],
+    "bc_taken": null
+   },
+   "source": "synthetic"
+  },
+  {
+   "schema_version": "0.1",
+   "user_id": "synthetic-maya",
+   "date": "2026-08-24",
+   "rhr_bpm": 69.1,
+   "hrv_rmssd_ms": 49.1,
+   "skin_temp_dev_c": 0.05,
+   "sleep_min": 441,
+   "steps": 6467,
+   "checkin": null,
+   "source": "synthetic"
+  },
+  {
+   "schema_version": "0.1",
+   "user_id": "synthetic-maya",
+   "date": "2026-08-25",
+   "rhr_bpm": 61.6,
+   "hrv_rmssd_ms": 50.3,
+   "skin_temp_dev_c": -0.14,
+   "sleep_min": 437,
+   "steps": 5328,
+   "checkin": {
+    "schema_version": "0.1",
+    "energy": 4,
+    "bleeding": "none",
+    "pain": 0,
+    "symptoms": [],
+    "bc_taken": null
+   },
+   "source": "synthetic"
+  },
+  {
+   "schema_version": "0.1",
+   "user_id": "synthetic-maya",
+   "date": "2026-08-26",
+   "rhr_bpm": 66.0,
+   "hrv_rmssd_ms": 49.8,
+   "skin_temp_dev_c": -0.2,
+   "sleep_min": 443,
+   "steps": 3881,
+   "checkin": null,
+   "source": "synthetic"
+  },
+  {
+   "schema_version": "0.1",
+   "user_id": "synthetic-maya",
+   "date": "2026-08-27",
+   "rhr_bpm": null,
+   "hrv_rmssd_ms": null,
+   "skin_temp_dev_c": null,
+   "sleep_min": null,
+   "steps": null,
+   "checkin": null,
+   "source": "synthetic"
+  },
+  {
+   "schema_version": "0.1",
+   "user_id": "synthetic-maya",
+   "date": "2026-08-28",
+   "rhr_bpm": 66.4,
+   "hrv_rmssd_ms": 48.2,
+   "skin_temp_dev_c": 0.16,
+   "sleep_min": 417,
+   "steps": 5237,
+   "checkin": {
+    "schema_version": "0.1",
+    "energy": 3,
+    "bleeding": "none",
+    "pain": 2,
+    "symptoms": [],
+    "bc_taken": null
+   },
+   "source": "synthetic"
+  },
+  {
+   "schema_version": "0.1",
+   "user_id": "synthetic-maya",
+   "date": "2026-08-29",
+   "rhr_bpm": null,
+   "hrv_rmssd_ms": null,
+   "skin_temp_dev_c": null,
+   "sleep_min": null,
+   "steps": null,
+   "checkin": {
+    "schema_version": "0.1",
+    "energy": 3,
+    "bleeding": "none",
+    "pain": 0,
+    "symptoms": [
+     "bloating"
+    ],
+    "bc_taken": null
+   },
+   "source": "synthetic"
+  },
+  {
+   "schema_version": "0.1",
+   "user_id": "synthetic-maya",
+   "date": "2026-08-30",
+   "rhr_bpm": 67.1,
+   "hrv_rmssd_ms": 48.6,
+   "skin_temp_dev_c": 0.26,
+   "sleep_min": 356,
+   "steps": 7612,
+   "checkin": null,
+   "source": "synthetic"
+  },
+  {
+   "schema_version": "0.1",
+   "user_id": "synthetic-maya",
+   "date": "2026-08-31",
+   "rhr_bpm": 67.8,
+   "hrv_rmssd_ms": 46.6,
+   "skin_temp_dev_c": 0.13,
+   "sleep_min": 422,
+   "steps": 5783,
+   "checkin": {
+    "schema_version": "0.1",
+    "energy": 3,
+    "bleeding": "none",
+    "pain": 0,
+    "symptoms": [],
+    "bc_taken": null
+   },
+   "source": "synthetic"
+  },
+  {
+   "schema_version": "0.1",
+   "user_id": "synthetic-maya",
+   "date": "2026-09-01",
+   "rhr_bpm": 69.7,
+   "hrv_rmssd_ms": 43.3,
+   "skin_temp_dev_c": 0.04,
+   "sleep_min": 341,
+   "steps": 5347,
+   "checkin": {
+    "schema_version": "0.1",
+    "energy": 4,
+    "bleeding": "none",
+    "pain": 2,
+    "symptoms": [],
+    "bc_taken": null
+   },
+   "source": "synthetic"
+  },
+  {
+   "schema_version": "0.1",
+   "user_id": "synthetic-maya",
+   "date": "2026-09-02",
+   "rhr_bpm": null,
+   "hrv_rmssd_ms": null,
+   "skin_temp_dev_c": null,
+   "sleep_min": null,
+   "steps": null,
+   "checkin": null,
+   "source": "synthetic"
+  },
+  {
+   "schema_version": "0.1",
+   "user_id": "synthetic-maya",
+   "date": "2026-09-03",
+   "rhr_bpm": 70.3,
+   "hrv_rmssd_ms": 41.2,
+   "skin_temp_dev_c": 0.04,
+   "sleep_min": 383,
+   "steps": 6031,
+   "checkin": {
+    "schema_version": "0.1",
+    "energy": 5,
+    "bleeding": "none",
+    "pain": 0,
+    "symptoms": [],
+    "bc_taken": null
+   },
+   "source": "synthetic"
+  },
+  {
+   "schema_version": "0.1",
+   "user_id": "synthetic-maya",
+   "date": "2026-09-04",
+   "rhr_bpm": 69.2,
+   "hrv_rmssd_ms": 56.6,
+   "skin_temp_dev_c": 0.13,
+   "sleep_min": 425,
+   "steps": 9765,
+   "checkin": {
+    "schema_version": "0.1",
+    "energy": 4,
+    "bleeding": "none",
+    "pain": 2,
+    "symptoms": [],
+    "bc_taken": null
+   },
+   "source": "synthetic"
+  },
+  {
+   "schema_version": "0.1",
+   "user_id": "synthetic-maya",
+   "date": "2026-09-05",
+   "rhr_bpm": 69.3,
+   "hrv_rmssd_ms": 45.6,
+   "skin_temp_dev_c": 0.08,
+   "sleep_min": 447,
+   "steps": 8120,
+   "checkin": {
+    "schema_version": "0.1",
+    "energy": 5,
+    "bleeding": "none",
+    "pain": 0,
+    "symptoms": [],
+    "bc_taken": null
+   },
+   "source": "synthetic"
+  },
+  {
+   "schema_version": "0.1",
+   "user_id": "synthetic-maya",
+   "date": "2026-09-06",
+   "rhr_bpm": 67.9,
+   "hrv_rmssd_ms": 46.4,
+   "skin_temp_dev_c": 0.09,
+   "sleep_min": 380,
+   "steps": 5947,
+   "checkin": {
+    "schema_version": "0.1",
+    "energy": 4,
+    "bleeding": "none",
+    "pain": 0,
+    "symptoms": [
+     "bloating"
+    ],
+    "bc_taken": null
+   },
+   "source": "synthetic"
+  },
+  {
+   "schema_version": "0.1",
+   "user_id": "synthetic-maya",
+   "date": "2026-09-07",
+   "rhr_bpm": 66.9,
+   "hrv_rmssd_ms": 45.2,
+   "skin_temp_dev_c": 0.16,
+   "sleep_min": 436,
+   "steps": 4391,
+   "checkin": {
+    "schema_version": "0.1",
+    "energy": 4,
+    "bleeding": "none",
+    "pain": 1,
+    "symptoms": [],
+    "bc_taken": null
+   },
+   "source": "synthetic"
+  },
+  {
+   "schema_version": "0.1",
+   "user_id": "synthetic-maya",
+   "date": "2026-09-08",
+   "rhr_bpm": 64.9,
+   "hrv_rmssd_ms": 48.5,
+   "skin_temp_dev_c": 0.0,
+   "sleep_min": 475,
+   "steps": 8173,
+   "checkin": {
+    "schema_version": "0.1",
+    "energy": 5,
+    "bleeding": "none",
+    "pain": 1,
+    "symptoms": [
+     "bloating"
+    ],
+    "bc_taken": null
+   },
+   "source": "synthetic"
+  },
+  {
+   "schema_version": "0.1",
+   "user_id": "synthetic-maya",
+   "date": "2026-09-09",
+   "rhr_bpm": 65.9,
+   "hrv_rmssd_ms": 50.8,
+   "skin_temp_dev_c": -0.14,
+   "sleep_min": 420,
+   "steps": 6913,
+   "checkin": {
+    "schema_version": "0.1",
+    "energy": 5,
+    "bleeding": "medium",
+    "pain": 6,
+    "symptoms": [
+     "cramps"
+    ],
+    "bc_taken": null
+   },
+   "source": "synthetic"
+  },
+  {
+   "schema_version": "0.1",
+   "user_id": "synthetic-maya",
+   "date": "2026-09-10",
+   "rhr_bpm": null,
+   "hrv_rmssd_ms": null,
+   "skin_temp_dev_c": null,
+   "sleep_min": null,
+   "steps": null,
+   "checkin": {
+    "schema_version": "0.1",
+    "energy": 4,
+    "bleeding": "heavy",
+    "pain": 6,
+    "symptoms": [
+     "cramps"
+    ],
+    "bc_taken": null
+   },
+   "source": "synthetic"
+  },
+  {
+   "schema_version": "0.1",
+   "user_id": "synthetic-maya",
+   "date": "2026-09-11",
+   "rhr_bpm": null,
+   "hrv_rmssd_ms": null,
+   "skin_temp_dev_c": null,
+   "sleep_min": null,
+   "steps": null,
+   "checkin": {
+    "schema_version": "0.1",
+    "energy": 3,
+    "bleeding": "medium",
+    "pain": 2,
+    "symptoms": [],
+    "bc_taken": null
+   },
+   "source": "synthetic"
+  },
+  {
+   "schema_version": "0.1",
+   "user_id": "synthetic-maya",
+   "date": "2026-09-12",
+   "rhr_bpm": 61.7,
+   "hrv_rmssd_ms": 58.0,
+   "skin_temp_dev_c": -0.27,
+   "sleep_min": 460,
+   "steps": 7678,
+   "checkin": {
+    "schema_version": "0.1",
+    "energy": 5,
+    "bleeding": "light",
+    "pain": 0,
+    "symptoms": [],
+    "bc_taken": null
+   },
+   "source": "synthetic"
+  },
+  {
+   "schema_version": "0.1",
+   "user_id": "synthetic-maya",
+   "date": "2026-09-13",
+   "rhr_bpm": 65.4,
+   "hrv_rmssd_ms": 59.0,
+   "skin_temp_dev_c": -0.15,
+   "sleep_min": 493,
+   "steps": 4891,
+   "checkin": {
+    "schema_version": "0.1",
+    "energy": 3,
+    "bleeding": "light",
+    "pain": 0,
+    "symptoms": [],
+    "bc_taken": null
+   },
+   "source": "synthetic"
+  },
+  {
+   "schema_version": "0.1",
+   "user_id": "synthetic-maya",
+   "date": "2026-09-14",
+   "rhr_bpm": 66.7,
+   "hrv_rmssd_ms": 43.0,
+   "skin_temp_dev_c": 0.19,
+   "sleep_min": 390,
+   "steps": 2363,
+   "checkin": {
+    "schema_version": "0.1",
+    "energy": 4,
+    "bleeding": "spot",
+    "pain": 1,
+    "symptoms": [],
+    "bc_taken": null
+   },
+   "source": "synthetic"
+  },
+  {
+   "schema_version": "0.1",
+   "user_id": "synthetic-maya",
+   "date": "2026-09-15",
+   "rhr_bpm": 62.6,
+   "hrv_rmssd_ms": 60.6,
+   "skin_temp_dev_c": -0.13,
+   "sleep_min": 376,
+   "steps": 3952,
+   "checkin": {
+    "schema_version": "0.1",
+    "energy": 3,
+    "bleeding": "none",
+    "pain": 0,
+    "symptoms": [],
+    "bc_taken": null
+   },
+   "source": "synthetic"
+  },
+  {
+   "schema_version": "0.1",
+   "user_id": "synthetic-maya",
+   "date": "2026-09-16",
+   "rhr_bpm": null,
+   "hrv_rmssd_ms": null,
+   "skin_temp_dev_c": null,
+   "sleep_min": null,
+   "steps": null,
+   "checkin": {
+    "schema_version": "0.1",
+    "energy": 5,
+    "bleeding": "none",
+    "pain": 0,
+    "symptoms": [],
+    "bc_taken": null
+   },
+   "source": "synthetic"
+  },
+  {
+   "schema_version": "0.1",
+   "user_id": "synthetic-maya",
+   "date": "2026-09-17",
+   "rhr_bpm": 66.9,
+   "hrv_rmssd_ms": 54.5,
+   "skin_temp_dev_c": -0.07,
+   "sleep_min": 412,
+   "steps": 7975,
+   "checkin": {
+    "schema_version": "0.1",
+    "energy": 4,
+    "bleeding": "none",
+    "pain": 0,
+    "symptoms": [],
+    "bc_taken": null
+   },
+   "source": "synthetic"
+  },
+  {
+   "schema_version": "0.1",
+   "user_id": "synthetic-maya",
+   "date": "2026-09-18",
+   "rhr_bpm": 66.5,
+   "hrv_rmssd_ms": 45.4,
+   "skin_temp_dev_c": 0.05,
+   "sleep_min": 421,
+   "steps": 4058,
+   "checkin": null,
+   "source": "synthetic"
+  },
+  {
+   "schema_version": "0.1",
+   "user_id": "synthetic-maya",
+   "date": "2026-09-19",
+   "rhr_bpm": 65.9,
+   "hrv_rmssd_ms": 45.5,
+   "skin_temp_dev_c": -0.15,
+   "sleep_min": 362,
+   "steps": 2630,
+   "checkin": {
+    "schema_version": "0.1",
+    "energy": 4,
+    "bleeding": "none",
+    "pain": 0,
+    "symptoms": [],
+    "bc_taken": null
+   },
+   "source": "synthetic"
+  },
+  {
+   "schema_version": "0.1",
+   "user_id": "synthetic-maya",
+   "date": "2026-09-20",
+   "rhr_bpm": null,
+   "hrv_rmssd_ms": null,
+   "skin_temp_dev_c": null,
+   "sleep_min": null,
+   "steps": null,
+   "checkin": {
+    "schema_version": "0.1",
+    "energy": 3,
+    "bleeding": "none",
+    "pain": 0,
+    "symptoms": [],
+    "bc_taken": null
+   },
+   "source": "synthetic"
+  },
+  {
+   "schema_version": "0.1",
+   "user_id": "synthetic-maya",
+   "date": "2026-09-21",
+   "rhr_bpm": null,
+   "hrv_rmssd_ms": null,
+   "skin_temp_dev_c": null,
+   "sleep_min": null,
+   "steps": null,
+   "checkin": {
+    "schema_version": "0.1",
+    "energy": 4,
+    "bleeding": "none",
+    "pain": 0,
+    "symptoms": [],
+    "bc_taken": null
+   },
+   "source": "synthetic"
+  },
+  {
+   "schema_version": "0.1",
+   "user_id": "synthetic-maya",
+   "date": "2026-09-22",
+   "rhr_bpm": 67.5,
+   "hrv_rmssd_ms": 44.1,
+   "skin_temp_dev_c": -0.18,
+   "sleep_min": 389,
+   "steps": 3928,
+   "checkin": {
+    "schema_version": "0.1",
+    "energy": 4,
+    "bleeding": "none",
+    "pain": 1,
+    "symptoms": [],
+    "bc_taken": null
+   },
+   "source": "synthetic"
+  },
+  {
+   "schema_version": "0.1",
+   "user_id": "synthetic-maya",
+   "date": "2026-09-23",
+   "rhr_bpm": 64.6,
+   "hrv_rmssd_ms": 49.3,
+   "skin_temp_dev_c": -0.17,
+   "sleep_min": 427,
+   "steps": 3095,
+   "checkin": {
+    "schema_version": "0.1",
+    "energy": 3,
+    "bleeding": "none",
+    "pain": 1,
+    "symptoms": [],
+    "bc_taken": null
+   },
+   "source": "synthetic"
+  },
+  {
+   "schema_version": "0.1",
+   "user_id": "synthetic-maya",
+   "date": "2026-09-24",
+   "rhr_bpm": 68.6,
+   "hrv_rmssd_ms": 54.9,
+   "skin_temp_dev_c": 0.05,
+   "sleep_min": 416,
+   "steps": 6346,
+   "checkin": {
+    "schema_version": "0.1",
+    "energy": 5,
+    "bleeding": "none",
+    "pain": 2,
+    "symptoms": [],
+    "bc_taken": null
+   },
+   "source": "synthetic"
+  },
+  {
+   "schema_version": "0.1",
+   "user_id": "synthetic-maya",
+   "date": "2026-09-25",
+   "rhr_bpm": 69.5,
+   "hrv_rmssd_ms": 49.4,
+   "skin_temp_dev_c": 0.23,
+   "sleep_min": 435,
+   "steps": 3865,
+   "checkin": {
+    "schema_version": "0.1",
+    "energy": 3,
+    "bleeding": "none",
+    "pain": 0,
+    "symptoms": [],
+    "bc_taken": null
+   },
+   "source": "synthetic"
+  },
+  {
+   "schema_version": "0.1",
+   "user_id": "synthetic-maya",
+   "date": "2026-09-26",
+   "rhr_bpm": null,
+   "hrv_rmssd_ms": null,
+   "skin_temp_dev_c": null,
+   "sleep_min": null,
+   "steps": null,
+   "checkin": {
+    "schema_version": "0.1",
+    "energy": 4,
+    "bleeding": "none",
+    "pain": 0,
+    "symptoms": [],
+    "bc_taken": null
+   },
+   "source": "synthetic"
+  },
+  {
+   "schema_version": "0.1",
+   "user_id": "synthetic-maya",
+   "date": "2026-09-27",
+   "rhr_bpm": 72.2,
+   "hrv_rmssd_ms": 49.0,
+   "skin_temp_dev_c": -0.1,
+   "sleep_min": 416,
+   "steps": 6471,
+   "checkin": null,
+   "source": "synthetic"
+  },
+  {
+   "schema_version": "0.1",
+   "user_id": "synthetic-maya",
+   "date": "2026-09-28",
+   "rhr_bpm": 67.6,
+   "hrv_rmssd_ms": 47.2,
+   "skin_temp_dev_c": 0.04,
+   "sleep_min": 345,
+   "steps": 4321,
+   "checkin": null,
+   "source": "synthetic"
+  },
+  {
+   "schema_version": "0.1",
+   "user_id": "synthetic-maya",
+   "date": "2026-09-29",
+   "rhr_bpm": 69.2,
+   "hrv_rmssd_ms": 55.9,
+   "skin_temp_dev_c": 0.15,
+   "sleep_min": 349,
+   "steps": 10238,
+   "checkin": {
+    "schema_version": "0.1",
+    "energy": 4,
+    "bleeding": "none",
+    "pain": 0,
+    "symptoms": [],
+    "bc_taken": null
+   },
+   "source": "synthetic"
+  },
+  {
+   "schema_version": "0.1",
+   "user_id": "synthetic-maya",
+   "date": "2026-09-30",
+   "rhr_bpm": 65.6,
+   "hrv_rmssd_ms": 52.9,
+   "skin_temp_dev_c": 0.34,
+   "sleep_min": 389,
+   "steps": 4406,
+   "checkin": {
+    "schema_version": "0.1",
+    "energy": 3,
+    "bleeding": "none",
+    "pain": 2,
+    "symptoms": [],
+    "bc_taken": null
+   },
+   "source": "synthetic"
+  },
+  {
+   "schema_version": "0.1",
+   "user_id": "synthetic-maya",
+   "date": "2026-10-01",
+   "rhr_bpm": 67.9,
+   "hrv_rmssd_ms": 38.3,
+   "skin_temp_dev_c": 0.16,
+   "sleep_min": 363,
+   "steps": 3185,
+   "checkin": {
+    "schema_version": "0.1",
+    "energy": 5,
+    "bleeding": "none",
+    "pain": 1,
+    "symptoms": [
+     "bloating"
+    ],
+    "bc_taken": null
+   },
+   "source": "synthetic"
+  },
+  {
+   "schema_version": "0.1",
+   "user_id": "synthetic-maya",
+   "date": "2026-10-02",
+   "rhr_bpm": 67.8,
+   "hrv_rmssd_ms": 40.0,
+   "skin_temp_dev_c": 0.23,
+   "sleep_min": 459,
+   "steps": 2156,
+   "checkin": {
+    "schema_version": "0.1",
+    "energy": 3,
+    "bleeding": "none",
+    "pain": 0,
+    "symptoms": [],
+    "bc_taken": null
+   },
+   "source": "synthetic"
+  },
+  {
+   "schema_version": "0.1",
+   "user_id": "synthetic-maya",
+   "date": "2026-10-03",
+   "rhr_bpm": 70.3,
+   "hrv_rmssd_ms": 46.1,
+   "skin_temp_dev_c": -0.02,
+   "sleep_min": 450,
+   "steps": 3735,
+   "checkin": {
+    "schema_version": "0.1",
+    "energy": 5,
+    "bleeding": "none",
+    "pain": 1,
+    "symptoms": [],
+    "bc_taken": null
+   },
+   "source": "synthetic"
+  },
+  {
+   "schema_version": "0.1",
+   "user_id": "synthetic-maya",
+   "date": "2026-10-04",
+   "rhr_bpm": 68.6,
+   "hrv_rmssd_ms": 47.1,
+   "skin_temp_dev_c": 0.14,
+   "sleep_min": 366,
+   "steps": 4349,
+   "checkin": {
+    "schema_version": "0.1",
+    "energy": 4,
+    "bleeding": "none",
+    "pain": 2,
+    "symptoms": [],
+    "bc_taken": null
+   },
+   "source": "synthetic"
+  },
+  {
+   "schema_version": "0.1",
+   "user_id": "synthetic-maya",
+   "date": "2026-10-05",
+   "rhr_bpm": null,
+   "hrv_rmssd_ms": null,
+   "skin_temp_dev_c": null,
+   "sleep_min": null,
+   "steps": null,
+   "checkin": {
+    "schema_version": "0.1",
+    "energy": 5,
+    "bleeding": "none",
+    "pain": 0,
+    "symptoms": [],
+    "bc_taken": null
+   },
+   "source": "synthetic"
+  },
+  {
+   "schema_version": "0.1",
+   "user_id": "synthetic-maya",
+   "date": "2026-10-06",
+   "rhr_bpm": 65.5,
+   "hrv_rmssd_ms": 45.7,
+   "skin_temp_dev_c": -0.13,
+   "sleep_min": 423,
+   "steps": 7166,
+   "checkin": {
+    "schema_version": "0.1",
+    "energy": 5,
+    "bleeding": "medium",
+    "pain": 6,
+    "symptoms": [
+     "cramps"
+    ],
+    "bc_taken": null
+   },
+   "source": "synthetic"
+  },
+  {
+   "schema_version": "0.1",
+   "user_id": "synthetic-maya",
+   "date": "2026-10-07",
+   "rhr_bpm": 64.4,
+   "hrv_rmssd_ms": 53.1,
+   "skin_temp_dev_c": 0.1,
+   "sleep_min": 337,
+   "steps": 3776,
+   "checkin": {
+    "schema_version": "0.1",
+    "energy": 4,
+    "bleeding": "heavy",
+    "pain": 4,
+    "symptoms": [
+     "cramps"
+    ],
+    "bc_taken": null
+   },
+   "source": "synthetic"
+  },
+  {
+   "schema_version": "0.1",
+   "user_id": "synthetic-maya",
+   "date": "2026-10-08",
+   "rhr_bpm": 66.0,
+   "hrv_rmssd_ms": 47.4,
+   "skin_temp_dev_c": 0.02,
+   "sleep_min": 412,
+   "steps": 7625,
+   "checkin": {
+    "schema_version": "0.1",
+    "energy": 4,
+    "bleeding": "medium",
+    "pain": 0,
+    "symptoms": [],
+    "bc_taken": null
+   },
+   "source": "synthetic"
+  },
+  {
+   "schema_version": "0.1",
+   "user_id": "synthetic-maya",
+   "date": "2026-10-09",
+   "rhr_bpm": 68.5,
+   "hrv_rmssd_ms": 43.8,
+   "skin_temp_dev_c": -0.24,
+   "sleep_min": 379,
+   "steps": 3758,
+   "checkin": {
+    "schema_version": "0.1",
+    "energy": 5,
+    "bleeding": "light",
+    "pain": 0,
+    "symptoms": [],
+    "bc_taken": null
+   },
+   "source": "synthetic"
+  },
+  {
+   "schema_version": "0.1",
+   "user_id": "synthetic-maya",
+   "date": "2026-10-10",
+   "rhr_bpm": 64.7,
+   "hrv_rmssd_ms": 59.6,
+   "skin_temp_dev_c": 0.02,
+   "sleep_min": 451,
+   "steps": 5382,
+   "checkin": {
+    "schema_version": "0.1",
+    "energy": 3,
+    "bleeding": "light",
+    "pain": 0,
+    "symptoms": [],
+    "bc_taken": null
+   },
+   "source": "synthetic"
+  },
+  {
+   "schema_version": "0.1",
+   "user_id": "synthetic-maya",
+   "date": "2026-10-11",
+   "rhr_bpm": 66.1,
+   "hrv_rmssd_ms": 54.6,
+   "skin_temp_dev_c": -0.03,
+   "sleep_min": 358,
+   "steps": 8138,
+   "checkin": {
+    "schema_version": "0.1",
+    "energy": 4,
+    "bleeding": "spot",
+    "pain": 1,
+    "symptoms": [],
+    "bc_taken": null
+   },
+   "source": "synthetic"
+  },
+  {
+   "schema_version": "0.1",
+   "user_id": "synthetic-maya",
+   "date": "2026-10-12",
+   "rhr_bpm": 65.9,
+   "hrv_rmssd_ms": 51.8,
+   "skin_temp_dev_c": -0.37,
+   "sleep_min": 415,
+   "steps": 3965,
+   "checkin": {
+    "schema_version": "0.1",
+    "energy": 4,
+    "bleeding": "none",
+    "pain": 0,
+    "symptoms": [],
+    "bc_taken": null
+   },
+   "source": "synthetic"
+  },
+  {
+   "schema_version": "0.1",
+   "user_id": "synthetic-maya",
+   "date": "2026-10-13",
+   "rhr_bpm": 63.4,
+   "hrv_rmssd_ms": 50.9,
+   "skin_temp_dev_c": -0.17,
+   "sleep_min": 492,
+   "steps": 8002,
+   "checkin": {
+    "schema_version": "0.1",
+    "energy": 3,
+    "bleeding": "none",
+    "pain": 0,
+    "symptoms": [],
+    "bc_taken": null
+   },
+   "source": "synthetic"
+  },
+  {
+   "schema_version": "0.1",
+   "user_id": "synthetic-maya",
+   "date": "2026-10-14",
+   "rhr_bpm": 69.6,
+   "hrv_rmssd_ms": 50.2,
+   "skin_temp_dev_c": -0.08,
+   "sleep_min": 438,
+   "steps": 8256,
+   "checkin": {
+    "schema_version": "0.1",
+    "energy": 4,
+    "bleeding": "none",
+    "pain": 0,
+    "symptoms": [],
+    "bc_taken": null
+   },
+   "source": "synthetic"
+  },
+  {
+   "schema_version": "0.1",
+   "user_id": "synthetic-maya",
+   "date": "2026-10-15",
+   "rhr_bpm": 65.8,
+   "hrv_rmssd_ms": 52.5,
+   "skin_temp_dev_c": -0.07,
+   "sleep_min": 398,
+   "steps": 7440,
+   "checkin": {
+    "schema_version": "0.1",
+    "energy": 5,
+    "bleeding": "none",
+    "pain": 1,
+    "symptoms": [],
+    "bc_taken": null
+   },
+   "source": "synthetic"
+  },
+  {
+   "schema_version": "0.1",
+   "user_id": "synthetic-maya",
+   "date": "2026-10-16",
+   "rhr_bpm": 64.5,
+   "hrv_rmssd_ms": 52.9,
+   "skin_temp_dev_c": -0.13,
+   "sleep_min": 469,
+   "steps": 7441,
+   "checkin": null,
+   "source": "synthetic"
+  },
+  {
+   "schema_version": "0.1",
+   "user_id": "synthetic-maya",
+   "date": "2026-10-17",
+   "rhr_bpm": 65.2,
+   "hrv_rmssd_ms": 55.4,
+   "skin_temp_dev_c": -0.09,
+   "sleep_min": 415,
+   "steps": 5589,
+   "checkin": null,
+   "source": "synthetic"
+  },
+  {
+   "schema_version": "0.1",
+   "user_id": "synthetic-maya",
+   "date": "2026-10-18",
+   "rhr_bpm": 66.3,
+   "hrv_rmssd_ms": 48.0,
+   "skin_temp_dev_c": -0.17,
+   "sleep_min": 408,
+   "steps": 5642,
+   "checkin": {
+    "schema_version": "0.1",
+    "energy": 4,
+    "bleeding": "none",
+    "pain": 2,
+    "symptoms": [],
+    "bc_taken": null
+   },
+   "source": "synthetic"
+  },
+  {
+   "schema_version": "0.1",
+   "user_id": "synthetic-maya",
+   "date": "2026-10-19",
+   "rhr_bpm": 63.3,
+   "hrv_rmssd_ms": 58.0,
+   "skin_temp_dev_c": -0.1,
+   "sleep_min": 450,
+   "steps": 6999,
+   "checkin": {
+    "schema_version": "0.1",
+    "energy": 4,
+    "bleeding": "none",
+    "pain": 1,
+    "symptoms": [],
+    "bc_taken": null
+   },
+   "source": "synthetic"
+  },
+  {
+   "schema_version": "0.1",
+   "user_id": "synthetic-maya",
+   "date": "2026-10-20",
+   "rhr_bpm": 65.0,
+   "hrv_rmssd_ms": 47.6,
+   "skin_temp_dev_c": -0.04,
+   "sleep_min": 400,
+   "steps": 7495,
+   "checkin": {
+    "schema_version": "0.1",
+    "energy": 5,
+    "bleeding": "none",
+    "pain": 0,
+    "symptoms": [],
+    "bc_taken": null
+   },
+   "source": "synthetic"
+  },
+  {
+   "schema_version": "0.1",
+   "user_id": "synthetic-maya",
+   "date": "2026-10-21",
+   "rhr_bpm": 68.4,
+   "hrv_rmssd_ms": 60.1,
+   "skin_temp_dev_c": -0.14,
+   "sleep_min": 431,
+   "steps": 3953,
+   "checkin": null,
+   "source": "synthetic"
+  },
+  {
+   "schema_version": "0.1",
+   "user_id": "synthetic-maya",
+   "date": "2026-10-22",
+   "rhr_bpm": 64.2,
+   "hrv_rmssd_ms": 51.6,
+   "skin_temp_dev_c": -0.0,
+   "sleep_min": 461,
+   "steps": 5108,
+   "checkin": {
+    "schema_version": "0.1",
+    "energy": 3,
+    "bleeding": "none",
+    "pain": 2,
+    "symptoms": [],
+    "bc_taken": null
+   },
+   "source": "synthetic"
+  },
+  {
+   "schema_version": "0.1",
+   "user_id": "synthetic-maya",
+   "date": "2026-10-23",
+   "rhr_bpm": 62.9,
+   "hrv_rmssd_ms": 48.6,
+   "skin_temp_dev_c": -0.15,
+   "sleep_min": 375,
+   "steps": 4133,
+   "checkin": {
+    "schema_version": "0.1",
+    "energy": 4,
+    "bleeding": "none",
+    "pain": 0,
+    "symptoms": [],
+    "bc_taken": null
+   },
+   "source": "synthetic"
+  },
+  {
+   "schema_version": "0.1",
+   "user_id": "synthetic-maya",
+   "date": "2026-10-24",
+   "rhr_bpm": 63.4,
+   "hrv_rmssd_ms": 51.7,
+   "skin_temp_dev_c": 0.01,
+   "sleep_min": 366,
+   "steps": 6616,
+   "checkin": {
+    "schema_version": "0.1",
+    "energy": 5,
+    "bleeding": "none",
+    "pain": 1,
+    "symptoms": [],
+    "bc_taken": null
+   },
+   "source": "synthetic"
+  },
+  {
+   "schema_version": "0.1",
+   "user_id": "synthetic-maya",
+   "date": "2026-10-25",
+   "rhr_bpm": null,
+   "hrv_rmssd_ms": null,
+   "skin_temp_dev_c": null,
+   "sleep_min": null,
+   "steps": null,
+   "checkin": {
+    "schema_version": "0.1",
+    "energy": 3,
+    "bleeding": "none",
+    "pain": 1,
+    "symptoms": [],
+    "bc_taken": null
+   },
+   "source": "synthetic"
+  },
+  {
+   "schema_version": "0.1",
+   "user_id": "synthetic-maya",
+   "date": "2026-10-26",
+   "rhr_bpm": null,
+   "hrv_rmssd_ms": null,
+   "skin_temp_dev_c": null,
+   "sleep_min": null,
+   "steps": null,
+   "checkin": {
+    "schema_version": "0.1",
+    "energy": 3,
+    "bleeding": "none",
+    "pain": 1,
+    "symptoms": [],
+    "bc_taken": null
+   },
+   "source": "synthetic"
+  },
+  {
+   "schema_version": "0.1",
+   "user_id": "synthetic-maya",
+   "date": "2026-10-27",
+   "rhr_bpm": 72.0,
+   "hrv_rmssd_ms": 51.0,
+   "skin_temp_dev_c": 0.27,
+   "sleep_min": 378,
+   "steps": 7600,
+   "checkin": {
+    "schema_version": "0.1",
+    "energy": 4,
+    "bleeding": "none",
+    "pain": 1,
+    "symptoms": [
+     "bloating"
+    ],
+    "bc_taken": null
+   },
+   "source": "synthetic"
+  },
+  {
+   "schema_version": "0.1",
+   "user_id": "synthetic-maya",
+   "date": "2026-10-28",
+   "rhr_bpm": 68.4,
+   "hrv_rmssd_ms": 51.3,
+   "skin_temp_dev_c": 0.22,
+   "sleep_min": 364,
+   "steps": 1838,
+   "checkin": {
+    "schema_version": "0.1",
+    "energy": 4,
+    "bleeding": "none",
+    "pain": 0,
+    "symptoms": [],
+    "bc_taken": null
+   },
+   "source": "synthetic"
+  },
+  {
+   "schema_version": "0.1",
+   "user_id": "synthetic-maya",
+   "date": "2026-10-29",
+   "rhr_bpm": 65.5,
+   "hrv_rmssd_ms": 39.9,
+   "skin_temp_dev_c": 0.03,
+   "sleep_min": 424,
+   "steps": 7429,
+   "checkin": {
+    "schema_version": "0.1",
+    "energy": 3,
+    "bleeding": "none",
+    "pain": 1,
+    "symptoms": [
+     "bloating"
+    ],
+    "bc_taken": null
+   },
+   "source": "synthetic"
+  },
+  {
+   "schema_version": "0.1",
+   "user_id": "synthetic-maya",
+   "date": "2026-10-30",
+   "rhr_bpm": 69.0,
+   "hrv_rmssd_ms": 47.8,
+   "skin_temp_dev_c": 0.11,
+   "sleep_min": 428,
+   "steps": 5696,
+   "checkin": {
+    "schema_version": "0.1",
+    "energy": 5,
+    "bleeding": "none",
+    "pain": 0,
+    "symptoms": [],
+    "bc_taken": null
+   },
+   "source": "synthetic"
+  },
+  {
+   "schema_version": "0.1",
+   "user_id": "synthetic-maya",
+   "date": "2026-10-31",
+   "rhr_bpm": 70.9,
+   "hrv_rmssd_ms": 44.8,
+   "skin_temp_dev_c": 0.17,
+   "sleep_min": 413,
+   "steps": 3647,
+   "checkin": {
+    "schema_version": "0.1",
+    "energy": 4,
+    "bleeding": "none",
+    "pain": 0,
+    "symptoms": [],
+    "bc_taken": null
+   },
+   "source": "synthetic"
+  },
+  {
+   "schema_version": "0.1",
+   "user_id": "synthetic-maya",
+   "date": "2026-11-01",
+   "rhr_bpm": 69.2,
+   "hrv_rmssd_ms": 47.7,
+   "skin_temp_dev_c": 0.34,
+   "sleep_min": 393,
+   "steps": 6252,
+   "checkin": {
+    "schema_version": "0.1",
+    "energy": 4,
+    "bleeding": "none",
+    "pain": 1,
+    "symptoms": [
+     "bloating"
+    ],
+    "bc_taken": null
+   },
+   "source": "synthetic"
+  },
+  {
+   "schema_version": "0.1",
+   "user_id": "synthetic-maya",
+   "date": "2026-11-02",
+   "rhr_bpm": 67.4,
+   "hrv_rmssd_ms": 53.2,
+   "skin_temp_dev_c": 0.16,
+   "sleep_min": 400,
+   "steps": 5353,
+   "checkin": {
+    "schema_version": "0.1",
+    "energy": 4,
+    "bleeding": "none",
+    "pain": 2,
+    "symptoms": [],
+    "bc_taken": null
+   },
+   "source": "synthetic"
+  },
+  {
+   "schema_version": "0.1",
+   "user_id": "synthetic-maya",
+   "date": "2026-11-03",
+   "rhr_bpm": 70.8,
+   "hrv_rmssd_ms": 37.5,
+   "skin_temp_dev_c": 0.22,
+   "sleep_min": 442,
+   "steps": 6751,
+   "checkin": {
+    "schema_version": "0.1",
+    "energy": 5,
+    "bleeding": "none",
+    "pain": 1,
+    "symptoms": [
+     "bloating"
+    ],
+    "bc_taken": null
+   },
+   "source": "synthetic"
+  },
+  {
+   "schema_version": "0.1",
+   "user_id": "synthetic-maya",
+   "date": "2026-11-04",
+   "rhr_bpm": 69.0,
+   "hrv_rmssd_ms": 40.5,
+   "skin_temp_dev_c": 0.06,
+   "sleep_min": 420,
+   "steps": 4574,
+   "checkin": null,
+   "source": "synthetic"
+  },
+  {
+   "schema_version": "0.1",
+   "user_id": "synthetic-maya",
+   "date": "2026-11-05",
+   "rhr_bpm": null,
+   "hrv_rmssd_ms": null,
+   "skin_temp_dev_c": null,
+   "sleep_min": null,
+   "steps": null,
+   "checkin": {
+    "schema_version": "0.1",
+    "energy": 4,
+    "bleeding": "none",
+    "pain": 0,
+    "symptoms": [],
+    "bc_taken": null
+   },
+   "source": "synthetic"
+  },
+  {
+   "schema_version": "0.1",
+   "user_id": "synthetic-maya",
+   "date": "2026-11-06",
+   "rhr_bpm": 66.3,
+   "hrv_rmssd_ms": 42.6,
+   "skin_temp_dev_c": 0.18,
+   "sleep_min": 450,
+   "steps": 2271,
+   "checkin": null,
+   "source": "synthetic"
+  },
+  {
+   "schema_version": "0.1",
+   "user_id": "synthetic-maya",
+   "date": "2026-11-07",
+   "rhr_bpm": 69.4,
+   "hrv_rmssd_ms": 54.5,
+   "skin_temp_dev_c": 0.21,
+   "sleep_min": 416,
+   "steps": 4158,
+   "checkin": {
+    "schema_version": "0.1",
+    "energy": 4,
+    "bleeding": "none",
+    "pain": 0,
+    "symptoms": [],
+    "bc_taken": null
+   },
+   "source": "synthetic"
+  },
+  {
+   "schema_version": "0.1",
+   "user_id": "synthetic-maya",
+   "date": "2026-11-08",
+   "rhr_bpm": 65.2,
+   "hrv_rmssd_ms": 61.5,
+   "skin_temp_dev_c": 0.02,
+   "sleep_min": 372,
+   "steps": 7081,
+   "checkin": {
+    "schema_version": "0.1",
+    "energy": 4,
+    "bleeding": "medium",
+    "pain": 4,
+    "symptoms": [
+     "cramps"
+    ],
+    "bc_taken": null
+   },
+   "source": "synthetic"
+  },
+  {
+   "schema_version": "0.1",
+   "user_id": "synthetic-maya",
+   "date": "2026-11-09",
+   "rhr_bpm": 65.5,
+   "hrv_rmssd_ms": 51.7,
+   "skin_temp_dev_c": -0.18,
+   "sleep_min": 371,
+   "steps": 5132,
+   "checkin": {
+    "schema_version": "0.1",
+    "energy": 4,
+    "bleeding": "heavy",
+    "pain": 5,
+    "symptoms": [
+     "cramps"
+    ],
+    "bc_taken": null
+   },
+   "source": "synthetic"
+  },
+  {
+   "schema_version": "0.1",
+   "user_id": "synthetic-maya",
+   "date": "2026-11-10",
+   "rhr_bpm": 64.7,
+   "hrv_rmssd_ms": 60.7,
+   "skin_temp_dev_c": -0.2,
+   "sleep_min": 350,
+   "steps": 5966,
+   "checkin": {
+    "schema_version": "0.1",
+    "energy": 4,
+    "bleeding": "medium",
+    "pain": 0,
+    "symptoms": [],
+    "bc_taken": null
+   },
+   "source": "synthetic"
+  },
+  {
+   "schema_version": "0.1",
+   "user_id": "synthetic-maya",
+   "date": "2026-11-11",
+   "rhr_bpm": 66.1,
+   "hrv_rmssd_ms": 52.0,
+   "skin_temp_dev_c": -0.19,
+   "sleep_min": 408,
+   "steps": 6154,
+   "checkin": {
+    "schema_version": "0.1",
+    "energy": 5,
+    "bleeding": "light",
+    "pain": 2,
+    "symptoms": [],
+    "bc_taken": null
+   },
+   "source": "synthetic"
+  },
+  {
+   "schema_version": "0.1",
+   "user_id": "synthetic-maya",
+   "date": "2026-11-12",
+   "rhr_bpm": 66.5,
+   "hrv_rmssd_ms": 52.1,
+   "skin_temp_dev_c": -0.06,
+   "sleep_min": 380,
+   "steps": 4080,
+   "checkin": {
+    "schema_version": "0.1",
+    "energy": 3,
+    "bleeding": "light",
+    "pain": 2,
+    "symptoms": [],
+    "bc_taken": null
+   },
+   "source": "synthetic"
+  },
+  {
+   "schema_version": "0.1",
+   "user_id": "synthetic-maya",
+   "date": "2026-11-13",
+   "rhr_bpm": 66.6,
+   "hrv_rmssd_ms": 48.0,
+   "skin_temp_dev_c": -0.03,
+   "sleep_min": 358,
+   "steps": 3557,
+   "checkin": {
+    "schema_version": "0.1",
+    "energy": 5,
+    "bleeding": "spot",
+    "pain": 0,
+    "symptoms": [],
+    "bc_taken": null
+   },
+   "source": "synthetic"
+  },
+  {
+   "schema_version": "0.1",
+   "user_id": "synthetic-maya",
+   "date": "2026-11-14",
+   "rhr_bpm": 65.1,
+   "hrv_rmssd_ms": 45.1,
+   "skin_temp_dev_c": -0.3,
+   "sleep_min": 441,
+   "steps": 3553,
+   "checkin": {
+    "schema_version": "0.1",
+    "energy": 4,
+    "bleeding": "none",
+    "pain": 2,
+    "symptoms": [],
+    "bc_taken": null
+   },
+   "source": "synthetic"
+  },
+  {
+   "schema_version": "0.1",
+   "user_id": "synthetic-maya",
+   "date": "2026-11-15",
+   "rhr_bpm": 66.1,
+   "hrv_rmssd_ms": 54.1,
+   "skin_temp_dev_c": 0.03,
+   "sleep_min": 412,
+   "steps": 6510,
+   "checkin": {
+    "schema_version": "0.1",
+    "energy": 3,
+    "bleeding": "none",
+    "pain": 0,
+    "symptoms": [],
+    "bc_taken": null
+   },
+   "source": "synthetic"
+  },
+  {
+   "schema_version": "0.1",
+   "user_id": "synthetic-maya",
+   "date": "2026-11-16",
+   "rhr_bpm": 68.0,
+   "hrv_rmssd_ms": 48.5,
+   "skin_temp_dev_c": 0.05,
+   "sleep_min": 392,
+   "steps": 4694,
+   "checkin": {
+    "schema_version": "0.1",
+    "energy": 5,
+    "bleeding": "none",
+    "pain": 0,
+    "symptoms": [],
+    "bc_taken": null
+   },
+   "source": "synthetic"
+  },
+  {
+   "schema_version": "0.1",
+   "user_id": "synthetic-maya",
+   "date": "2026-11-17",
+   "rhr_bpm": 65.6,
+   "hrv_rmssd_ms": 53.0,
+   "skin_temp_dev_c": -0.1,
+   "sleep_min": 395,
+   "steps": 4960,
+   "checkin": {
+    "schema_version": "0.1",
+    "energy": 3,
+    "bleeding": "none",
+    "pain": 2,
+    "symptoms": [],
+    "bc_taken": null
+   },
+   "source": "synthetic"
+  },
+  {
+   "schema_version": "0.1",
+   "user_id": "synthetic-maya",
+   "date": "2026-11-18",
+   "rhr_bpm": null,
+   "hrv_rmssd_ms": null,
+   "skin_temp_dev_c": null,
+   "sleep_min": null,
+   "steps": null,
+   "checkin": {
+    "schema_version": "0.1",
+    "energy": 5,
+    "bleeding": "none",
+    "pain": 1,
+    "symptoms": [],
+    "bc_taken": null
+   },
+   "source": "synthetic"
+  },
+  {
+   "schema_version": "0.1",
+   "user_id": "synthetic-maya",
+   "date": "2026-11-19",
+   "rhr_bpm": 64.9,
+   "hrv_rmssd_ms": 53.4,
+   "skin_temp_dev_c": -0.16,
+   "sleep_min": 385,
+   "steps": 3741,
+   "checkin": {
+    "schema_version": "0.1",
+    "energy": 3,
+    "bleeding": "none",
+    "pain": 0,
+    "symptoms": [],
+    "bc_taken": null
+   },
+   "source": "synthetic"
+  },
+  {
+   "schema_version": "0.1",
+   "user_id": "synthetic-maya",
+   "date": "2026-11-20",
+   "rhr_bpm": 63.7,
+   "hrv_rmssd_ms": 50.7,
+   "skin_temp_dev_c": -0.18,
+   "sleep_min": 453,
+   "steps": 9523,
+   "checkin": {
+    "schema_version": "0.1",
+    "energy": 3,
+    "bleeding": "none",
+    "pain": 0,
+    "symptoms": [],
+    "bc_taken": null
+   },
+   "source": "synthetic"
+  },
+  {
+   "schema_version": "0.1",
+   "user_id": "synthetic-maya",
+   "date": "2026-11-21",
+   "rhr_bpm": 67.8,
+   "hrv_rmssd_ms": 47.9,
+   "skin_temp_dev_c": 0.07,
+   "sleep_min": 389,
+   "steps": 9934,
+   "checkin": {
+    "schema_version": "0.1",
+    "energy": 4,
+    "bleeding": "none",
+    "pain": 2,
+    "symptoms": [],
+    "bc_taken": null
+   },
+   "source": "synthetic"
+  },
+  {
+   "schema_version": "0.1",
+   "user_id": "synthetic-maya",
+   "date": "2026-11-22",
+   "rhr_bpm": 64.9,
+   "hrv_rmssd_ms": 58.0,
+   "skin_temp_dev_c": -0.04,
+   "sleep_min": 445,
+   "steps": 6873,
+   "checkin": {
+    "schema_version": "0.1",
+    "energy": 3,
+    "bleeding": "none",
+    "pain": 1,
+    "symptoms": [],
+    "bc_taken": null
+   },
+   "source": "synthetic"
+  },
+  {
+   "schema_version": "0.1",
+   "user_id": "synthetic-maya",
+   "date": "2026-11-23",
+   "rhr_bpm": 67.9,
+   "hrv_rmssd_ms": 50.7,
+   "skin_temp_dev_c": -0.24,
+   "sleep_min": 383,
+   "steps": 7015,
+   "checkin": null,
+   "source": "synthetic"
+  },
+  {
+   "schema_version": "0.1",
+   "user_id": "synthetic-maya",
+   "date": "2026-11-24",
+   "rhr_bpm": 65.2,
+   "hrv_rmssd_ms": 48.1,
+   "skin_temp_dev_c": -0.01,
+   "sleep_min": 402,
+   "steps": 7601,
+   "checkin": {
+    "schema_version": "0.1",
+    "energy": 4,
+    "bleeding": "none",
+    "pain": 0,
+    "symptoms": [],
+    "bc_taken": null
+   },
+   "source": "synthetic"
+  },
+  {
+   "schema_version": "0.1",
+   "user_id": "synthetic-maya",
+   "date": "2026-11-25",
+   "rhr_bpm": 63.9,
+   "hrv_rmssd_ms": 44.5,
+   "skin_temp_dev_c": 0.09,
+   "sleep_min": 362,
+   "steps": 8103,
+   "checkin": null,
+   "source": "synthetic"
+  },
+  {
+   "schema_version": "0.1",
+   "user_id": "synthetic-maya",
+   "date": "2026-11-26",
+   "rhr_bpm": null,
+   "hrv_rmssd_ms": null,
+   "skin_temp_dev_c": null,
+   "sleep_min": null,
+   "steps": null,
+   "checkin": {
+    "schema_version": "0.1",
+    "energy": 3,
+    "bleeding": "none",
+    "pain": 2,
+    "symptoms": [],
+    "bc_taken": null
+   },
+   "source": "synthetic"
+  },
+  {
+   "schema_version": "0.1",
+   "user_id": "synthetic-maya",
+   "date": "2026-11-27",
+   "rhr_bpm": 65.1,
+   "hrv_rmssd_ms": 48.4,
+   "skin_temp_dev_c": -0.29,
+   "sleep_min": 342,
+   "steps": 7607,
+   "checkin": null,
+   "source": "synthetic"
+  },
+  {
+   "schema_version": "0.1",
+   "user_id": "synthetic-maya",
+   "date": "2026-11-28",
+   "rhr_bpm": null,
+   "hrv_rmssd_ms": null,
+   "skin_temp_dev_c": null,
+   "sleep_min": null,
+   "steps": null,
+   "checkin": {
+    "schema_version": "0.1",
+    "energy": 3,
+    "bleeding": "none",
+    "pain": 1,
+    "symptoms": [],
+    "bc_taken": null
+   },
+   "source": "synthetic"
+  },
+  {
+   "schema_version": "0.1",
+   "user_id": "synthetic-maya",
+   "date": "2026-11-29",
+   "rhr_bpm": 67.1,
+   "hrv_rmssd_ms": 44.8,
+   "skin_temp_dev_c": -0.16,
+   "sleep_min": 431,
+   "steps": 5797,
+   "checkin": {
+    "schema_version": "0.1",
+    "energy": 3,
+    "bleeding": "none",
+    "pain": 0,
+    "symptoms": [],
+    "bc_taken": null
+   },
+   "source": "synthetic"
+  },
+  {
+   "schema_version": "0.1",
+   "user_id": "synthetic-maya",
+   "date": "2026-11-30",
+   "rhr_bpm": 62.6,
+   "hrv_rmssd_ms": 46.3,
+   "skin_temp_dev_c": -0.16,
+   "sleep_min": 401,
+   "steps": 7423,
+   "checkin": {
+    "schema_version": "0.1",
+    "energy": 4,
+    "bleeding": "none",
+    "pain": 2,
+    "symptoms": [],
+    "bc_taken": null
+   },
+   "source": "synthetic"
+  },
+  {
+   "schema_version": "0.1",
+   "user_id": "synthetic-maya",
+   "date": "2026-12-01",
+   "rhr_bpm": null,
+   "hrv_rmssd_ms": null,
+   "skin_temp_dev_c": null,
+   "sleep_min": null,
+   "steps": null,
+   "checkin": {
+    "schema_version": "0.1",
+    "energy": 3,
+    "bleeding": "none",
+    "pain": 0,
+    "symptoms": [],
+    "bc_taken": null
+   },
+   "source": "synthetic"
+  },
+  {
+   "schema_version": "0.1",
+   "user_id": "synthetic-maya",
+   "date": "2026-12-02",
+   "rhr_bpm": 71.3,
+   "hrv_rmssd_ms": 50.5,
+   "skin_temp_dev_c": 0.06,
+   "sleep_min": 337,
+   "steps": 3647,
+   "checkin": {
+    "schema_version": "0.1",
+    "energy": 3,
+    "bleeding": "none",
+    "pain": 0,
+    "symptoms": [],
+    "bc_taken": null
+   },
+   "source": "synthetic"
+  },
+  {
+   "schema_version": "0.1",
+   "user_id": "synthetic-maya",
+   "date": "2026-12-03",
+   "rhr_bpm": 69.9,
+   "hrv_rmssd_ms": 42.3,
+   "skin_temp_dev_c": 0.03,
+   "sleep_min": 381,
+   "steps": 3002,
+   "checkin": {
+    "schema_version": "0.1",
+    "energy": 3,
+    "bleeding": "none",
+    "pain": 2,
+    "symptoms": [],
+    "bc_taken": null
+   },
+   "source": "synthetic"
+  },
+  {
+   "schema_version": "0.1",
+   "user_id": "synthetic-maya",
+   "date": "2026-12-04",
+   "rhr_bpm": 70.5,
+   "hrv_rmssd_ms": 55.6,
+   "skin_temp_dev_c": 0.02,
+   "sleep_min": 390,
+   "steps": 9283,
+   "checkin": {
+    "schema_version": "0.1",
+    "energy": 4,
+    "bleeding": "none",
+    "pain": 1,
+    "symptoms": [],
+    "bc_taken": null
+   },
+   "source": "synthetic"
+  },
+  {
+   "schema_version": "0.1",
+   "user_id": "synthetic-maya",
+   "date": "2026-12-05",
+   "rhr_bpm": 67.7,
+   "hrv_rmssd_ms": 42.7,
+   "skin_temp_dev_c": 0.1,
+   "sleep_min": 431,
+   "steps": 8945,
+   "checkin": {
+    "schema_version": "0.1",
+    "energy": 3,
+    "bleeding": "none",
+    "pain": 2,
+    "symptoms": [],
+    "bc_taken": null
+   },
+   "source": "synthetic"
+  },
+  {
+   "schema_version": "0.1",
+   "user_id": "synthetic-maya",
+   "date": "2026-12-06",
+   "rhr_bpm": 68.1,
+   "hrv_rmssd_ms": 46.7,
+   "skin_temp_dev_c": 0.03,
+   "sleep_min": 406,
+   "steps": 7880,
+   "checkin": null,
+   "source": "synthetic"
+  },
+  {
+   "schema_version": "0.1",
+   "user_id": "synthetic-maya",
+   "date": "2026-12-07",
+   "rhr_bpm": 69.6,
+   "hrv_rmssd_ms": 41.6,
+   "skin_temp_dev_c": -0.0,
+   "sleep_min": 335,
+   "steps": 6721,
+   "checkin": {
+    "schema_version": "0.1",
+    "energy": 2,
+    "bleeding": "none",
+    "pain": 0,
+    "symptoms": [
+     "fatigue"
+    ],
+    "bc_taken": null
+   },
+   "source": "synthetic"
+  },
+  {
+   "schema_version": "0.1",
+   "user_id": "synthetic-maya",
+   "date": "2026-12-08",
+   "rhr_bpm": 68.3,
+   "hrv_rmssd_ms": 53.8,
+   "skin_temp_dev_c": 0.11,
+   "sleep_min": 339,
+   "steps": 10687,
+   "checkin": {
+    "schema_version": "0.1",
+    "energy": 2,
+    "bleeding": "none",
+    "pain": 0,
+    "symptoms": [
+     "bloating",
+     "fatigue"
+    ],
+    "bc_taken": null
+   },
+   "source": "synthetic"
+  },
+  {
+   "schema_version": "0.1",
+   "user_id": "synthetic-maya",
+   "date": "2026-12-09",
+   "rhr_bpm": null,
+   "hrv_rmssd_ms": null,
+   "skin_temp_dev_c": null,
+   "sleep_min": null,
+   "steps": null,
+   "checkin": {
+    "schema_version": "0.1",
+    "energy": 2,
+    "bleeding": "none",
+    "pain": 0,
+    "symptoms": [
+     "fatigue"
+    ],
+    "bc_taken": null
+   },
+   "source": "synthetic"
+  },
+  {
+   "schema_version": "0.1",
+   "user_id": "synthetic-maya",
+   "date": "2026-12-10",
+   "rhr_bpm": 65.6,
+   "hrv_rmssd_ms": 46.1,
+   "skin_temp_dev_c": 0.36,
+   "sleep_min": 349,
+   "steps": 4890,
+   "checkin": {
+    "schema_version": "0.1",
+    "energy": 1,
+    "bleeding": "none",
+    "pain": 0,
+    "symptoms": [
+     "bloating",
+     "fatigue"
+    ],
+    "bc_taken": null
+   },
+   "source": "synthetic"
+  },
+  {
+   "schema_version": "0.1",
+   "user_id": "synthetic-maya",
+   "date": "2026-12-11",
+   "rhr_bpm": 68.9,
+   "hrv_rmssd_ms": 44.0,
+   "skin_temp_dev_c": 0.29,
+   "sleep_min": 352,
+   "steps": 5787,
+   "checkin": {
+    "schema_version": "0.1",
+    "energy": 1,
+    "bleeding": "none",
+    "pain": 0,
+    "symptoms": [
+     "bloating",
+     "fatigue"
+    ],
+    "bc_taken": null
+   },
+   "source": "synthetic"
+  }
+ ],
+ "truth": [
+  {
+   "date": "2026-07-07",
+   "cycle_day": 1,
+   "phase": "menstrual"
+  },
+  {
+   "date": "2026-07-08",
+   "cycle_day": 2,
+   "phase": "menstrual"
+  },
+  {
+   "date": "2026-07-09",
+   "cycle_day": 3,
+   "phase": "menstrual"
+  },
+  {
+   "date": "2026-07-10",
+   "cycle_day": 4,
+   "phase": "menstrual"
+  },
+  {
+   "date": "2026-07-11",
+   "cycle_day": 5,
+   "phase": "menstrual"
+  },
+  {
+   "date": "2026-07-12",
+   "cycle_day": 6,
+   "phase": "menstrual"
+  },
+  {
+   "date": "2026-07-13",
+   "cycle_day": 7,
+   "phase": "follicular"
+  },
+  {
+   "date": "2026-07-14",
+   "cycle_day": 8,
+   "phase": "follicular"
+  },
+  {
+   "date": "2026-07-15",
+   "cycle_day": 9,
+   "phase": "follicular"
+  },
+  {
+   "date": "2026-07-16",
+   "cycle_day": 10,
+   "phase": "follicular"
+  },
+  {
+   "date": "2026-07-17",
+   "cycle_day": 11,
+   "phase": "follicular"
+  },
+  {
+   "date": "2026-07-18",
+   "cycle_day": 12,
+   "phase": "follicular"
+  },
+  {
+   "date": "2026-07-19",
+   "cycle_day": 13,
+   "phase": "follicular"
+  },
+  {
+   "date": "2026-07-20",
+   "cycle_day": 14,
+   "phase": "follicular"
+  },
+  {
+   "date": "2026-07-21",
+   "cycle_day": 15,
+   "phase": "ovulatory"
+  },
+  {
+   "date": "2026-07-22",
+   "cycle_day": 16,
+   "phase": "ovulatory"
+  },
+  {
+   "date": "2026-07-23",
+   "cycle_day": 17,
+   "phase": "ovulatory"
+  },
+  {
+   "date": "2026-07-24",
+   "cycle_day": 18,
+   "phase": "luteal"
+  },
+  {
+   "date": "2026-07-25",
+   "cycle_day": 19,
+   "phase": "luteal"
+  },
+  {
+   "date": "2026-07-26",
+   "cycle_day": 20,
+   "phase": "luteal"
+  },
+  {
+   "date": "2026-07-27",
+   "cycle_day": 21,
+   "phase": "luteal"
+  },
+  {
+   "date": "2026-07-28",
+   "cycle_day": 22,
+   "phase": "luteal"
+  },
+  {
+   "date": "2026-07-29",
+   "cycle_day": 23,
+   "phase": "luteal"
+  },
+  {
+   "date": "2026-07-30",
+   "cycle_day": 24,
+   "phase": "luteal"
+  },
+  {
+   "date": "2026-07-31",
+   "cycle_day": 25,
+   "phase": "luteal"
+  },
+  {
+   "date": "2026-08-01",
+   "cycle_day": 26,
+   "phase": "luteal"
+  },
+  {
+   "date": "2026-08-02",
+   "cycle_day": 27,
+   "phase": "luteal"
+  },
+  {
+   "date": "2026-08-03",
+   "cycle_day": 28,
+   "phase": "luteal"
+  },
+  {
+   "date": "2026-08-04",
+   "cycle_day": 29,
+   "phase": "luteal"
+  },
+  {
+   "date": "2026-08-05",
+   "cycle_day": 1,
+   "phase": "menstrual"
+  },
+  {
+   "date": "2026-08-06",
+   "cycle_day": 2,
+   "phase": "menstrual"
+  },
+  {
+   "date": "2026-08-07",
+   "cycle_day": 3,
+   "phase": "menstrual"
+  },
+  {
+   "date": "2026-08-08",
+   "cycle_day": 4,
+   "phase": "menstrual"
+  },
+  {
+   "date": "2026-08-09",
+   "cycle_day": 5,
+   "phase": "menstrual"
+  },
+  {
+   "date": "2026-08-10",
+   "cycle_day": 6,
+   "phase": "menstrual"
+  },
+  {
+   "date": "2026-08-11",
+   "cycle_day": 7,
+   "phase": "follicular"
+  },
+  {
+   "date": "2026-08-12",
+   "cycle_day": 8,
+   "phase": "follicular"
+  },
+  {
+   "date": "2026-08-13",
+   "cycle_day": 9,
+   "phase": "follicular"
+  },
+  {
+   "date": "2026-08-14",
+   "cycle_day": 10,
+   "phase": "follicular"
+  },
+  {
+   "date": "2026-08-15",
+   "cycle_day": 11,
+   "phase": "follicular"
+  },
+  {
+   "date": "2026-08-16",
+   "cycle_day": 12,
+   "phase": "follicular"
+  },
+  {
+   "date": "2026-08-17",
+   "cycle_day": 13,
+   "phase": "follicular"
+  },
+  {
+   "date": "2026-08-18",
+   "cycle_day": 14,
+   "phase": "follicular"
+  },
+  {
+   "date": "2026-08-19",
+   "cycle_day": 15,
+   "phase": "follicular"
+  },
+  {
+   "date": "2026-08-20",
+   "cycle_day": 16,
+   "phase": "follicular"
+  },
+  {
+   "date": "2026-08-21",
+   "cycle_day": 17,
+   "phase": "follicular"
+  },
+  {
+   "date": "2026-08-22",
+   "cycle_day": 18,
+   "phase": "follicular"
+  },
+  {
+   "date": "2026-08-23",
+   "cycle_day": 19,
+   "phase": "follicular"
+  },
+  {
+   "date": "2026-08-24",
+   "cycle_day": 20,
+   "phase": "follicular"
+  },
+  {
+   "date": "2026-08-25",
+   "cycle_day": 21,
+   "phase": "ovulatory"
+  },
+  {
+   "date": "2026-08-26",
+   "cycle_day": 22,
+   "phase": "ovulatory"
+  },
+  {
+   "date": "2026-08-27",
+   "cycle_day": 23,
+   "phase": "ovulatory"
+  },
+  {
+   "date": "2026-08-28",
+   "cycle_day": 24,
+   "phase": "luteal"
+  },
+  {
+   "date": "2026-08-29",
+   "cycle_day": 25,
+   "phase": "luteal"
+  },
+  {
+   "date": "2026-08-30",
+   "cycle_day": 26,
+   "phase": "luteal"
+  },
+  {
+   "date": "2026-08-31",
+   "cycle_day": 27,
+   "phase": "luteal"
+  },
+  {
+   "date": "2026-09-01",
+   "cycle_day": 28,
+   "phase": "luteal"
+  },
+  {
+   "date": "2026-09-02",
+   "cycle_day": 29,
+   "phase": "luteal"
+  },
+  {
+   "date": "2026-09-03",
+   "cycle_day": 30,
+   "phase": "luteal"
+  },
+  {
+   "date": "2026-09-04",
+   "cycle_day": 31,
+   "phase": "luteal"
+  },
+  {
+   "date": "2026-09-05",
+   "cycle_day": 32,
+   "phase": "luteal"
+  },
+  {
+   "date": "2026-09-06",
+   "cycle_day": 33,
+   "phase": "luteal"
+  },
+  {
+   "date": "2026-09-07",
+   "cycle_day": 34,
+   "phase": "luteal"
+  },
+  {
+   "date": "2026-09-08",
+   "cycle_day": 35,
+   "phase": "luteal"
+  },
+  {
+   "date": "2026-09-09",
+   "cycle_day": 1,
+   "phase": "menstrual"
+  },
+  {
+   "date": "2026-09-10",
+   "cycle_day": 2,
+   "phase": "menstrual"
+  },
+  {
+   "date": "2026-09-11",
+   "cycle_day": 3,
+   "phase": "menstrual"
+  },
+  {
+   "date": "2026-09-12",
+   "cycle_day": 4,
+   "phase": "menstrual"
+  },
+  {
+   "date": "2026-09-13",
+   "cycle_day": 5,
+   "phase": "menstrual"
+  },
+  {
+   "date": "2026-09-14",
+   "cycle_day": 6,
+   "phase": "menstrual"
+  },
+  {
+   "date": "2026-09-15",
+   "cycle_day": 7,
+   "phase": "follicular"
+  },
+  {
+   "date": "2026-09-16",
+   "cycle_day": 8,
+   "phase": "follicular"
+  },
+  {
+   "date": "2026-09-17",
+   "cycle_day": 9,
+   "phase": "follicular"
+  },
+  {
+   "date": "2026-09-18",
+   "cycle_day": 10,
+   "phase": "follicular"
+  },
+  {
+   "date": "2026-09-19",
+   "cycle_day": 11,
+   "phase": "follicular"
+  },
+  {
+   "date": "2026-09-20",
+   "cycle_day": 12,
+   "phase": "follicular"
+  },
+  {
+   "date": "2026-09-21",
+   "cycle_day": 13,
+   "phase": "ovulatory"
+  },
+  {
+   "date": "2026-09-22",
+   "cycle_day": 14,
+   "phase": "ovulatory"
+  },
+  {
+   "date": "2026-09-23",
+   "cycle_day": 15,
+   "phase": "ovulatory"
+  },
+  {
+   "date": "2026-09-24",
+   "cycle_day": 16,
+   "phase": "luteal"
+  },
+  {
+   "date": "2026-09-25",
+   "cycle_day": 17,
+   "phase": "luteal"
+  },
+  {
+   "date": "2026-09-26",
+   "cycle_day": 18,
+   "phase": "luteal"
+  },
+  {
+   "date": "2026-09-27",
+   "cycle_day": 19,
+   "phase": "luteal"
+  },
+  {
+   "date": "2026-09-28",
+   "cycle_day": 20,
+   "phase": "luteal"
+  },
+  {
+   "date": "2026-09-29",
+   "cycle_day": 21,
+   "phase": "luteal"
+  },
+  {
+   "date": "2026-09-30",
+   "cycle_day": 22,
+   "phase": "luteal"
+  },
+  {
+   "date": "2026-10-01",
+   "cycle_day": 23,
+   "phase": "luteal"
+  },
+  {
+   "date": "2026-10-02",
+   "cycle_day": 24,
+   "phase": "luteal"
+  },
+  {
+   "date": "2026-10-03",
+   "cycle_day": 25,
+   "phase": "luteal"
+  },
+  {
+   "date": "2026-10-04",
+   "cycle_day": 26,
+   "phase": "luteal"
+  },
+  {
+   "date": "2026-10-05",
+   "cycle_day": 27,
+   "phase": "luteal"
+  },
+  {
+   "date": "2026-10-06",
+   "cycle_day": 1,
+   "phase": "menstrual"
+  },
+  {
+   "date": "2026-10-07",
+   "cycle_day": 2,
+   "phase": "menstrual"
+  },
+  {
+   "date": "2026-10-08",
+   "cycle_day": 3,
+   "phase": "menstrual"
+  },
+  {
+   "date": "2026-10-09",
+   "cycle_day": 4,
+   "phase": "menstrual"
+  },
+  {
+   "date": "2026-10-10",
+   "cycle_day": 5,
+   "phase": "menstrual"
+  },
+  {
+   "date": "2026-10-11",
+   "cycle_day": 6,
+   "phase": "menstrual"
+  },
+  {
+   "date": "2026-10-12",
+   "cycle_day": 7,
+   "phase": "follicular"
+  },
+  {
+   "date": "2026-10-13",
+   "cycle_day": 8,
+   "phase": "follicular"
+  },
+  {
+   "date": "2026-10-14",
+   "cycle_day": 9,
+   "phase": "follicular"
+  },
+  {
+   "date": "2026-10-15",
+   "cycle_day": 10,
+   "phase": "follicular"
+  },
+  {
+   "date": "2026-10-16",
+   "cycle_day": 11,
+   "phase": "follicular"
+  },
+  {
+   "date": "2026-10-17",
+   "cycle_day": 12,
+   "phase": "follicular"
+  },
+  {
+   "date": "2026-10-18",
+   "cycle_day": 13,
+   "phase": "follicular"
+  },
+  {
+   "date": "2026-10-19",
+   "cycle_day": 14,
+   "phase": "follicular"
+  },
+  {
+   "date": "2026-10-20",
+   "cycle_day": 15,
+   "phase": "follicular"
+  },
+  {
+   "date": "2026-10-21",
+   "cycle_day": 16,
+   "phase": "follicular"
+  },
+  {
+   "date": "2026-10-22",
+   "cycle_day": 17,
+   "phase": "follicular"
+  },
+  {
+   "date": "2026-10-23",
+   "cycle_day": 18,
+   "phase": "follicular"
+  },
+  {
+   "date": "2026-10-24",
+   "cycle_day": 19,
+   "phase": "ovulatory"
+  },
+  {
+   "date": "2026-10-25",
+   "cycle_day": 20,
+   "phase": "ovulatory"
+  },
+  {
+   "date": "2026-10-26",
+   "cycle_day": 21,
+   "phase": "ovulatory"
+  },
+  {
+   "date": "2026-10-27",
+   "cycle_day": 22,
+   "phase": "luteal"
+  },
+  {
+   "date": "2026-10-28",
+   "cycle_day": 23,
+   "phase": "luteal"
+  },
+  {
+   "date": "2026-10-29",
+   "cycle_day": 24,
+   "phase": "luteal"
+  },
+  {
+   "date": "2026-10-30",
+   "cycle_day": 25,
+   "phase": "luteal"
+  },
+  {
+   "date": "2026-10-31",
+   "cycle_day": 26,
+   "phase": "luteal"
+  },
+  {
+   "date": "2026-11-01",
+   "cycle_day": 27,
+   "phase": "luteal"
+  },
+  {
+   "date": "2026-11-02",
+   "cycle_day": 28,
+   "phase": "luteal"
+  },
+  {
+   "date": "2026-11-03",
+   "cycle_day": 29,
+   "phase": "luteal"
+  },
+  {
+   "date": "2026-11-04",
+   "cycle_day": 30,
+   "phase": "luteal"
+  },
+  {
+   "date": "2026-11-05",
+   "cycle_day": 31,
+   "phase": "luteal"
+  },
+  {
+   "date": "2026-11-06",
+   "cycle_day": 32,
+   "phase": "luteal"
+  },
+  {
+   "date": "2026-11-07",
+   "cycle_day": 33,
+   "phase": "luteal"
+  },
+  {
+   "date": "2026-11-08",
+   "cycle_day": 1,
+   "phase": "menstrual"
+  },
+  {
+   "date": "2026-11-09",
+   "cycle_day": 2,
+   "phase": "menstrual"
+  },
+  {
+   "date": "2026-11-10",
+   "cycle_day": 3,
+   "phase": "menstrual"
+  },
+  {
+   "date": "2026-11-11",
+   "cycle_day": 4,
+   "phase": "menstrual"
+  },
+  {
+   "date": "2026-11-12",
+   "cycle_day": 5,
+   "phase": "menstrual"
+  },
+  {
+   "date": "2026-11-13",
+   "cycle_day": 6,
+   "phase": "menstrual"
+  },
+  {
+   "date": "2026-11-14",
+   "cycle_day": 7,
+   "phase": "follicular"
+  },
+  {
+   "date": "2026-11-15",
+   "cycle_day": 8,
+   "phase": "follicular"
+  },
+  {
+   "date": "2026-11-16",
+   "cycle_day": 9,
+   "phase": "follicular"
+  },
+  {
+   "date": "2026-11-17",
+   "cycle_day": 10,
+   "phase": "follicular"
+  },
+  {
+   "date": "2026-11-18",
+   "cycle_day": 11,
+   "phase": "follicular"
+  },
+  {
+   "date": "2026-11-19",
+   "cycle_day": 12,
+   "phase": "follicular"
+  },
+  {
+   "date": "2026-11-20",
+   "cycle_day": 13,
+   "phase": "follicular"
+  },
+  {
+   "date": "2026-11-21",
+   "cycle_day": 14,
+   "phase": "follicular"
+  },
+  {
+   "date": "2026-11-22",
+   "cycle_day": 15,
+   "phase": "follicular"
+  },
+  {
+   "date": "2026-11-23",
+   "cycle_day": 16,
+   "phase": "follicular"
+  },
+  {
+   "date": "2026-11-24",
+   "cycle_day": 17,
+   "phase": "follicular"
+  },
+  {
+   "date": "2026-11-25",
+   "cycle_day": 18,
+   "phase": "follicular"
+  },
+  {
+   "date": "2026-11-26",
+   "cycle_day": 19,
+   "phase": "follicular"
+  },
+  {
+   "date": "2026-11-27",
+   "cycle_day": 20,
+   "phase": "follicular"
+  },
+  {
+   "date": "2026-11-28",
+   "cycle_day": 21,
+   "phase": "ovulatory"
+  },
+  {
+   "date": "2026-11-29",
+   "cycle_day": 22,
+   "phase": "ovulatory"
+  },
+  {
+   "date": "2026-11-30",
+   "cycle_day": 23,
+   "phase": "ovulatory"
+  },
+  {
+   "date": "2026-12-01",
+   "cycle_day": 24,
+   "phase": "luteal"
+  },
+  {
+   "date": "2026-12-02",
+   "cycle_day": 25,
+   "phase": "luteal"
+  },
+  {
+   "date": "2026-12-03",
+   "cycle_day": 26,
+   "phase": "luteal"
+  },
+  {
+   "date": "2026-12-04",
+   "cycle_day": 27,
+   "phase": "luteal"
+  },
+  {
+   "date": "2026-12-05",
+   "cycle_day": 28,
+   "phase": "luteal"
+  },
+  {
+   "date": "2026-12-06",
+   "cycle_day": 29,
+   "phase": "luteal"
+  },
+  {
+   "date": "2026-12-07",
+   "cycle_day": 30,
+   "phase": "luteal"
+  },
+  {
+   "date": "2026-12-08",
+   "cycle_day": 31,
+   "phase": "luteal"
+  },
+  {
+   "date": "2026-12-09",
+   "cycle_day": 32,
+   "phase": "luteal"
+  },
+  {
+   "date": "2026-12-10",
+   "cycle_day": 33,
+   "phase": "luteal"
+  },
+  {
+   "date": "2026-12-11",
+   "cycle_day": 34,
+   "phase": "luteal"
+  }
+ ]
+}
