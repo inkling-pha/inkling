@@ -21,7 +21,7 @@ from itertools import pairwise
 from statistics import median
 
 from contracts import CheckIn, PhaseEstimate
-from contracts.models import Phase
+from contracts.models import DataSource, Phase
 from signals import store
 
 FLOW = {"light", "medium", "heavy"}  # bleeding that can start a period
@@ -105,12 +105,24 @@ def _phase(cycle_day: int, usual_cycle: int, period_days: int) -> Phase:
     return "follicular" if cycle_day < ovulation_day else "luteal"
 
 
-def estimate_phase(user_id: str, today: date | None = None) -> PhaseEstimate:
-    """Calendar phase from her logged periods; "unknown" when there is nothing to count from."""
+def estimate_phase(
+    user_id: str,
+    today: date | None = None,
+    checkins: dict[date, CheckIn] | None = None,
+    source: DataSource | None = None,
+) -> PhaseEstimate:
+    """Calendar phase from her logged periods; "unknown" when there is nothing to count from.
+
+    Reads her check-ins from the store, unless `checkins` and `source` are passed (the synthetic
+    demo user, whose data never goes in the store).
+    """
     today = today or date.today()
-    checkins = _checkins(user_id, today)
+    if checkins is None:
+        checkins = _checkins(user_id, today)
+    else:
+        checkins = {d: c for d, c in checkins.items() if d <= today}
     found = _periods(checkins)
-    sources = store.data_sources(user_id)
+    sources = store.data_sources(user_id) if source is None else {source}
     estimate = PhaseEstimate(
         user_id=user_id,
         as_of=today,

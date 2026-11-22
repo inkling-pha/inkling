@@ -38,11 +38,11 @@ Update at each integration gate (Nov 15, Nov 19, Dec 4).
 |---|---|---|
 | Contracts + fixtures | real | v0.1 |
 | signals: records + phase estimate | stub | fixture data, synthetic |
-| signals: synthetic Maya | real, not wired | `signals.synthetic` + `data/synthetic/maya.json`: 158 days, 4 cycles + a late current cycle, from mcPHASES aggregates (see docs/data.md). The app still reads the 3-day fixture; switch `get_daily_records` for `synthetic-maya` once #9 merges. |
+| signals: synthetic Maya | real | `signals.synthetic` + `data/synthetic/maya.json`: 158 days, 4 cycles + a late current cycle, from mcPHASES aggregates (see docs/data.md). The app's demo user reads it, dated to end today; her phase is #9's calendar estimate on her check-ins. |
 | signals: Google Health client | real | pulls and caches raw Fitbit data; not yet parsed into `DailyRecord` (see docs/data.md) |
 | rag: retrieve | real, not wired | `rag.retriever`: BM25 over all 60 manifest docs (1,314 chunks), real citations. The agent still imports `rag.stub` until the fertility guard (D25) exists. |
 | agent: respond | stub | wires stubs; no LLM, no routing, no safety checks yet |
-| app | partial | Today (Cycle Clock, source, coverage, limit), check-in with Undo, Ask, and failure/red-flag previews run on the stubs. Check-ins last one session (D13). Red-flag, sync and fallback states are demo previews until the router and fallbacks exist. |
+| app | partial | Today (Cycle Clock, source, coverage, limit), check-in with Undo, Ask, and failure/red-flag previews. The demo user shows synthetic Maya with a calendar phase; the Today card is driven by the phase (D34 proposal), and the nights chart shows the last 7 nights. Check-ins last one session (D13). Red-flag, sync and fallback states are demo previews until the router and fallbacks exist. |
 | evals: rag | partial | 56 questions, 32 dev references; `python -m evals.rag.run` gives Hit@5 and capped Recall@5. Answer metrics wait for generation (see `evals/rag/README.md`). |
 | evals: signals, agent | not started | planned metrics in the timeline's Sprint 2 row |
 | Storage | not started | open decision |
