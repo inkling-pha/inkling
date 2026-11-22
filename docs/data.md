@@ -455,3 +455,44 @@ still hold several rows per day silently multiplies rows and misaligns labels, a
 | `CheckIn.bleeding` | `flow_volume`: Not at all→none, Spotting→spot, Light + Somewhat Light→light, Moderate→medium, Somewhat Heavy + Heavy + Very Heavy→heavy | none |
 | `CheckIn.pain` (0–10) | `cramps` (6 text levels) | Rescale, or change the contract to the same 6 levels? |
 | (new?) respiratory rate | `full_sleep_breathing_rate` | Add in v0.2? Both sources have it |
+
+### Building `DailyRecord`s (`signals/mcphases_records.py`)
+
+Checked 2026-11-21 by running `python -m signals.mcphases_records` on mcPHASES v1.0.0. It prints
+aggregates only; the numbers below come from that output. `--schema` confirmed every column the
+builder reads exists under the name used here.
+
+**What it builds.** One row per (participant, round, day) with a row in `hormones_and_selfreport`,
+then `DailyRecord`s (`source="real"`) and Mira's phase per day (the eval's ground truth). It asserts
+one row per key for every table and after the merge.
+
+| | 2022 | 2024 |
+|---|---|---|
+| Participants / participant-days | 42 / 3,698 | 20 / 1,961 |
+| Days with a phase label | all but 1 | all |
+| `bleeding` missing | 14% | **100%** (no diary in 2024) |
+| `rhr_bpm` missing | 21% | 100% (left out on purpose) |
+| `hrv_rmssd_ms` missing | 23% | 1% |
+| `skin_temp_dev_c` missing | 15% | 7% |
+| `sleep_min` missing | 7% | 0.3% |
+| `steps` missing | 3% | 100% (left out on purpose) |
+
+**Choices made in the builder**
+- **user_id** is `mcphases-<id>-<round>`: each round is its own sequence with its own baselines, and
+  the gap between rounds is never bridged. These ids stay local; they never appear in output.
+- **date** = 2000-01-01 + `day_in_study` days. mcPHASES has no calendar dates; only the differences
+  between dates mean anything, and this date is never shown as real.
+- **HRV night:** a 5-min sample at or after 12:00 counts toward the next day's night (the wake day,
+  like the Fitbit parser). Only 5.4% of samples are after noon, so this barely matters: both rules
+  give a median of 90 samples per night, and 99.7% of HRV nights land on a day with a main sleep.
+- **HRV coverage:** no cutoff applied. Coverage p5/p50/p95 is 0.86 / 0.99 / 1.0, so any reasonable
+  cutoff drops very little. Nights still need 12+ samples, like the Fitbit parser.
+- **checkin:** only `bleeding`. `pain` stays `None` until D25 settles how `cramps` maps to 0–10.
+- **Steps** come out lower than in the EDA (median 5,700 vs ~6,200) because only days with a hormone
+  row are kept.
+
+**Unexplained: 2024 sleep is ~1.7 h longer.** For the 20 people in both rounds, median `sleep_min`
+is 413 in 2022 and 516 in 2024, while HRV (45 vs 50 ms) and temperature deviation (0.0 vs −0.01 °C)
+barely move. Possible causes: season (day ~850 lands around summer 2024) or a 2024 export quirk
+the duplicate rule doesn't catch. It doesn't affect phase evals, since baselines are per round, but
+don't pool raw sleep minutes across rounds.
