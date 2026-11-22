@@ -690,3 +690,261 @@ def test_maya_is_reproducible_and_load_shifts_to_today(tmp_path):
     assert loaded[-1].date == date(2027, 1, 1)
     assert len(loaded) == len(a) and loaded[-1].rhr_bpm == a[-1].rhr_bpm
     assert "truth" in json.loads(path.read_text())
+
+
+# --- mcPHASES records: synthetic tables shaped like the real files (never real data) ---------
+
+from signals import mcphases_records as mr  # noqa: E402
+
+
+def _write(root, name, rows):
+    pd.DataFrame(rows).to_csv(root / f"{name}.csv", index=False)
+
+
+def _synthetic_mcphases(root):
+    """Two people; zz-a has 2022 and 2024 rounds, zz-b only 2022. Includes the documented quirks."""
+    hormones = [
+        {"id": "zz-a", "study_interval": 2022, "day_in_study": 1, "phase": "Menstrual",
+         "flow_volume": "Heavy"},
+        {"id": "zz-a", "study_interval": 2022, "day_in_study": 2, "phase": "Fertility",
+         "flow_volume": None},
+        {"id": "zz-b", "study_interval": 2022, "day_in_study": 1, "phase": "Luteal",
+         "flow_volume": "Not at all"},
+        {"id": "zz-a", "study_interval": 2024, "day_in_study": 850, "phase": "Follicular",
+         "flow_volume": "Spotting / Very Light"},
+    ]  # fmt: skip
+    _write(root, "hormones_and_selfreport", hormones)
+    temp = [  # zz-a night into day 2: two sessions -> median; an exact 0 deviation is missing
+        {"id": "zz-a", "study_interval": 2022, "sleep_start_day_in_study": 1,
+         "sleep_end_day_in_study": 2, "sleep_start_timestamp": "23:00:00",
+         "baseline_relative_sample_sum": 30.0, "temperature_samples": 100},
+        {"id": "zz-a", "study_interval": 2022, "sleep_start_day_in_study": 2,
+         "sleep_end_day_in_study": 2, "sleep_start_timestamp": "14:00:00",
+         "baseline_relative_sample_sum": 10.0, "temperature_samples": 100},
+        {"id": "zz-b", "study_interval": 2022, "sleep_start_day_in_study": 0,
+         "sleep_end_day_in_study": 1, "sleep_start_timestamp": "23:00:00",
+         "baseline_relative_sample_sum": 0.0, "temperature_samples": 100},
+    ]  # fmt: skip
+    _write(root, "computed_temperature", temp + temp[:1])  # an exact duplicate row
+    hrv = []
+    for i in range(6):  # 6 evening samples on day 1 + 6 morning samples on day 2 -> night of day 2
+        hrv.append(
+            {
+                "id": "zz-a",
+                "study_interval": 2022,
+                "day_in_study": 1,
+                "timestamp": f"23:{i * 5:02d}:00",
+                "rmssd": 40.0,
+                "coverage": 0.9,
+            }
+        )
+        hrv.append(
+            {
+                "id": "zz-a",
+                "study_interval": 2022,
+                "day_in_study": 2,
+                "timestamp": f"03:{i * 5:02d}:00",
+                "rmssd": 50.0,
+                "coverage": 0.9,
+            }
+        )
+    hrv.append({"id": "zz-b", "study_interval": 2022, "day_in_study": 1,  # too few samples
+                "timestamp": "02:00:00", "rmssd": 60.0, "coverage": 0.9})  # fmt: skip
+    _write(root, "heart_rate_variability_details", hrv + hrv[:2])
+    sleeps = [  # duplicate session copies (keep the longer), plus a nap that is not main sleep
+        {"id": "zz-a", "study_interval": 2022, "sleep_start_day_in_study": 1,
+         "sleep_end_day_in_study": 2, "sleep_start_timestamp": "23:00:00",
+         "minutesasleep": 400, "mainsleep": True},
+        {"id": "zz-a", "study_interval": 2022, "sleep_start_day_in_study": 1,
+         "sleep_end_day_in_study": 2, "sleep_start_timestamp": "23:00:00",
+         "minutesasleep": 410, "mainsleep": True},
+        {"id": "zz-a", "study_interval": 2022, "sleep_start_day_in_study": 2,
+         "sleep_end_day_in_study": 2, "sleep_start_timestamp": "14:00:00",
+         "minutesasleep": 60, "mainsleep": False},
+    ]  # fmt: skip
+    _write(root, "sleep", sleeps)
+    rhr = [
+        {"id": "zz-a", "study_interval": 2022, "day_in_study": 1, "value": 62.0, "error": 0},
+        {"id": "zz-b", "study_interval": 2022, "day_in_study": 1, "value": 0.0, "error": 100},
+        {"id": "zz-a", "study_interval": 2024, "day_in_study": 850, "value": 70.0, "error": 0},
+        {"id": "zz-a", "study_interval": 2024, "day_in_study": 850, "value": 88.0, "error": 0},
+    ]
+    _write(root, "resting_heart_rate", rhr)
+    steps = [
+        {"id": "zz-a", "study_interval": 2022, "day_in_study": 1, "timestamp": "10:00:00",
+         "steps": 30},
+        {"id": "zz-a", "study_interval": 2022, "day_in_study": 1, "timestamp": "10:01:00",
+         "steps": 12},
+        {"id": "zz-a", "study_interval": 2024, "day_in_study": 850, "timestamp": "10:00:00",
+         "steps": 999},
+    ]  # fmt: skip
+    _write(root, "steps", steps)
+
+
+def _row(frame, user_id, day):
+    return frame[(frame.user_id == user_id) & (frame.day_in_study == day)].iloc[0]
+
+
+def test_mcphases_frame_applies_cleaning_rules(tmp_path):
+    _synthetic_mcphases(tmp_path)
+    frame = mr.build_frame(tmp_path)
+    assert len(frame) == 4 and not frame.duplicated(subset=mr.KEY).any()
+    d1, d2 = _row(frame, "mcphases-zz-a-2022", 1), _row(frame, "mcphases-zz-a-2022", 2)
+    assert d1.rhr_bpm == 62.0 and d1.steps == 42
+    assert d2.skin_temp_dev_c == pytest.approx(0.2)  # median of 0.3 and 0.1
+    assert d2.hrv_rmssd_ms == pytest.approx(45.0)  # evening + morning samples, one night
+    assert d2.sleep_min == 410  # longer copy, nap ignored
+    p2 = _row(frame, "mcphases-zz-b-2022", 1)
+    assert pd.isna(p2.rhr_bpm) and pd.isna(p2.skin_temp_dev_c) and pd.isna(p2.hrv_rmssd_ms)
+    r24 = _row(frame, "mcphases-zz-a-2024", 850)
+    assert pd.isna(r24.rhr_bpm) and pd.isna(r24.steps)  # 2024 RHR and steps are left out
+
+
+def test_mcphases_records_and_labels(tmp_path):
+    _synthetic_mcphases(tmp_path)
+    frame = mr.build_frame(tmp_path)
+    records = mr.to_records(frame)
+    assert all(isinstance(r, DailyRecord) and r.source == "real" for r in records)
+    first = next(r for r in records if r.user_id == "mcphases-zz-a-2022" and r.date == mr.EPOCH
+                 + pd.Timedelta(days=1))  # fmt: skip
+    assert first.checkin.bleeding == "heavy" and first.checkin.pain is None
+    no_diary = next(r for r in records if r.user_id == "mcphases-zz-a-2022" and r.checkin is None)
+    assert no_diary.rhr_bpm is None  # missing stays None, never 0
+    labels = mr.phase_labels(frame)
+    assert sorted(set(labels.values())) == ["follicular", "luteal", "menstrual", "ovulatory"]
+
+
+def test_mcphases_summary_is_aggregates_only(tmp_path):
+    _synthetic_mcphases(tmp_path)
+    out = mr.summary(mr.build_frame(tmp_path), root=tmp_path)
+    assert out["rounds"]["2022"]["participants"] == 2
+    assert out["hrv_dating_check"]["shift_at_12h"] == 1.0
+    text = json.dumps(out, default=str)
+    assert "zz-a" not in text and "zz-b" not in text  # no participant ids in the output
+
+
+def test_mcphases_schema_report_flags_missing_columns(tmp_path):
+    _synthetic_mcphases(tmp_path)
+    (tmp_path / "steps.csv").unlink()
+    report = mr.schema_report(tmp_path)
+    assert report["steps"] == "file missing"
+    assert report["sleep"]["missing"] == []
+
+
+# --- detector: synthetic cycles with a clean luteal rise ------------------------------------
+
+
+from signals import detector  # noqa: E402
+
+DAY0 = date(2026, 1, 1)
+LUTEAL_FROM = 15  # cycle days 15-28 are luteal in these synthetic 28-day cycles
+
+
+def _cycles(n_cycles=3, temp=True, rhr=True, hrv=True, skip=()):
+    records = []
+    for i in range(28 * n_cycles):
+        luteal = i % 28 + 1 >= LUTEAL_FROM
+        if i in skip:
+            continue
+        records.append(
+            DailyRecord(
+                user_id="synthetic",
+                date=DAY0 + timedelta(days=i),
+                skin_temp_dev_c=(0.15 if luteal else -0.1) if temp else None,
+                rhr_bpm=(66.0 if luteal else 63.5) if rhr else None,
+                hrv_rmssd_ms=(42.0 if luteal else 48.0) if hrv else None,
+                source="synthetic",
+            )
+        )
+    return records
+
+
+def _is_luteal(d):
+    return (d - DAY0).days % 28 + 1 >= LUTEAL_FROM
+
+
+def test_detector_finds_the_luteal_rise_after_warm_up():
+    states = detector.detect(_cycles())
+    warm = [s for s in states if (s.date - DAY0).days >= 28]  # after one cycle of baseline
+    decided = [s for s in warm if s.luteal_like is not None]
+    correct = sum(s.luteal_like == _is_luteal(s.date) for s in decided)
+    assert len(decided) / len(warm) > 0.8
+    assert correct / len(decided) > 0.85
+    mid_luteal = next(s for s in warm if (s.date - DAY0).days % 28 + 1 == 20)
+    assert mid_luteal.luteal_like is True and mid_luteal.votes == {
+        "skin_temp_dev_c": 1,
+        "rhr_bpm": 1,
+        "hrv_rmssd_ms": 1,
+    }
+
+
+def test_detector_says_not_enough_data_at_the_start():
+    states = detector.detect(_cycles())
+    assert all(s.luteal_like is None for s in states[: detector.MIN_BASELINE_NIGHTS])
+
+
+def test_detector_uses_whatever_signals_exist():
+    states = detector.detect(_cycles(rhr=False, hrv=False))  # temperature only
+    s = next(s for s in states if (s.date - DAY0).days == 28 + 19)
+    assert set(s.votes) == {"skin_temp_dev_c"} and s.luteal_like is True
+
+
+def test_detector_abstains_without_signal_and_never_looks_ahead():
+    empty = detector.detect(_cycles(temp=False, rhr=False, hrv=False))
+    assert all(s.luteal_like is None and not s.votes for s in empty)
+    full = _cycles()
+    cut = DAY0 + timedelta(days=40)
+    past_only = [r for r in full if r.date <= cut]
+    a = {s.date: s for s in detector.detect(full)}
+    b = {s.date: s for s in detector.detect(past_only)}
+    assert all(a[d] == b[d] for d in b)  # adding future nights changes no past verdict
+
+
+def test_detector_tolerates_missing_nights():
+    states = detector.detect(_cycles(skip=set(range(50, 60))))
+    assert len(states) == 28 * 3 - 10
+
+
+# --- signals eval: scoring helpers and an end-to-end run on synthetic tables ----------------
+
+from evals.signals import run as signals_eval  # noqa: E402
+
+
+def test_eval_scores_and_lag():
+    d = [DAY0 + timedelta(days=i) for i in range(6)]
+    labels = {("u", d[i]): p for i, p in enumerate(["follicular"] * 2 + ["luteal"] * 4)}
+    preds = {("u", d[0]): False, ("u", d[1]): None, ("u", d[2]): False, ("u", d[3]): True,
+             ("u", d[4]): True, ("u", d[5]): True}  # fmt: skip
+    s = signals_eval.score(preds, labels)
+    assert s["coverage"] == round(5 / 6, 3)
+    assert s["sensitivity"] == 0.75 and s["specificity"] == 1.0
+    lag = signals_eval.detection_lag(preds, labels)
+    assert lag["luteal_runs"] == 1 and lag["median_lag_days"] == 1
+
+
+def test_eval_split_is_fixed_and_by_person():
+    ids = [f"person-{i}" for i in range(200)]
+    test = [i for i in ids if signals_eval.is_test(i)]
+    assert test == [i for i in ids if signals_eval.is_test(i)]
+    assert 0.15 < len(test) / len(ids) < 0.45
+
+
+def test_eval_runs_end_to_end_and_prints_no_ids(tmp_path, monkeypatch, capsys):
+    _synthetic_mcphases(tmp_path)
+    build = mr.build_frame
+    monkeypatch.setattr(mr, "build_frame", lambda: build(tmp_path))
+    result = signals_eval.main()
+    assert set(result) >= {"people", "best_params", "train", "test", "test_detection_lag"}
+    out = capsys.readouterr().out
+    assert "zz-a" not in out and "zz-b" not in out
+
+
+def test_eval_bootstrap_intervals_resample_people():
+    same = {"all": [8, 2, 8, 2, 0], "temp_only": [6, 4, 6, 4, 0]}
+    per_person = {f"person-{i}": same for i in range(6)}
+    out = signals_eval.bootstrap(per_person, n=200)
+    assert out["balanced_accuracy_95ci"]["all"] == [0.8, 0.8]  # identical people: no spread
+    assert out["all_minus_set_balanced_accuracy_95ci"]["temp_only"] == [0.2, 0.2]
+    mixed = {"good": {"all": [9, 1, 9, 1, 0]}, "poor": {"all": [5, 5, 5, 5, 0]}}
+    low, high = signals_eval.bootstrap(mixed, n=500)["balanced_accuracy_95ci"]["all"]
+    assert low == 0.5 and high == 0.9  # a resample can draw the same person twice
