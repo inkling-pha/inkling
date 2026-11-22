@@ -625,6 +625,73 @@ def test_recent_birth_control_makes_the_phase_unknown_but_keeps_period_tracking(
     assert cycle.estimate_phase("u1", date(2026, 10, 15)).phase == "follicular"
 
 
+# --- synthetic Maya ------------------------------------------------------------------------
+
+from itertools import pairwise  # noqa: E402
+from statistics import mean  # noqa: E402
+
+from signals import synthetic  # noqa: E402
+
+MAYA_END = date(2026, 12, 11)
+
+
+def _maya():
+    return synthetic.generate(MAYA_END)
+
+
+def test_maya_is_synthetic_and_ends_mid_late_cycle():
+    records, truth = _maya()
+    total = sum(synthetic.CYCLE_LENGTHS) + synthetic.CURRENT_CYCLE_DAY
+    assert len(records) == len(truth) == total
+    assert all(r.user_id == "synthetic-maya" and r.source == "synthetic" for r in records)
+    assert records[-1].date == MAYA_END
+    assert truth[-1]["cycle_day"] == synthetic.CURRENT_CYCLE_DAY
+    assert synthetic.CURRENT_CYCLE_DAY > max(synthetic.CYCLE_LENGTHS) - 2  # late for her
+
+
+def test_maya_period_starts_from_checkins_match_her_cycles():
+    records, _ = _maya()
+    flow = [
+        r.date for r in records if r.checkin and r.checkin.bleeding in {"light", "medium", "heavy"}
+    ]
+    starts = [d for d in flow if not any(0 < (d - f).days <= 10 for f in flow)]
+    gaps = [(b - a).days for a, b in pairwise(starts)]
+    assert gaps == synthetic.CYCLE_LENGTHS
+    assert all(27 <= n <= 36 for n in gaps)
+
+
+def test_maya_luteal_shift_matches_the_mcphases_aggregates():
+    records, truth = _maya()
+    phase = {t["date"]: t["phase"] for t in truth}
+
+    def mean_in(field, wanted):
+        xs = [getattr(r, field) for r in records if phase[r.date.isoformat()] == wanted]
+        return mean(x for x in xs if x is not None)
+
+    for field, shift in synthetic.LUTEAL_SHIFT.items():
+        got = mean_in(field, "luteal") - mean_in(field, "follicular")
+        assert abs(got - shift) < abs(shift) * 0.5, field
+
+
+def test_maya_has_realistic_gaps_and_a_tired_last_week():
+    records, _ = _maya()
+    missed = sum(r.rhr_bpm is None for r in records) / len(records)
+    assert 0.03 < missed < 0.2
+    assert all(r.checkin is None or r.checkin.energy <= 2 for r in records[-5:])
+    assert any(r.checkin is None for r in records)  # she skips some check-ins
+
+
+def test_maya_is_reproducible_and_load_shifts_to_today(tmp_path):
+    a, _ = synthetic.generate(MAYA_END)
+    b, _ = synthetic.generate(MAYA_END)
+    assert a == b
+    path = synthetic.write(MAYA_END, tmp_path / "maya.json")
+    loaded = synthetic.load(path, end=date(2027, 1, 1))
+    assert loaded[-1].date == date(2027, 1, 1)
+    assert len(loaded) == len(a) and loaded[-1].rhr_bpm == a[-1].rhr_bpm
+    assert "truth" in json.loads(path.read_text())
+
+
 # --- mcPHASES records: synthetic tables shaped like the real files (never real data) ---------
 
 from signals import mcphases_records as mr  # noqa: E402

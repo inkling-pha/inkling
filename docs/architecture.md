@@ -285,11 +285,12 @@ Update at each integration gate (Nov 15, Nov 19, Dec 4).
 | signals: sync | real, not wired | `sync(user_id)` pulls new days (PR #9). The app doesn't call it yet |
 | signals: phase estimate | real (calendar) | From logged periods; `unknown` without one (PR #9). Doesn't use the detector yet. Ovulation fields stay empty (D34) |
 | signals: luteal-rise detector | real, not wired | `signals.detector`: temperature, RHR and HRV vs her own 28-day baseline, look-back only (D15, D34). Held-out eval in `evals/signals/run.py` (PR #11) |
+| signals: synthetic Maya | real | `signals.synthetic` + `data/synthetic/maya.json`: 158 days, 4 cycles + a late current cycle, from mcPHASES aggregates (see docs/data.md), PR #12. The app's demo user reads it, dated to end today; her phase is the calendar estimate (PR #9) on her check-ins. |
 | signals: mcPHASES records | real | `signals.mcphases_records`: cleaned `DailyRecord`s + phase labels for offline evals only (see docs/data.md) |
 | signals: Google Health client | real | Pulls and caches raw Fitbit data |
 | rag: retrieve | real, not wired | `rag.retriever`: BM25 over all 60 docs (1,314 chunks), real citations. The agent still uses `rag.stub` until the fertility guard (D25) exists |
 | agent: respond | stub | Wires stubs. No LLM, no pipeline, no safety checks yet |
-| app | partial | Today (Cycle Clock, source, coverage, limit), check-in with Undo, Ask, and failure/red-flag previews run on the stubs. Check-ins last one session (D13). Red-flag, sync and fallback states are demo previews until the router and fallbacks exist |
+| app | partial | Today (Cycle Clock, source, coverage, limit), check-in with Undo, Ask, and failure/red-flag previews. The demo user shows synthetic Maya with a calendar phase; the Today card is driven by the phase (D34 proposal), and the nights chart shows the last 7 nights. Check-ins last one session (D13). Red-flag, sync and fallback states are demo previews until the router and fallbacks exist. |
 | evals: rag | partial | 56 questions, 32 dev references. `python -m evals.rag.run` gives Hit@5 and capped Recall@5. Answer metrics wait for generation (see `evals/rag/README.md`) |
 | evals: signals | partial | `python -m evals.signals.run`: held-out balanced accuracy 0.64, 95% CI 0.55–0.73 (luteal vs not, Mira labels), coverage 0.61, median lag 2 days. Ovulation-day error and calibration not yet. See `evals/signals/README.md` |
 | evals: agent | not started | Planned in the timeline's Sprint 2 |

@@ -69,21 +69,34 @@ def warm_streak(records: list[DailyRecord]) -> int:
 
 
 def today_summary(est: PhaseEstimate, records: list[DailyRecord]) -> tuple[str, str]:
-    """(headline, body) for the Today card."""
-    window = window_text(est)
-    if window is None:
+    """(headline, body) for the Today card.
+
+    Driven by the phase when there's no window (D34's proposal): the calendar estimate never has
+    an ovulation window (D25), so waiting for one would say "not enough data" forever. No future
+    dates are shown either way.
+    """
+    if est.phase == "unknown":
         return (
             "Not enough data yet",
-            "Inkling needs more nights before it can show a likely window. "
-            "Wearing your Fitbit tonight will help.",
+            "Inkling needs a logged period and more nights before it can place you in your "
+            "cycle. Checking in and wearing your Fitbit tonight will help.",
         )
-    level = f"{confidence_word(est.confidence)} confidence. Likely window {window}."
+    window = window_text(est)
+    if window is None:
+        day = f"Day {est.cycle_day} · " if est.cycle_day else ""
+        level = f"{day}{phase_label(est)} · {confidence_word(est.confidence)} confidence."
+    else:
+        level = f"{confidence_word(est.confidence)} confidence. Likely window {window}."
     streak = warm_streak(records)
+    if window is None and streak < 2:
+        warm = f"{streak or 'No'} warm night{'' if streak == 1 else 's'} in a row"
+        return (phase_label(est), f"{level} {warm} isn’t a pattern yet.")
     if streak >= 2:
+        pattern = "That pattern often follows ovulation."
         return (
             f"Skin temp above your usual for {streak} nights",
-            f"That pattern often follows ovulation. {level} "
-            "Stress, sleep or getting sick can look similar.",
+            (f"{level} {pattern}" if window is None else f"{pattern} {level}")
+            + " Stress, sleep or getting sick can look similar.",
         )
     return (
         "Too early to tell",
