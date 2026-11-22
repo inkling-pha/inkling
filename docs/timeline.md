@@ -104,7 +104,7 @@ Build a thin end-to-end slice first, then make each layer real. A polished UI ov
 
 ### Nov 12–15 · Sprint 0: walking skeleton
 **Signals**
-- [ ] Synthetic Maya: 4 cycles of 27–36 days with matching RHR and temperature patterns (`data/synthetic/`)
+- [ ] Synthetic Maya: 4 cycles of 27–36 days with matching RHR and temperature patterns (`data/synthetic/`) (PR #12, in review)
 - [x] Stub PhaseEstimate (`signals/stub.py`)
 - [ ] mcPHASES → `DailyRecord`s: apply the cleaning rules in [data.md](data.md#cleaning) (one row per participant-day, 2024 RHR and steps excluded), after contracts v0.1 settle D25
 
@@ -116,13 +116,13 @@ Build a thin end-to-end slice first, then make each layer real. A polished UI ov
 **Agent / Safety / App**
 - [x] App shell + check-in screen (Today, Check-in with Undo, Ask; check-ins last one session until storage, D13)
 - [ ] Agent loop calling the signals and RAG stubs with the LLM (the stub wiring exists; no LLM yet)
-- [ ] Storage layer (D13: SQLite proposed)
+- [x] Storage layer (D13): SQLite, Fitbit sync and check-ins (PRs #8, #9)
 
 **Gate, Sun Nov 15:** Maya asks the hero question and gets an answer with one evidence chip, end to end.
 
 ### Nov 16–19 · Sprint 1: make it real
 **Signals**
-- [ ] Baselines + temperature-shift / RHR-rise detector
+- [x] Baselines + temperature-shift / RHR-rise detector (`signals/detector.py`, PR #11)
 - [ ] Phase rules v1 tuned on mcPHASES (D15: rules first, ML is a stretch)
 - [ ] Cycle history (`CycleHistory`): feeds the Trends tab and the context card (D32, D14)
 - [ ] Cycle Clock with a narrowing range
@@ -161,7 +161,7 @@ UX candidates (not scheduled; raise at standup):
 
 ### Nov 21–25 · Sprint 2: evals (async, Thanksgiving week)
 **Signals**
-- [ ] Held-out participant eval: phase accuracy, ovulation-day error in days, calibration of the range
+- [ ] Held-out participant eval: phase accuracy, ovulation-day error in days, calibration of the range. Partly done (PR #11): luteal vs not, balanced accuracy 0.64 on 15 held-out people; ovulation-day error and calibration still to do
 - [ ] Missing-data behavior
 
 **RAG**
