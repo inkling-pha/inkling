@@ -1012,3 +1012,26 @@ def test_phase_model_eval_training_rows_skip_unlabeled_and_no_signal_days():
     }
     X, y = pm_eval._training_rows(records, labels)
     assert len(X) == 1 and y == [1]
+
+
+def test_best_threshold_beats_a_flat_half_on_imbalanced_labels():
+    """The real mcPHASES run showed sensitivity 0.21 at a flat 0.5 threshold on a 33.5% luteal
+    train set — a symptom of class imbalance, not a bad model. Thinning out luteal labels here
+    reproduces that imbalance on synthetic data, and the grid should pick a better threshold."""
+    records = {"u": _cycles(n_cycles=3)}
+    deltas = pm.deltas_by_day(records["u"])
+    labels = {}
+    for day, row in deltas.items():
+        if all(v is None for v in row.values()):
+            continue
+        if _is_luteal(day) and (day - DAY0).days % 5 != 0:
+            continue  # keep only a fifth of luteal days labeled: an imbalanced train set
+        labels[("u", day)] = "luteal" if _is_luteal(day) else "follicular"
+
+    X, y = pm_eval._training_rows(records, labels)
+    _l2, threshold, model, train_score = pm_eval._best_l2_and_threshold(records, labels, X, y)
+    assert threshold in pm_eval.THRESHOLD_GRID
+
+    half_preds = pm_eval._predict_all(records, model, 0.5)
+    half_score = signals_eval.score(half_preds, labels)
+    assert train_score["balanced_accuracy"] >= (half_score["balanced_accuracy"] or 0)
