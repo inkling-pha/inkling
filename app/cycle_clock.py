@@ -17,6 +17,7 @@ INK, BODY, PLUM, WINE, TRACK, WARM, COOL = (
     "#8d8297",
 )
 DEFAULT_DIAL_DAYS = 30  # the contract has no cycle length yet, so the dial is drawn at 30 days
+DIAL_ROOM_DAYS = 3  # past the default, keep room after today so it never lands back on Day 1
 
 
 def _point(day: float, days: int, r: float) -> tuple[float, float]:
@@ -37,7 +38,7 @@ def _arc(start: float, end: float, days: int, r: float, color: str, width: int) 
 def cycle_clock_svg(est: PhaseEstimate, records: list[DailyRecord]) -> str:
     """The dial: today, any logged bleeding, and the likely window, all from the contracts."""
     day = est.cycle_day
-    days = max(DEFAULT_DIAL_DAYS, day or 0)
+    days = max(DEFAULT_DIAL_DAYS, (day or 0) + DIAL_ROOM_DAYS)
     start = est.as_of - timedelta(days=(day or 1) - 1)
     day_of = lambda d: (d - start).days + 1  # noqa: E731
     parts = [f'<circle cx="150" cy="150" r="118" fill="none" stroke="{TRACK}" stroke-width="22"/>']
@@ -70,10 +71,22 @@ def cycle_clock_svg(est: PhaseEstimate, records: list[DailyRecord]) -> str:
         f'fill="{INK}">{title if day else "Day –"}</text>'
         f'<text x="150" y="190" text-anchor="middle" font-size="16" font-weight="600" '
         f'fill="{PLUM}">{escape(label)}</text>'
+        + _legend(est.ovulation_window is not None)
+        + "</svg>"
+    )
+
+
+def _legend(has_window: bool) -> str:
+    """Today, plus the likely window only when one is drawn."""
+    today = (
+        f'<circle cx="{192 if has_window else 136}" cy="317" r="6" fill="{INK}"/>'
+        f'<text x="{204 if has_window else 148}" y="322" font-size="14" fill="{BODY}">Today</text>'
+    )
+    if not has_window:
+        return today
+    return (
         f'<rect x="58" y="312" width="18" height="10" rx="3" fill="{PLUM}"/>'
-        f'<text x="82" y="322" font-size="14" fill="{BODY}">Likely window</text>'
-        f'<circle cx="192" cy="317" r="6" fill="{INK}"/>'
-        f'<text x="204" y="322" font-size="14" fill="{BODY}">Today</text></svg>'
+        f'<text x="82" y="322" font-size="14" fill="{BODY}">Likely window</text>' + today
     )
 
 
