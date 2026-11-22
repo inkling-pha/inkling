@@ -58,16 +58,17 @@ def _has(text: str, *patterns: str) -> bool:
     return any(re.search(p, text) for p in patterns)
 
 
-def _affirmed(text: str, *patterns: str, window: int = 15) -> bool:
-    """Like _has, but a nearby "not"/"n't"/"no" before the match means it doesn't count.
+def _affirmed(text: str, *patterns: str, window: int = 20) -> bool:
+    """Like _has, but a nearby negation or question word before the match means it doesn't count.
 
     Only worth the extra care where getting it backwards would suppress a red flag (missing one
     is the worst failure, D5) — general negation handling is still an LLM-extractor job (D5).
     """
+    disqualifying = re.compile(r"\b(not|n't|no|could|might|may|possible)\b")
     for p in patterns:
         for m in re.finditer(p, text):
             before = text[max(0, m.start() - window) : m.start()]
-            if not re.search(r"\b(not|n't|no)\b\s*$", before):
+            if not disqualifying.search(before):
                 return True
     return False
 
@@ -86,9 +87,9 @@ def extract_facts(text: str) -> SafetyFacts:
     """v1 keyword extraction. Conservative: only sets a fact when the text is fairly explicit."""
     t = text.lower()
 
-    soaking = _has(
+    soaking = _affirmed(
         t,
-        r"soak(ing|ed)?\s+(a |an |through a |through )?(pad|tampon)",
+        r"soak(ing|ed)?\s+(a |an |through a |through )?(pad|tampon)s?",
         r"(pad|tampon)s?\s+every\s+hour",
         r"clots?\s+(bigger|larger)\s+than\s+a\s+quarter",
     )
@@ -99,7 +100,7 @@ def extract_facts(text: str) -> SafetyFacts:
     faint_or_dizzy = _has(
         t, r"faint(ed|ing)?|pass(ed|ing)? out|black(ed)? out|dizz(y|iness)|light.?headed"
     )
-    tampon = _has(t, r"\btampon\b")
+    tampon = _has(t, r"\btampons?\b")
     # FDA's tampon-safety page lists sudden high fever, rash, vomiting, diarrhea, and
     # fainting/dizziness as TSS signs, any one of which alone is "seek medical attention
     # immediately" — not a required combination. A lone rash during tampon use gets its own
@@ -110,24 +111,41 @@ def extract_facts(text: str) -> SafetyFacts:
     feels_feverish = _has(
         t, r"feverish|running a fever|have a fever|feel(ing)?\b.{0,20}\b(warm|hot|feverish)\b"
     )
-    temp_match = (
-        re.search(r"(\d{2,3}(?:\.\d)?)\s*(?:°|degrees)?\s*f\b", t)
-        or re.search(r"temp(erature)?.{0,15}?(\d{2,3}(?:\.\d)?)", t)
-        or re.search(r"fever.{0,30}?(\d{2,3}(?:\.\d)?)", t)
+    temp_f_match = re.search(r"(\d{2,3}(?:\.\d)?)\s*(?:°|degrees)?\s*f\b", t)
+    temp_c_match = re.search(r"(\d{2,3}(?:\.\d)?)\s*(?:°|degrees)?\s*c\b", t)
+    temp_unmarked_match = re.search(r"temp(erature)?.{0,15}?(\d{2,3}(?:\.\d)?)", t) or re.search(
+        r"fever.{0,30}?(\d{2,3}(?:\.\d)?)", t
     )
     reported_temp = None
-    if temp_match:
-        digits = next(g for g in reversed(temp_match.groups()) if g and re.match(r"^\d", g))
-        reported_temp = float(digits)
+    if temp_f_match:
+        reported_temp = float(temp_f_match.group(1))
+    elif temp_c_match:
+        reported_temp = float(temp_c_match.group(1)) * 9 / 5 + 32
+    elif temp_unmarked_match:
+        digits = next(
+            g for g in reversed(temp_unmarked_match.groups()) if g and re.match(r"^\d", g)
+        )
+        value = float(digits)
+        # No unit given. No real fever reads below ~50°F, so a bare number that low is Celsius.
+        reported_temp = value * 9 / 5 + 32 if value < 50 else value
     # A reported number is its own evidence — FDA's TSS fever sign (102°F+) and the CDC general
     # threshold (100.4°F) don't require "feverish" wording too.
     feels_feverish = feels_feverish or (reported_temp is not None and reported_temp >= 100.4)
 
-    days_since = _number_before(t, "days?")
-    months_since = _number_before(t, "months?")
-    if months_since is not None and days_since is None:
-        days_since = months_since * 30
-    no_period_context = _has(t, r"no period|haven'?t (had|gotten) (my |a )?period|missed my period")
+    period_phrase = re.search(
+        r"no period|haven'?t (had|gotten) (my |a )?period|missed my period", t
+    )
+    days_since = None
+    if period_phrase:
+        # Read the day/month count near the period phrase, not the first "N days"/"N months"
+        # anywhere in the message (e.g. "...period in 4 months and I've been tired for 3 days").
+        nearby = t[max(0, period_phrase.start() - 30) : period_phrase.end() + 30]
+        days_near = _number_before(nearby, "days?")
+        months_near = _number_before(nearby, "months?")
+        readings = [
+            d for d in (days_near, months_near * 30 if months_near is not None else None) if d
+        ]
+        days_since = max(readings) if readings else None
 
     excludes_amenorrhea_rule = _affirmed(t, r"pregnan|breastfeed|nursing|perimenopaus|menopaus")
 
@@ -135,9 +153,9 @@ def extract_facts(text: str) -> SafetyFacts:
         t,
         r"severe (pelvic|abdominal)? ?pain",
         r"pain.{0,20}(can'?t function|won'?t stop|unbearable)",
-    )
-    otc_no_help = _has(
-        t,
+        r"(severe|unbearable) cramps?",
+        r"cramps?.{0,20}(can'?t function|won'?t stop|unbearable)",
+        # OTC pain relief not helping implies pain severe enough to need it in the first place.
         r"(advil|ibuprofen|tylenol|midol|otc|pain reliever|medication)"
         r".{0,20}(didn'?t|doesn'?t|not).{0,10}help",
     )
@@ -175,9 +193,9 @@ def extract_facts(text: str) -> SafetyFacts:
         feels_feverish=feels_feverish and not tss_combo,
         reported_temp_f=reported_temp,
         fainting_or_severe_dizziness=faint_or_dizzy and not tss_combo,
-        days_since_period=days_since if no_period_context else None,
+        days_since_period=days_since,
         pregnant_breastfeeding_or_perimenopause=excludes_amenorrhea_rule,
-        severe_unrelieved_pelvic_pain=severe_pain and (otc_no_help or "severe" in t),
+        severe_unrelieved_pelvic_pain=severe_pain,
         bleeding_between_periods_or_postmenopause=between_periods,
         irregular_cycle_pattern=irregular,
         new_discharge_symptom=discharge,
@@ -210,13 +228,6 @@ def assess(facts: SafetyFacts) -> SafetyResult:
             "syndrome warning sign, even with nothing else going on — FDA says to stop using "
             "the tampon and get care now, not wait for other symptoms.",
             "FDA: The facts on tampons and tampon safety",
-        )
-    if facts.feels_feverish and facts.reported_temp_f is None:
-        return SafetyResult(
-            "red_flag",
-            "Feeling feverish is worth checking rather than guessing at — what's your temperature "
-            "if you've taken it? Without a number or another sign, this isn't enough to judge.",
-            None,
         )
     if facts.reported_temp_f is not None and facts.reported_temp_f >= 100.4:
         return SafetyResult(
@@ -259,6 +270,14 @@ def assess(facts: SafetyFacts) -> SafetyResult:
             "OWH: Period problems",
         )
 
+    if facts.feels_feverish and facts.reported_temp_f is None:
+        return SafetyResult(
+            "caution",
+            "Feeling feverish is worth checking rather than guessing at — what's your temperature "
+            "if you've taken it? Without a number or another sign, this isn't enough to judge, "
+            "but worth mentioning to a clinician if it continues.",
+            None,
+        )
     if facts.irregular_cycle_pattern:
         return SafetyResult(
             "caution",

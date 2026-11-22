@@ -92,12 +92,14 @@ def respond(
 ) -> AgentResponse:
     est = estimate_phase(user_id)
 
-    if is_fertility_timing(question):
-        return _fertility_decline(mode, est)
-
+    # Safety rules decide first (CLAUDE.md), even over the fertility guard: a message that's both
+    # fertility-timing and a red flag ("when's my fertile window? also I passed out") must escalate.
     result = safety.assess(safety.extract_facts(question))
     if result.safety == "red_flag":
         return _red_flag_response(mode, result)
+
+    if is_fertility_timing(question):
+        return _fertility_decline(mode, est)
 
     if mode == "summary":
         return stub_respond(question, user_id, mode).model_copy(update={"safety": result.safety})
