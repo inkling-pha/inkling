@@ -226,17 +226,33 @@ def parse_steps(points: list[dict]) -> dict[date, int]:
     return out
 
 
-def parse_daily_records(user_id: str, raw_dir: Path = RAW_DIR) -> list[DailyRecord]:
-    """Every day that has at least one signal in the cache, oldest first."""
-    sleep = load_raw("sleep", raw_dir)
+# The Fitbit data types a DailyRecord is built from, and which record fields each one feeds.
+# HRV is computed from the samples inside the main sleep, so it needs sleep too.
+DATA_TYPES = (
+    "daily-resting-heart-rate",
+    "daily-sleep-temperature-derivations",
+    "heart-rate-variability",
+    "sleep",
+    "steps",
+)
+FIELDS_BY_TYPE = {
+    "daily-resting-heart-rate": ("rhr_bpm",),
+    "daily-sleep-temperature-derivations": ("skin_temp_dev_c",),
+    "heart-rate-variability": ("hrv_rmssd_ms",),
+    "sleep": ("sleep_min", "hrv_rmssd_ms"),
+    "steps": ("steps",),
+}
+
+
+def records_from_points(user_id: str, points: dict[str, list[dict]]) -> list[DailyRecord]:
+    """DailyRecords from points keyed by data type. A type that is absent gives None fields."""
+    sleep = points.get("sleep", [])
     signals = {
-        "rhr_bpm": parse_resting_hr(load_raw("daily-resting-heart-rate", raw_dir)),
-        "hrv_rmssd_ms": parse_hrv(load_raw("heart-rate-variability", raw_dir), sleep),
-        "skin_temp_dev_c": parse_skin_temp(
-            load_raw("daily-sleep-temperature-derivations", raw_dir)
-        ),
+        "rhr_bpm": parse_resting_hr(points.get("daily-resting-heart-rate", [])),
+        "hrv_rmssd_ms": parse_hrv(points.get("heart-rate-variability", []), sleep),
+        "skin_temp_dev_c": parse_skin_temp(points.get("daily-sleep-temperature-derivations", [])),
         "sleep_min": parse_sleep(sleep),
-        "steps": parse_steps(load_raw("steps", raw_dir)),
+        "steps": parse_steps(points.get("steps", [])),
     }
     days = sorted(set().union(*signals.values()))
     return [
@@ -248,3 +264,8 @@ def parse_daily_records(user_id: str, raw_dir: Path = RAW_DIR) -> list[DailyReco
         )
         for day in days
     ]
+
+
+def parse_daily_records(user_id: str, raw_dir: Path = RAW_DIR) -> list[DailyRecord]:
+    """Every day that has at least one signal in the whole raw cache, oldest first."""
+    return records_from_points(user_id, {t: load_raw(t, raw_dir) for t in DATA_TYPES})
