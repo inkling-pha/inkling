@@ -283,11 +283,14 @@ Update at each integration gate (Nov 15, Nov 19, Dec 4).
 | Contracts + fixtures | real | v0.1. v0.2 proposed above |
 | signals: records | real | Fitbit parsed into `DailyRecord` and stored (PR #8). Users with nothing stored get the fixture |
 | signals: sync | real, not wired | `sync(user_id)` pulls new days (PR #9). The app doesn't call it yet |
-| signals: phase estimate | real (calendar) | From logged periods; `unknown` without one (PR #9). Wearable rules not started. Ovulation fields stay empty (D34) |
+| signals: phase estimate | real (calendar) | From logged periods; `unknown` without one (PR #9). Doesn't use the detector yet. Ovulation fields stay empty (D34) |
+| signals: luteal-rise detector | real, not wired | `signals.detector`: temperature, RHR and HRV vs her own 28-day baseline, look-back only (D15, D34). Held-out eval in `evals/signals/run.py` (PR #11) |
+| signals: mcPHASES records | real | `signals.mcphases_records`: cleaned `DailyRecord`s + phase labels for offline evals only (see docs/data.md) |
 | signals: Google Health client | real | Pulls and caches raw Fitbit data |
 | rag: retrieve | real, not wired | `rag.retriever`: BM25 over all 60 docs (1,314 chunks), real citations. The agent still uses `rag.stub` until the fertility guard (D25) exists |
 | agent: respond | stub | Wires stubs. No LLM, no pipeline, no safety checks yet |
-| app | partial | Today, Check-in with Undo, Ask, and failure/red-flag previews run on the stubs. Check-ins last one session. Red-flag, sync and fallback states are demo previews |
+| app | partial | Today (Cycle Clock, source, coverage, limit), check-in with Undo, Ask, and failure/red-flag previews run on the stubs. Check-ins last one session (D13). Red-flag, sync and fallback states are demo previews until the router and fallbacks exist |
 | evals: rag | partial | 56 questions, 32 dev references. `python -m evals.rag.run` gives Hit@5 and capped Recall@5. Answer metrics wait for generation (see `evals/rag/README.md`) |
-| evals: signals, agent | not started | Planned in the timeline's Sprint 2 |
+| evals: signals | partial | `python -m evals.signals.run`: held-out balanced accuracy 0.64, 95% CI 0.55–0.73 (luteal vs not, Mira labels), coverage 0.61, median lag 2 days. Ovulation-day error and calibration not yet. See `evals/signals/README.md` |
+| evals: agent | not started | Planned in the timeline's Sprint 2 |
 | Storage | real, not wired | SQLite (D13), PRs #8–#9. The app doesn't save check-ins to it yet |
