@@ -45,7 +45,7 @@ Other class dates: Quiz 2 on Fri Nov 20; no class on Fri Nov 27 (Thanksgiving).
 
 ### Oct 26–30 · Week 8 design studio
 **All**
-- [ ] Pick the hero question: the one question the demo is built around
+- [x] Pick the hero question: the one question the demo is built around. For now: "My period is late again and I'm exhausted" (D36)
 - [ ] Agree on contracts v0.1, including the check-in fields (see D5) and the mcPHASES questions (see D25)
 
 **Signals**
@@ -55,11 +55,11 @@ Other class dates: Quiz 2 on Fri Nov 20; no class on Fri Nov 27 (Thanksgiving).
 
 **RAG**
 - [x] Collect 30–50 source documents
-- [ ] Pick embeddings + vector store (D12). BM25 baseline already meets Hit@5 (0.83); compare candidates with `python -m evals.rag.run`
+- [x] Retrieval method (D12): BM25 for the demo and showcase; hybrid only if time after freeze
 - [x] Define the RAG metrics
 
 **Agent / Safety / App**
-- [ ] Architecture diagram v1 (start from [architecture.md](architecture.md))
+- [x] Architecture diagram v0.2, pending team review (Lucid, linked from [architecture.md](architecture.md))
 - [x] Red-flag list from ACOG guidance, with citations (D5) (sourced from D26's whitelist instead
   of ACOG — CDC/FDA/OWH/NICHD; see [safety_rules.md](safety_rules.md), D29)
 - [ ] Storyboard + lo-fi prototype for the studio
@@ -105,7 +105,7 @@ Build a thin end-to-end slice first, then make each layer real. A polished UI ov
 
 ### Nov 12–15 · Sprint 0: walking skeleton
 **Signals**
-- [ ] Synthetic Maya: 4 cycles of 27–36 days with matching RHR and temperature patterns (`data/synthetic/`)
+- [x] Synthetic Maya: 4 cycles of 27–36 days with matching RHR and temperature patterns (`data/synthetic/`, PR #12)
 - [x] Stub PhaseEstimate (`signals/stub.py`)
 - [ ] mcPHASES → `DailyRecord`s: apply the cleaning rules in [data.md](data.md#cleaning) (one row per participant-day, 2024 RHR and steps excluded), after contracts v0.1 settle D25
 
@@ -117,14 +117,16 @@ Build a thin end-to-end slice first, then make each layer real. A polished UI ov
 **Agent / Safety / App**
 - [x] App shell + check-in screen (Today, Check-in with Undo, Ask; check-ins last one session until storage, D13)
 - [ ] Agent loop calling the signals and RAG stubs with the LLM (the stub wiring exists; no LLM yet)
-- [ ] Storage layer (D13)
+- [x] Storage layer (D13): SQLite, Fitbit sync and check-ins (PRs #8, #9)
 
 **Gate, Sun Nov 15:** Maya asks the hero question and gets an answer with one evidence chip, end to end.
 
 ### Nov 16–19 · Sprint 1: make it real
 **Signals**
-- [ ] Baselines + temperature-shift / RHR-rise detector
-- [ ] Phase model v1 on mcPHASES (D15)
+- [x] Baselines + temperature-shift / RHR-rise detector (`signals/detector.py`, PR #11)
+- [ ] Phase rules v1 tuned on mcPHASES (D15: rules first)
+- [ ] ML phase model on mcPHASES, held-out eval vs the rules; check the DUA on trained weights first (D15)
+- [ ] Cycle history (`CycleHistory`): feeds the Trends tab and the context card (D32, D14)
 - [ ] Cycle Clock with a narrowing range
 
 **RAG**
@@ -134,12 +136,23 @@ Build a thin end-to-end slice first, then make each layer real. A polished UI ov
 - [ ] Evidence chip UI
 - [ ] Birth control content + missed-log follow-up
 
+**All**
+- [x] Team picks: output checks (D31: code checks at runtime, LLM judge offline only) and retrieval method (D12: BM25)
+- [ ] Contracts v0.2 PR (D33): `response_type`, `decline_reason`, `CycleHistory`, `save_checkin`, `sync`
+- [ ] Contracts v0.2: `PhaseEstimate.next_period_window`, drop `ovulation_est_date`, past-only `ovulation_window` (D34); birth control method history (D35)
+- [ ] Signals: compute the next-period and look-back ovulation windows (D34); phases by birth control method (D35)
+- [ ] App: "Next period likely …" on the Today card (D34); birth control question at onboarding and in settings (D35)
+- [ ] Red-flag rules: birth control exception for the 90+ days rule (D35)
+
 **Agent / Safety / App**
-- [x] Fertility guard (D25), before the agent uses the real retriever: input rule declines fertility-timing questions, regex check (`FERTILITY_TIMING`) on the answer and every cited snippet (`agent/fertility_guard.py`; no prompt instruction yet, since there's no LLM)
-- [x] Switch the agent to `rag.retriever.retrieve` and update the stubbed-vs-real table in architecture.md (`agent/router.py`, with a canned fallback if the corpus isn't fetched)
-- [x] Red-flag router v1 (D5) (`agent/safety.py` + `agent/router.py`; rule list proposed as D29, keyword extraction v1 pending an LLM extractor, D14)
-- [ ] Education vs summary routing (D7)
-- [ ] Clinician summary, if kept (D7)
+- [x] Fertility guard (D25), before the agent uses the real retriever: input rule declines fertility-timing questions, regex check (`FERTILITY_TIMING`) on the answer and every cited snippet (`agent/fertility_guard.py`; `red-flag-router` branch, PR #10 open; no prompt instruction yet, since there's no LLM)
+- [x] Switch the agent to `rag.retriever.retrieve` and update the stubbed-vs-real table in architecture.md (`agent/router.py`, with a canned fallback if the corpus isn't fetched; same branch/PR)
+- [ ] Red-flag router v1 (D5: rules on check-in save, history and messages, before any LLM call) — the "each message" phrase-pattern rules are done (`agent/safety.py` + `agent/router.py`, D29, PR #10); check-in-save banner and history math (90+ days, 8+ days bleeding in a row) aren't built yet
+- [ ] Education vs summary routing (D7). D30 proposes one fixed pipeline instead, with mode taken from citations
+- [ ] Past-period logging / "last period start" onboarding, so the phase estimate has a cycle day 1 (D15)
+- [ ] Context card + "Use my data in answers" opt-in (D14)
+- [ ] Output checks: code checks at runtime (D31)
+- [ ] Clinician summary: on screen, built from her data, no LLM (D33)
 - [ ] Live Fitbit sync in the app
 
 RAG candidates (later, after the basic RAG works):
@@ -148,23 +161,28 @@ RAG candidates (later, after the basic RAG works):
 UX candidates (not scheduled; raise at standup):
 - Select-to-ask: tap a card or number and ask about it; the app passes the item as `user_context`, so the user doesn't type the referent.
 - Clarifying chips: when a question is ambiguous (e.g. "my discharge is a weird color"), offer option buttons (colors, amounts) instead of a follow-up question. Could also feed red-flag rules (D5).
-- Find care near me (`Escalation.nearby_care`): the user enters a ZIP code and we look up OB-GYNs via the public NPI Registry API (no key). Caveats: NPI addresses can be stale or billing-only, and it doesn't show insurance or whether they take new patients. Pair it with static links (campus health, health-center finders) and a cached fallback for the demo.
+- Find care near me (`Escalation.nearby_care`, stretch per D33): the user enters a ZIP code and we look up OB-GYNs via the public NPI Registry API (no key). Caveats: NPI addresses can be stale or billing-only, and it doesn't show insurance or whether they take new patients. Pair it with static links (campus health, health-center finders) and a cached fallback for the demo.
 
 **Gate, Thu Nov 19:** Integration #1. All real components are wired, and what's still mocked is listed in architecture.md.
 
 ### Nov 21–25 · Sprint 2: evals (async, Thanksgiving week)
 **Signals**
-- [ ] Held-out participant eval: phase accuracy, ovulation-day error in days, calibration of the range
+- [ ] Held-out participant eval: phase accuracy, ovulation-day error in days, calibration of the range. Partly done (PR #11): luteal vs not, balanced accuracy 0.64 on 15 held-out people; ovulation-day error and calibration still to do
 - [ ] Missing-data behavior
 
 **RAG**
 - [ ] RAG eval set: 56 questions (32 dev, 24 test) and dev references done; write the 24 test references (drafted or reviewed by a second person), then freeze
 - [ ] Answer metrics: groundedness, key-point coverage, IDK accuracy, rule pass rate (see `evals/rag/README.md`)
 - [ ] Out-of-scope questions get "I don't know"
+- [ ] Optional, after feature freeze: BM25 vs hybrid on dev, ± query rewrite (D12)
+- [ ] Tune the retrieval-score cutoff for "I don't know" on the dev IDK items (D12)
 
 **Agent / Safety / App**
 - [ ] Safety red-team set (~50 prompts: red flags, diagnosis requests, teen/privacy cases)
 - [ ] Escalation recall + false-alarm rate
+
+**Stretch (only with spare time or if an eval calls for it; see architecture.md):** per-user
+parameters + mcPHASES replay eval, LLM red-flag fact extraction, decline review, clinician summary PDF, NPI care lookup.
 
 ### Nov 30 – Dec 2 · Harden
 **Signals**
@@ -172,11 +190,13 @@ UX candidates (not scheduled; raise at standup):
 - [ ] Tune what the chart shows
 
 **RAG**
-- [ ] Fall back to canned cited answers if the LLM fails
+- [ ] Fall back to "what our sources say" (top snippets) + canned demo answers if the LLM fails (D6)
 - [ ] 5 classmate user tests (bonus)
 
 **Agent / Safety / App**
 - [ ] "Real vs synthetic" label on every data view
+- [ ] Trends tab: cycle-day overlay + by-date view with phase bands (D32)
+- [ ] Decline cards with a next step for each `decline_reason` (D33)
 - [ ] Record a full fallback demo video
 - [ ] Demo script
 

@@ -23,6 +23,7 @@ from contracts import AgentResponse, CheckIn, DailyRecord, Escalation, PhaseEsti
 from signals.stub import estimate_phase, get_daily_records  # noqa: E402
 
 USER_ID = "synthetic-maya"
+NIGHTS_SHOWN = 7  # one 32-px column per night in a 320-px chart: a week fits
 VIEWS = ["Today", "Check-in", "Ask"]
 DEMO_STATES = [
     "Normal",
@@ -144,9 +145,10 @@ def today_view(est: PhaseEstimate, records: list[DailyRecord], demo: str) -> Non
         st.write(body)
         st.markdown(f"**{coverage_line(est, records)}**")
         st.caption(LIMIT)
-        with st.expander(f"See the last {len(records)} nights"):
+        recent = records[-NIGHTS_SHOWN:]
+        with st.expander(f"See the last {len(recent)} nights"):
             st.markdown("**Skin temp vs. your usual (°C)**")
-            st.markdown(nights_svg(records), unsafe_allow_html=True)
+            st.markdown(nights_svg(recent), unsafe_allow_html=True)
             latest = next((r for r in reversed(records) if r.rhr_bpm is not None), None)
             if latest:
                 st.caption(f"Resting HR {latest.rhr_bpm:.0f} bpm on {short_date(latest.date)}")

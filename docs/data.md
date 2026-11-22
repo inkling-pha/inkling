@@ -5,13 +5,14 @@ and the quirks we've hit. It holds **no one's actual values**. Real data never g
 Handling rules are in [CLAUDE.md](../CLAUDE.md) and decisions D18–D25 in [decisions.md](decisions.md).
 
 - [Fitbit via the Google Health API](#fitbit-via-the-google-health-api): live data for the app
+- [Periods from check-ins](#periods-from-check-ins): how logged bleeding becomes cycle history
 - [mcPHASES](#mcphases): labeled research data for building and evaluating the phase model
 
 ---
 
 ## Fitbit via the Google Health API
 
-Last checked: 2026-10-26, Fitbit Air, `notebooks/fitbit_test_pull.ipynb`.
+Last checked: 2026-10-26, Fitbit Air, `notebooks/fitbit_test_pull.ipynb`. Parsing quirks added 2026-11-19.
 
 ### Access
 
@@ -30,6 +31,35 @@ Last checked: 2026-10-26, Fitbit Air, `notebooks/fitbit_test_pull.ipynb`.
   - Client: `signals/google_health.py`
   - Test pull: `notebooks/fitbit_test_pull.ipynb`
   - Raw pulls are cached as `data/raw/fitbit/<type>_<start>_<end>.json` (gitignored, `"source": "real"`).
+  - Parser: `signals/parse.py`. Store: `signals/store.py`. Sync: `signals/sync.py` (below).
+
+### Sync
+
+Pulls Fitbit data into the store. Built 2026-11-19 on D13 (proposed).
+
+- **On app open, once per session:** `sync(user_id)` pulls from 3 days before the last stored day up
+  to today. Overnight values arrive late and today's steps are partial, so the last few days are
+  re-pulled and replaced. After a long absence it pulls at most 90 days.
+- **History, once, by hand:** `python -m signals.sync --backfill 90`. Kept out of app load so it
+  stays fast. Without `--backfill`, the same command runs a normal sync.
+- **What it pulls:** resting HR, temperature, HRV samples (from one day earlier, since a night's
+  samples start the evening before), sleep and steps. Each pull is cached raw, then only that window
+  is parsed and saved.
+- **Failures never raise.** No token or no network → `cached`: nothing stored changes. One type fails
+  → `partial`: the rest are saved, and the fields that type feeds keep their stored values instead of
+  becoming None. Every attempt is logged (`sync_log` table: time, mode, error), which gives "last
+  synced". Errors record only the data type, error type and HTTP status, never bodies or tokens.
+- **One Fitbit account per machine, saved as user `me`:** the tokens in `.env` belong to one account,
+  and there is no login, so its data goes under the user id `me` (`--user` to override). Each
+  teammate's `me` is their own data in their own gitignored DB. Without tokens, sync reports `cached`
+  and the app shows the synthetic demo user. Multi-user is out of scope.
+- **Switching Fitbit accounts on one machine?** Delete `data/inkling.db` and `data/raw/fitbit/` first,
+  or both accounts' data ends up mixed under `me`.
+- **Status for the app:** `sync` returns a signals-internal `SyncStatus` (mode, last successful sync,
+  window, days saved, failed types). Showing it in the app needs a `SyncStatus` contract and an app
+  hook (both pending: contracts v0.2 and the app owner).
+- **Reading:** `get_daily_records(user_id)` returns the stored days. A user with nothing stored (such
+  as the demo user) still gets the synthetic fixture, labeled `synthetic`.
 
 ### Endpoint
 
@@ -61,7 +91,7 @@ records that type, not how much any one person has.
 | Resp. rate by sleep stage | `respiratory-rate-sleep-summary` | `respiratory_rate_sleep_summary.sample_time.civil_time` | `deepSleepStats`, `lightSleepStats`, `remSleepStats`, `fullSleepStats`, each with `breathsPerMinute`, `standardDeviation`, `signalToNoise` | about 1 per night |
 | SpO2 | `daily-oxygen-saturation` | `daily_oxygen_saturation.date` | `averagePercentage`, `lowerBoundPercentage`, `upperBoundPercentage`, `standardDeviationPercentage` | 1 per night |
 | SpO2 samples | `oxygen-saturation` | `oxygen_saturation.sample_time.civil_time` | `percentage` | every minute during sleep |
-| Sleep | `sleep` | `sleep.interval.civil_end_time` | `interval` (start/end), `type` (e.g. `STAGES`), `stages[]` (`startTime`, `endTime`, `type` e.g. `AWAKE`), `summary`, `metadata` | per session; naps add sessions |
+| Sleep | `sleep` | `sleep.interval.civil_end_time` | `interval` (start/end), `type` (e.g. `STAGES`), `stages[]` (`startTime`, `endTime`, `type` e.g. `AWAKE`), `shortAwakenings[]` (`startTime`, `endTime`), `summary`, `metadata` | per session; naps add sessions |
 | Steps | `steps` | `steps.interval.civil_start_time` | `count`\*, `interval` | 1-minute intervals |
 | Heart rate | `heart-rate` | `heart_rate.sample_time.civil_time` | not inspected yet | every ~3 s (~33k points/day) |
 
@@ -122,18 +152,95 @@ What this means for Inkling:
   the deviation is nightly minus baseline. The first night or so after setup may have no value.
 - **Filter field names** in snake_case (as in Lab 3) work. The docs also show camelCase
   (`dailyHeartRateVariability.date`).
+- **`"NaN"` as a string.** `baselineTemperatureCelsius` and `relativeNightlyStddev30dCelsius` can be
+  the string `"NaN"`, seemingly before a baseline exists. Treat it as missing. SQLite would otherwise
+  store a NaN as NULL without saying so.
+- **Numbers as strings, per field.** Within one type some fields are numbers and others strings
+  (temperature: `nightlyTemperatureCelsius` is a number, `baselineTemperatureCelsius` a string).
+  `sleep.summary.minutesAsleep` and `steps.count` are strings too.
+- **Sleep has no civil time.** Only UTC `interval.startTime`/`endTime` plus `endUtcOffset`. The wake-up
+  day is the local date of `endTime + endUtcOffset`.
+- **Sleep flags overlap.** `metadata.mainSleep` and `metadata.nap` are independent: a session can be
+  flagged both, and a nap may have no `mainSleep` at all. We go by `mainSleep`.
+- **`minutesAsleep` counts short awakenings as sleep.** `summary.minutesAsleep` equals the sum of the
+  non-`AWAKE` stage durations for every session checked. Brief wakes are listed separately in
+  `shortAwakenings[]` (start/end), and every one checked fell *inside* a non-`AWAKE` stage. So the
+  summary includes them as sleep, unlike mcPHASES (see below). We compute `sleep_min` ourselves.
+- **Phone and watch steps don't overlap.** In one month of `all-sources` data, no minute had both a
+  phone and a watch count. Phone steps fill time the watch was off, and some days are phone-only.
 
-### Mapping to `DailyRecord` (proposal, not decided)
+### Mapping to `DailyRecord`
 
-| Contract field | Proposed source | Open question |
+Decided 2026-11-19 (Grace) for the parser in `signals/parse.py`. Every value is dated by the day it
+belongs to, sleep-derived values by the wake-up day. A day with no data for a signal gets `None`,
+never 0. Records are `source: "real"`.
+
+| Contract field | Source | Choice and trade-off |
 |---|---|---|
-| `rhr_bpm` | `daily-resting-heart-rate.beatsPerMinute` | none |
-| `hrv_rmssd_ms` | `daily-heart-rate-variability`: the average or the deep-sleep RMSSD | Pick whichever matches mcPHASES, so the model transfers |
-| `skin_temp_dev_c` | `nightlyTemperatureCelsius − baselineTemperatureCelsius` | Keep `relativeNightlyStddev30dCelsius` for confidence? |
-| `sleep_min` | Sum of non-`AWAKE` stages across that day's sessions | Count naps? |
-| `steps` | Sum of `steps.count` per civil day | Watch only, or include the phone? |
-| (new?) | `daily-respiratory-rate.breathsPerMinute` | Add to the contract (v0.2)? |
-| `date` | Wake-up day for sleep-derived values | none |
+| `rhr_bpm` | `daily-resting-heart-rate.beatsPerMinute`, by its `date` | none |
+| `hrv_rmssd_ms` | Mean of the 5-min `heart-rate-variability` RMSSD samples inside the main sleep session, by wake-up day. Needs 12+ samples (1 h), else `None` | Our own nightly mean, not Fitbit's `averageHeartRateVariabilityMilliseconds`, so it is computed the same way as mcPHASES (D25). It won't match the number in the Fitbit app. mcPHASES (`signals/mcphases_records.py`) averages all of a night's samples instead; the two agree, because Fitbit records HRV only during the main sleep (every sample in our pulls falls inside it) |
+| `skin_temp_dev_c` | `nightlyTemperatureCelsius − baselineTemperatureCelsius`, by its `date`. `None` if either is missing or `"NaN"` | `relativeNightlyStddev30dCelsius` is not kept: no contract field |
+| `sleep_min` | Main sleep (`mainSleep: true`; the longest if several), by wake-up day: asleep-stage minutes (`LIGHT`, `DEEP`, `REM`, `ASLEEP`) minus the `shortAwakenings` inside them. Falls back to `summary.minutesAsleep` if a session has no stages | Computed like mcPHASES `minutesasleep` (decided 2026-11-19, for consistency). It reads lower than the Fitbit app's number, so the UI must not call it "what Fitbit says". Naps are not counted, matching the mcPHASES cleaning rule; a day with a big nap reads as short sleep |
+| `steps` | Sum of `steps.count` per `civilStartTime` day, watch and phone together | Matches the Fitbit app's total, and no double counting was seen. mcPHASES steps are watch-only |
+| (new?) | `daily-respiratory-rate.breathsPerMinute` | Not parsed. Needs a contract change (v0.2?) |
+
+Parsed records and check-ins are stored in SQLite (`signals/store.py`, `data/inkling.db`,
+gitignored). Re-saving a day replaces it. Check-ins are kept in their own table, so re-parsing
+Fitbit data never overwrites them.
+
+**Check-ins are stored as whole JSON**, one per user per day (the latest wins), not one column per
+question, because the questions are not final (D5, D25). Adding a `CheckIn` field needs no change
+here. A contract change that removes, renames or rescales a field needs a conversion step for stored
+check-ins in the same PR (each stored check-in keeps its `schema_version`).
+
+**Sleep stages (signals-internal, not in the contracts).** The main sleep's `stages[]` segments
+(`LIGHT`, `DEEP`, `REM`, `AWAKE`, each with a UTC start and end) and its `shortAwakenings[]` (stored as
+stage `SHORT_AWAKENING`, overlapping the stage they sit in) are kept per wake-up day in their own
+table, because mcPHASES `sleep.levels` has the same detail (see
+[Sleep stage detail](#sleep-stage-detail-sleeplevels)). If the app or the agent needs stage minutes,
+that becomes a `DailyRecord` change through the contract process.
+
+---
+
+## Periods from check-ins
+
+Fitbit's period log can't be read through the API (write-only, see [Data types](#data-types)), so
+cycle history comes only from the bleeding answer in check-ins (`signals/cycle.py`). The numbers are
+named constants there, set from mcPHASES (see [Cycles and periods](#cycles-and-periods-hormones_and_selfreport)).
+
+| What | Rule | Why |
+|---|---|---|
+| Period start (day 1) | A `light`, `medium` or `heavy` day with no such day in the 10 days before | Spotting alone can be mid-cycle, so it never starts a period. On mcPHASES it found 101 of 116 of Mira's period starts, and 111 of the 117 starts it found matched one |
+| Period end | The last bleeding day (spotting included) no more than 2 days after the previous one | One skipped check-in doesn't split a period |
+| Usual cycle and period length | Medians of her last 6, once she has 2. Until then 29 and 6 days | The mcPHASES medians |
+| Phase | The standard four phases. Menstrual through her period length (longer if she's still bleeding). Ovulatory = (usual length − 12) ± 1 day. Follicular before it, luteal after | Calendar method. 12 sits between the textbook 14 and mcPHASES, where Mira's fertile window ends a median 10 days before the next period. Ovulatory stays narrow on purpose: Mira's fertile window is wider, but matching it would read as fertile days (D25), so the eval will score lower on that phase |
+| Later than usual | Past her usual length + 7 days, or past 38 days: phase `unknown`. It never wraps into a new cycle | A late period isn't a new cycle |
+| No period logged | Phase `unknown`, `cycle_day` None, confidence 0 | No guessing from a default day 1 |
+| `days_since_last_period` | Days since day 1 (0 on day 1). None with no start, or when the bleeding question hasn't been answered in 14 days | For the 90+ day rule: not logging is not the same as not bleeding |
+
+- **Confidence** is a fixed 0.3 ("Low", D28) for every calendar estimate. Her history doesn't raise
+  it, because accuracy isn't measured yet. The held-out eval sets it later.
+- **No fertility timing (D25, D27).** The ovulation day is estimated only to place the phase
+  boundaries. `ovulation_est_date` and `ovulation_window` are always None. The demo fixture still
+  has them filled in.
+- **Birth control (interim rule).** If any check-in in the last 35 days has `bc_taken=True`, the
+  phase is `unknown` and `cycle_day` is None. Period starts and `days_since_last_period` still work,
+  since they describe bleeding, not hormones. Why, from the trusted corpus:
+  - Combined pill, patch and ring work mainly by stopping ovulation, and the bleed in the
+    hormone-free days is a withdrawal bleed that follows the pack (CDC US SPR, pmid-34367655).
+  - Progestin-only pills: norethindrone/norgestrel stop ovulation in about half of cycles, varying
+    widely by person; drospirenone pills mainly stop it (CDC US SPR).
+  - Shot, implant and IUDs list missed, irregular or lighter periods as expected effects (OWH). The
+    corpus doesn't say which LARC methods stop ovulation.
+  - Copper IUD and barrier methods have no hormones, so phases apply.
+  - On combined pills, HRV and resting heart rate follow the pill pack, not a natural cycle
+    (pmid-34367655, pmid-41545627). mcPHASES excludes hormonal contraception, so the eval can't test this.
+
+  Limits: `bc_taken` ("taken today", yes/no) only fits pills and can't tell combined from
+  progestin-only. A per-method rule needs a "which method" question, which is a contract change.
+- **Cycle lengths assume she logs every period.** A missed period start reads as one long cycle.
+- **The demo user** (nothing stored) keeps the fixture estimate. A user with anything stored gets the
+  calendar estimate, which is `unknown` until she logs a period.
 
 ---
 
@@ -199,6 +306,33 @@ Access is under PhysioNet's **restricted-access DUA**:
 - `flow_color` includes `Bright Red`, `Dark Brown / Dark Red`, `Pink`, `Orange`, `Yellow`, `Grey`,
   `Black`, `Other`.
 
+### Cycles and periods (`hormones_and_selfreport`)
+
+Checked 2026-11-19 with a person-run aggregate script. Reference periods are runs of Mira's
+`Menstrual` label; runs cut off at the start or end of a round are left out.
+
+| What | p10 | p25 | p50 | p75 | p90 | n |
+|---|---|---|---|---|---|---|
+| Cycle length (days) | 23 | 27 | 29 | 32 | 36 | 119 |
+| Period (`Menstrual` run) length | 3 | 5 | 6 | 7 | 8 | 170 |
+| Days from the end of the `Fertility` window to the next period | 5 | 9 | 10 | 12 | 13 | 162 |
+| SD of cycle length within one person's round | 0.7 | 1.4 | 2.8 | 4.2 | 9.2 | 47 |
+
+- **16 of 119 cycles (13%) were outside 24–38 days**, in people with no known cycle problems. A
+  caution that fires on one such cycle will fire often.
+- **The diary covers 116 of 181 Mira period starts** (a logged day within ±2 days).
+- **The first logged bleeding day is a median 1 day after Mira's start**, and it is spotting in 29 of
+  110 periods.
+- **Day-1 rule** (a start must match a Mira start within ±2 days):
+
+| Rule | Found | Correct |
+|---|---|---|
+| Light or heavier, 10-day gap (**used**) | 101 / 116 | 111 / 117 |
+| Light or heavier, 7-day gap | 101 / 116 | 111 / 119 |
+| Light or heavier, 3-day gap | 104 / 116 | 115 / 138 |
+| Spotting or heavier, 10-day gap | 102 / 116 | 113 / 120 |
+| Light or heavier, 14-day gap | 98 / 116 | 108 / 114 |
+
 ### Wearable signals and how they line up with the Google Health API
 
 | Signal | mcPHASES | Per night | Typical values (p25–p75) | Google Health API |
@@ -208,10 +342,33 @@ Access is under PhysioNet's **restricted-access DUA**:
 | RHR | `resting_heart_rate.value` | 1 | 64–74 bpm\* | `daily-resting-heart-rate` |
 | HRV | `heart_rate_variability_details.rmssd`, 5-min samples | ~90 (~7.5 h) | 31–69 ms | `heart-rate-variability` (same 5-min RMSSD) |
 | Respiratory rate | `respiratory_rate_summary.full_sleep_breathing_rate` | 1 per sleep session | 14.4–16.8 /min | `respiratory-rate-sleep-summary` |
-| Sleep | `sleep.minutesasleep`, `mainsleep` | 1+ (naps) | 297–459 min asleep | `sleep.summary.minutesAsleep`, `metadata.mainSleep` |
+| Sleep | `sleep.minutesasleep`, `mainsleep` | 1+ (naps) | 297–459 min asleep | `stages[]` minus `shortAwakenings[]`, `metadata.mainSleep` (not `summary.minutesAsleep`, which counts short wakes as sleep) |
 
 HRV and respiratory rate cover 40 of the 42 participants; the rest cover all 42.
 \* Includes the unusable 2024 copies; the 2022-only range is in notebook section 6d.
+
+#### Sleep stage detail (`sleep.levels`)
+
+Checked 2026-11-19 with a script that prints aggregates only (14,765 sleep rows, before deduplication).
+
+- **Stored as text in two encodings:** 10,654 rows are JSON, 4,111 are Python-literal (single
+  quotes). A loader must accept both.
+- **Shape:** a dict with `summary` and `data`, plus `shortData` on stages nights. Every entry is
+  `{dateTime, level, seconds}`. Segments vary in length (p5/p50/p95: 90 / 780 / 3,360 s), always a
+  multiple of 30 s, so they line up with the API's `stages[]` without resampling.
+- **Two night types:**
+  - `stages` (12,328, 83%): levels `deep`, `light`, `rem`, `wake`. Same as the API's `DEEP`, `LIGHT`,
+    `REM`, `AWAKE`.
+  - `classic` (2,437, 17%): levels `asleep`, `restless`, `awake`, no stage detail. Leave these out of
+    stage comparisons.
+  - 24 entries have level `unknown`.
+- **`shortData` = the API's `shortAwakenings`:** brief `wake` entries laid over the `data` segments.
+- **`minutesasleep` excludes short wakes.** On stages nights it equals asleep-level seconds in `data`
+  minus the `shortData` wake seconds inside them (10,525 of 12,328 nights within 1 min, median
+  difference 0). Counting only `data` overestimates by a median ~20 min (p25–p75: 15–26). Classic nights
+  match on `asleep` seconds alone (2,403 of 2,437). The ~15% of stages nights that still differ have
+  not been explained (possibly the 2024 duplicates). This is why our Fitbit `sleep_min` is computed
+  the same way rather than taken from the API summary.
 
 ### Activity (confounder, and activity by phase)
 
@@ -291,10 +448,73 @@ still hold several rows per day silently multiplies rows and misaligns labels, a
 |---|---|---|
 | `PhaseEstimate.phase` | `Menstrual`→`menstrual`, `Follicular`→`follicular`, `Fertility`→`ovulatory`, `Luteal`→`luteal` | Is "ovulatory" honest for a fertile window, and how do we keep the UI from reading as contraception advice? |
 | `DailyRecord.skin_temp_dev_c` | nightly mean deviation (above) | Confirm it matches the API's nightly minus baseline |
-| `DailyRecord.hrv_rmssd_ms` | nightly mean of 5-min `rmssd` (drop low `coverage`) | Compute the same way from API samples, not the API's daily average |
+| `DailyRecord.hrv_rmssd_ms` | nightly mean of 5-min `rmssd` (drop low `coverage`) | Decided: the Fitbit parser computes the same nightly mean from API samples. The API has no `coverage`, so it needs 12+ samples instead |
 | `DailyRecord.rhr_bpm` | `resting_heart_rate.value`, **2022 round only** | Leaves about 3,700 participant-days |
-| `DailyRecord.sleep_min` | `minutesasleep` of the main sleep | Count naps? |
+| `DailyRecord.sleep_min` | `minutesasleep` of the main sleep | Decided: main sleep only, no naps. Same definition as our Fitbit parser (short wakes excluded) |
 | `DailyRecord.steps` | per-minute `steps` summed per day, **2022 round only** | none |
 | `CheckIn.bleeding` | `flow_volume`: Not at all→none, Spotting→spot, Light + Somewhat Light→light, Moderate→medium, Somewhat Heavy + Heavy + Very Heavy→heavy | none |
 | `CheckIn.pain` (0–10) | `cramps` (6 text levels) | Rescale, or change the contract to the same 6 levels? |
 | (new?) respiratory rate | `full_sleep_breathing_rate` | Add in v0.2? Both sources have it |
+
+### Building `DailyRecord`s (`signals/mcphases_records.py`)
+
+Checked 2026-11-21 by running `python -m signals.mcphases_records` on mcPHASES v1.0.0. It prints
+aggregates only; the numbers below come from that output. `--schema` confirmed every column the
+builder reads exists under the name used here.
+
+**What it builds.** One row per (participant, round, day) with a row in `hormones_and_selfreport`,
+then `DailyRecord`s (`source="real"`) and Mira's phase per day (the eval's ground truth). It asserts
+one row per key for every table and after the merge.
+
+| | 2022 | 2024 |
+|---|---|---|
+| Participants / participant-days | 42 / 3,698 | 20 / 1,961 |
+| Days with a phase label | all but 1 | all |
+| `bleeding` missing | 14% | **100%** (no diary in 2024) |
+| `rhr_bpm` missing | 21% | 100% (left out on purpose) |
+| `hrv_rmssd_ms` missing | 23% | 1% |
+| `skin_temp_dev_c` missing | 15% | 7% |
+| `sleep_min` missing | 7% | 0.3% |
+| `steps` missing | 3% | 100% (left out on purpose) |
+
+**Choices made in the builder**
+- **user_id** is `mcphases-<id>-<round>`: each round is its own sequence with its own baselines, and
+  the gap between rounds is never bridged. These ids stay local; they never appear in output.
+- **date** = 2000-01-01 + `day_in_study` days. mcPHASES has no calendar dates; only the differences
+  between dates mean anything, and this date is never shown as real.
+- **HRV night:** a 5-min sample at or after 12:00 counts toward the next day's night (the wake day,
+  like the Fitbit parser). Only 5.4% of samples are after noon, so this barely matters: both rules
+  give a median of 90 samples per night, and 99.7% of HRV nights land on a day with a main sleep.
+- **HRV coverage:** no cutoff applied. Coverage p5/p50/p95 is 0.86 / 0.99 / 1.0, so any reasonable
+  cutoff drops very little. Nights still need 12+ samples, like the Fitbit parser.
+- **checkin:** only `bleeding`. `pain` stays `None` until D25 settles how `cramps` maps to 0–10.
+- **Steps** come out lower than in the EDA (median 5,700 vs ~6,200) because only days with a hormone
+  row are kept.
+
+**Unexplained: 2024 sleep is ~1.7 h longer.** For the 20 people in both rounds, median `sleep_min`
+is 413 in 2022 and 516 in 2024, while HRV (45 vs 50 ms) and temperature deviation (0.0 vs −0.01 °C)
+barely move. Possible causes: season (day ~850 lands around summer 2024) or a 2024 export quirk
+the duplicate rule doesn't catch. It doesn't affect phase evals, since baselines are per round, but
+don't pool raw sleep minutes across rounds.
+
+## Synthetic Maya (`data/synthetic/maya.json`)
+
+The demo persona from PRODUCT.md, generated by `signals/synthetic.py` from the mcPHASES
+**aggregates** above. No participant's series is used. Every record is `source="synthetic"`, and
+the app must label her as synthetic wherever her data appears.
+
+- **158 days:** four finished cycles (29, 35, 27, 33 days) and a current cycle at day 34, later than
+  her usual (~31). This sets up the hero question "My period is late again and I'm exhausted".
+  Ovulation in the current cycle is late (day 22), so her temperature is still raised.
+- **Signals:** her own levels plus the mcPHASES luteal shifts (temperature +0.23 °C, RHR +2.5 bpm,
+  HRV −5.4 ms) and day-to-day noise (SD 0.12 °C, 1.6 bpm, 5 ms). In the saved file the luteal minus
+  follicular means come out at +0.22 °C, +3.0 bpm and −4.5 ms.
+- **Gaps:** about 10% of nights have no wearable data (16% in the saved file, close to mcPHASES), and
+  she skips about 15% of check-ins outside her period.
+- **Check-ins:** bleeding on period days (medium, heavy, medium, light, light, spot), cramps and pain
+  on days 1–2, some bloating in the luteal phase, low energy and fatigue in the last 5 days.
+- **truth:** the file also holds each day's phase and cycle day for tests. Never show it in the app;
+  it is not a prediction (D25, D27, D34).
+- **Dates:** the saved file ends on 2026-12-11 (showcase day). `synthetic.load()` shifts every date so
+  the last day is today, so the demo always looks current. Regenerate with
+  `python -m signals.synthetic --end YYYY-MM-DD`; the seed is fixed, so the values don't change.
