@@ -7,6 +7,8 @@ cycle using Fitbit data and trusted sources. It is a course project and **not a 
 - Never use diagnosis language ("you have PCOS", "you are ovulating", "you are pregnant").
   Describe patterns ("your temperature has been higher than your usual") and add
   "worth asking a clinician" where it fits.
+- No fertility timing: ovulation dates only look back ("likely happened Oct 17–19"); never show a
+  future ovulation or fertile window (D25, D27, D34).
 - Always show uncertainty: an estimate comes with its window/confidence, or says "not enough data yet".
 - Red flags (e.g. soaking a pad hourly, severe pain, 90+ days without a period) pause the
   conversation and route to care. Rules decide first; the LLM never overrides a rule.
@@ -65,5 +67,5 @@ JSON dict of metrics (aggregate only, never data rows).
 - Tests live in `tests/test_<layer>.py`.
 - Prefer simple code. Plain functions over classes; no framework unless the team has agreed to it.
 - Ask before adding a dependency or framework, and log the choice in `docs/decisions.md`.
-- Don't pick the LLM model (D8), the retrieval method (D12) or the output checks (D31) on your own. Check
-  `docs/decisions.md` for what's open.
+- Don't pick the LLM model (D8) on your own. Retrieval is BM25 (D12) and output checks are code
+  checks at runtime (D31). Check `docs/decisions.md` for what's open.

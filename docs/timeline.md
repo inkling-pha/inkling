@@ -55,7 +55,7 @@ Other class dates: Quiz 2 on Fri Nov 20; no class on Fri Nov 27 (Thanksgiving).
 
 **RAG**
 - [x] Collect 30–50 source documents
-- [ ] Retrieval method (D12): now a team choice between BM25, embeddings and hybrid. Compared in Sprint 2
+- [x] Retrieval method (D12): BM25 for the demo and showcase; hybrid only if time after freeze
 - [x] Define the RAG metrics
 
 **Agent / Safety / App**
@@ -123,7 +123,8 @@ Build a thin end-to-end slice first, then make each layer real. A polished UI ov
 ### Nov 16–19 · Sprint 1: make it real
 **Signals**
 - [x] Baselines + temperature-shift / RHR-rise detector (`signals/detector.py`, PR #11)
-- [ ] Phase rules v1 tuned on mcPHASES (D15: rules first, ML is a stretch)
+- [ ] Phase rules v1 tuned on mcPHASES (D15: rules first)
+- [ ] ML phase model on mcPHASES, held-out eval vs the rules; check the DUA on trained weights first (D15)
 - [ ] Cycle history (`CycleHistory`): feeds the Trends tab and the context card (D32, D14)
 - [ ] Cycle Clock with a narrowing range
 
@@ -135,8 +136,12 @@ Build a thin end-to-end slice first, then make each layer real. A polished UI ov
 - [ ] Birth control content + missed-log follow-up
 
 **All**
-- [ ] Team picks: output checks (D31) and retrieval method (D12). Comment in the architecture PR or team doc
+- [x] Team picks: output checks (D31: code checks at runtime, LLM judge offline only) and retrieval method (D12: BM25)
 - [ ] Contracts v0.2 PR (D33): `response_type`, `decline_reason`, `CycleHistory`, `save_checkin`, `sync`
+- [ ] Contracts v0.2: `PhaseEstimate.next_period_window`, drop `ovulation_est_date`, past-only `ovulation_window` (D34); birth control method history (D35)
+- [ ] Signals: compute the next-period and look-back ovulation windows (D34); phases by birth control method (D35)
+- [ ] App: "Next period likely …" on the Today card (D34); birth control question at onboarding and in settings (D35)
+- [ ] Red-flag rules: birth control exception for the 90+ days rule (D35)
 
 **Agent / Safety / App**
 - [ ] Fertility guard (D25), before the agent uses the real retriever: input rule declines fertility-timing questions, prompt instruction, regex check (`FERTILITY_TIMING`) on the answer and every cited snippet
@@ -145,7 +150,7 @@ Build a thin end-to-end slice first, then make each layer real. A polished UI ov
 - [ ] Education vs summary routing (D7). D30 proposes one fixed pipeline instead, with mode taken from citations
 - [ ] Past-period logging / "last period start" onboarding, so the phase estimate has a cycle day 1 (D15)
 - [ ] Context card + "Use my data in answers" opt-in (D14)
-- [ ] Output checks, after the team picks (D31)
+- [ ] Output checks: code checks at runtime (D31)
 - [ ] Clinician summary: on screen, built from her data, no LLM (D33)
 - [ ] Live Fitbit sync in the app
 
@@ -168,14 +173,14 @@ UX candidates (not scheduled; raise at standup):
 - [ ] RAG eval set: 56 questions (32 dev, 24 test) and dev references done; write the 24 test references (drafted or reviewed by a second person), then freeze
 - [ ] Answer metrics: groundedness, key-point coverage, IDK accuracy, rule pass rate (see `evals/rag/README.md`)
 - [ ] Out-of-scope questions get "I don't know"
-- [ ] Retrieval method comparison on dev: BM25 vs embeddings vs hybrid, ± query rewrite (D12, if the team wants B or C)
+- [ ] Optional, after feature freeze: BM25 vs hybrid on dev, ± query rewrite (D12)
 - [ ] Tune the retrieval-score cutoff for "I don't know" on the dev IDK items (D12)
 
 **Agent / Safety / App**
 - [ ] Safety red-team set (~50 prompts: red flags, diagnosis requests, teen/privacy cases)
 - [ ] Escalation recall + false-alarm rate
 
-**Stretch (only with spare time or if an eval calls for it; see architecture.md):** ML phase model, per-user
+**Stretch (only with spare time or if an eval calls for it; see architecture.md):** per-user
 parameters + mcPHASES replay eval, LLM red-flag fact extraction, decline review, clinician summary PDF, NPI care lookup.
 
 ### Nov 30 – Dec 2 · Harden

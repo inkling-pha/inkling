@@ -21,10 +21,10 @@ How this log works:
 | D9 | App framework | decided | Streamlit |
 | D10 | Environment | decided | venv + requirements.txt |
 | D11 | (merged) | | Merged into D18 |
-| D12 | Retrieval method | team choice | BM25, embeddings or hybrid. BM25 until decided |
-| D13 | Storage | proposed | SQLite, owned by signals |
-| D14 | Data sent to the LLM | proposed | Opt-in context card of computed facts |
-| D15 | Phase model | proposed | Rules anchored on check-ins. ML is a stretch |
+| D12 | Retrieval method | decided | BM25 for the demo and showcase. Hybrid only if time after freeze |
+| D13 | Storage | decided | SQLite, owned by signals |
+| D14 | Data sent to the LLM | decided | Opt-in context card of computed facts |
+| D15 | Phase model | decided | Rules anchored on check-ins, then an ML model (planned) |
 | D16 | v1 scope cuts | open | Candidates for stretch or out of scope |
 | D17 | Gate dates | decided | Integration #1 Thu Nov 19. Mock demo Fri Dec 4 |
 | D18 | mcPHASES handling | decided | Own access, local only, aggregates only, never to an LLM |
@@ -34,17 +34,17 @@ How this log works:
 | D22 | (merged) | | Merged into D19 |
 | D23 | (merged) | | Merged into D19 |
 | D24 | mcPHASES files | decided | Which files we download, and why |
-| D25 | Contract changes from mcPHASES | proposed | Phase labels, HRV, temp, bleeding and pain mapping |
+| D25 | Contract changes from mcPHASES | decided | Phase labels, HRV, temp, bleeding and pain mapping |
 | D26 | Source whitelist | decided | US government pages, open-access papers, Google Health docs |
 | D27 | Answer scope | decided | Cycle + app signals. Interpret, don't coach. No fertility timing |
-| D28 | Confidence in words | proposed | A word + coverage + a limit line. No number |
+| D28 | Confidence in words | decided | A word + coverage + a limit line. No number |
 | D29 | Red-flag rule list v1 | proposed | Annika, on the `red-flag-router` branch (not merged yet). See `docs/safety_rules.md` there |
-| D30 | Question pipeline | proposed | One fixed pipeline, one LLM call |
-| D31 | Output checks | team choice | Code checks, or code checks + an LLM judge |
-| D32 | Trends tab | proposed | Her data lined up by cycle day |
-| D33 | Escalation + contracts v0.2 | proposed | On-screen clinician summary. New response fields |
-| D34 | Ovulation dates and the likely window | proposed | Ovulation only looks back. A next-period window is the likely window |
-| D35 | Birth control method | proposed | Asked at onboarding, editable in settings, kept with start dates |
+| D30 | Question pipeline | decided | One fixed pipeline, one LLM call |
+| D31 | Output checks | decided | Code checks at runtime. LLM judge only in the offline eval |
+| D32 | Trends tab | decided | Her data lined up by cycle day |
+| D33 | Escalation + contracts v0.2 | decided | On-screen clinician summary. New response fields |
+| D34 | Ovulation dates and the likely window | decided | Ovulation only looks back. A next-period window is the likely window |
+| D35 | Birth control method | decided | Asked at onboarding, editable in settings, kept with start dates |
 | D36 | Hero question | decided (for now) | "My period is late again and I'm exhausted", asked by synthetic Maya |
 
 ---
@@ -127,8 +127,13 @@ How this log works:
 - **Date:** 2026-10-24 · **Status:** decided. No extra tools, so anyone can clone and run.
 
 ### D12. Retrieval method
-- **Date:** 2026-10-24, updated 2026-11-16 · **Status:** team choice. BM25 stays until decided.
-- **How to decide:** compare on the dev set (Hit@5, capped Recall@5). Never on test.
+- **Date:** 2026-10-24, updated 2026-11-16, decided 2026-11-22 (team) · **Status:** decided.
+- **Decision:** A (BM25) for the Dec 4 mock demo and the showcase. Try C (hybrid) only if there's
+  time after feature freeze, measured on the dev set.
+- **Why:** BM25 is measured (Hit@5 0.83 on dev), offline and deterministic, which matters for a live
+  demo with a planned failure. Embeddings would add a model pick and a network dependency 11 days
+  before freeze.
+- **How it was compared:** compare on the dev set (Hit@5, capped Recall@5). Never on test.
 - **A. Keyword (BM25, current)**
   - Pros: already works (Hit@5 0.83 on dev). Local, offline, free, same result every run. No new
     dependency. Matches exact medical terms. Easy to debug.
@@ -145,8 +150,8 @@ How this log works:
 - **Note:** the corpus is small (60 docs). A local option also works offline at the demo.
 
 ### D13. Storage: SQLite owned by signals
-- **Date:** 2026-10-24, updated 2026-11-16 · **Status:** proposed (pending team)
-- **Proposal:**
+- **Date:** 2026-10-24, updated 2026-11-16, decided 2026-11-22 (team) · **Status:** decided.
+- **Decision:**
   - One SQLite file under `data/` (gitignored), via Python's built-in `sqlite3`. No new dependency.
   - Holds check-ins and parsed `DailyRecord`s.
   - Raw Fitbit JSON stays in the D20 file cache: used to re-parse, and as the API-down fallback.
@@ -155,8 +160,8 @@ How this log works:
 - **Considered:** JSON files (easy to read, awkward to update and query).
 
 ### D14. What reaches the LLM: a context card
-- **Date:** 2026-10-24, updated 2026-11-16 · **Status:** proposed (pending team)
-- **Proposal:**
+- **Date:** 2026-10-24, updated 2026-11-16, decided 2026-11-22 (team) · **Status:** decided.
+- **Decision:**
   - Opt-in ("Use my data in answers", off by default). Off → education answers only.
   - The LLM gets a card of facts computed in code, each with an id. Fixed menu: now (phase, cycle day,
     confidence word, coverage), recent nights vs her usual, this cycle vs her last 1–3, and up to 6
@@ -170,19 +175,24 @@ How this log works:
 - **Considered:** raw or lightly processed records (more to leak, and the LLM does the math).
 - **Example card:** see `docs/architecture.md`, section 6.
 
-### D15. Phase estimate v1: rules anchored on check-ins
-- **Date:** 2026-10-24, updated 2026-11-16 · **Status:** proposed (pending team)
-- **Proposal:**
+### D15. Phase estimate v1: rules anchored on check-ins, then an ML model
+- **Date:** 2026-10-24, updated 2026-11-16, decided 2026-11-22 (team) · **Status:** decided.
+- **Decision:**
   - Offline: mcPHASES tunes and tests the rules. Output: a few aggregate numbers + a calibration
     table (safe to commit under D18).
   - Runtime: `estimate_phase` runs on demand over stored records. No batch jobs.
-  - Rules: a temperature shift or RHR rise over her own baseline.
-  - Cycle day 1 = a period start from her check-ins. Calendar count is the fallback.
+  - Rules: a temperature shift or RHR rise over her own baseline (`signals/detector.py`, PR #11).
+  - Cycle day 1 = a period start from her check-ins. Calendar count is the fallback (PR #9).
   - Needed: logging a past period, or "last period start" at onboarding.
-- **Why:** Realistic for the Nov 19 gate. Easy to explain. Weights trained on restricted data are a
-  grey area under the DUA.
-- **Stretch:** an ML model (must beat the rules on held-out participants). Per-user numbers updated
-  each cycle, tested by replaying mcPHASES cycle by cycle.
+  - **ML model: a planned goal, not a stretch** (Grace, 2026-11-22). Train on mcPHASES, evaluate on
+    held-out participants with the same split as the rules (`evals/signals/run.py`), and ship it
+    only if it beats the rules there.
+- **Why:** Rules first: realistic for the Nov 19 gate and easy to explain. The ML model is a planned
+  goal (decided 2026-11-22); it ships only if it beats the rules on held-out participants.
+- **Before shipping the ML model:** weights trained on restricted data are a grey area under the
+  DUA (D18). Check with the team or instructor whether trained weights may be committed and used in
+  the app; if not, keep it as an offline result for the poster and writeup.
+- **Stretch:** per-user numbers updated each cycle, tested by replaying mcPHASES cycle by cycle.
 
 ### D16. v1 scope cuts from the whiteboard
 - **Date:** 2026-10-24 · **Status:** open
@@ -263,8 +273,8 @@ How this log works:
   daily RHR covers it), `calories`, `altitude`, `glucose`, `stress_score`, `demographic_vo2_max`.
 
 ### D25. Contract changes suggested by mcPHASES
-- **Date:** 2026-10-27 · **Status:** proposed. Details in the mapping table at the end of `docs/data.md`.
-- **Proposals:**
+- **Date:** 2026-10-27, decided 2026-11-22 (team) · **Status:** decided. Details in the mapping table at the end of `docs/data.md`.
+- **Decisions:**
   - **Phase labels:** mcPHASES uses `Fertility` (a fertile window from Mira's algorithm), not
     ovulation. Map it to `ovulatory`, or rename that value. The UI must never read as contraception
     advice ("safe days", "fertile today").
@@ -300,19 +310,19 @@ How this log works:
   point in the eval (`evals/rag/README.md`).
 
 ### D28. Confidence is shown in words until it's validated
-- **Date:** 2026-11-02 · **Status:** proposed
+- **Date:** 2026-11-02, decided 2026-11-22 (team) · **Status:** decided.
 - **Decision:** The UI shows the likely window, a word (Low / Medium / Higher), coverage ("2 of 3
   nights recorded") and a limit line ("Accuracy not validated yet"). No number, no filling bar.
   `PhaseEstimate.confidence` stays in the contract and drives the word.
 - **Why:** HCI lecture (slides-08 p.27): show a number only when its meaning is validated. Coverage
   describes what arrived, not correctness (p.26). A bar reads as a measurement.
-- **Revisit:** after the held-out calibration eval (Nov 21–25). D34 proposes that the likely window
-  becomes a next-period window.
+- **Revisit:** after the held-out calibration eval (Nov 21–25). D34 makes the likely window a
+  next-period window.
 - **Considered:** the Lab 8 bar (over-reliance risk, p.46). Only the window, no word.
 
 ### D30. One fixed question pipeline, no router
-- **Date:** 2026-11-16 · **Status:** proposed (pending team)
-- **Proposal:**
+- **Date:** 2026-11-16, decided 2026-11-22 (team) · **Status:** decided.
+- **Decision:**
   - Every question: red-flag rules → fertility rule → context card (if opted in) → retrieve (always)
     → one LLM call returning JSON → output checks (D31) → regenerate once → safe fallback.
   - `mode` comes from what the answer cites: education, summary or both. The user toggle goes away.
@@ -325,8 +335,13 @@ How this log works:
 - **Open:** chat memory across visits (touches D13, D14).
 
 ### D31. Output checks
-- **Date:** 2026-11-16 · **Status:** team choice
-- **Both options:** fail → regenerate once → safe fallback. Checks can only make answers stricter.
+- **Date:** 2026-11-16, decided 2026-11-22 (team) · **Status:** decided.
+- **Decision:** Option 1 (code checks) at runtime. An LLM judge is used only in the offline answer
+  eval.
+- **Why:** Runtime stays deterministic and works with the LLM down (D6), and the offline judge still
+  gives a meaning-level groundedness score for the poster and writeup. A judge on every answer means
+  an LLM outage hits twice, and judge errors trigger more fallbacks.
+- **Both options (as compared):** fail → regenerate once → safe fallback. Checks can only make answers stricter.
   The eval is graded by a different model or by hand, so it isn't circular.
 - **Option 1: code checks only.** Banned phrases (diagnosis, fertility timing) in the answer and its
   cited snippets. Every cited chunk was retrieved. Every cited fact is on the card. Every number in
@@ -343,8 +358,8 @@ How this log works:
     LLM outage hits twice. A same-model judge may share blind spots. Wrong fails → more fallbacks.
 
 ### D32. A cycle-aligned Trends tab
-- **Date:** 2026-11-16 · **Status:** proposed (pending team)
-- **Proposal:** Default view: this cycle vs previous ones, by cycle day, with check-in markers.
+- **Date:** 2026-11-16, decided 2026-11-22 (team) · **Status:** decided.
+- **Decision:** Default view: this cycle vs previous ones, by cycle day, with check-in markers.
   By-date view with phase bands (the default for new users). Trends and the agent use the same
   signals function (`CycleHistory`), so the chart and the chat agree.
 - **Why:** Fitbit already shows metrics by date. It can't line them up by cycle day, because it can't
@@ -352,7 +367,7 @@ How this log works:
 - **Considered:** a Fitbit-style metrics tab by date (duplicates Fitbit).
 
 ### D33. Escalation details and contracts v0.2
-- **Date:** 2026-11-16 · **Status:** proposed (pending team). Escalation was only briefly discussed.
+- **Date:** 2026-11-16, decided 2026-11-22 (team) · **Status:** decided.
 - **Escalation:** clinician summary on screen and copyable, built from her data with no LLM (PDF is a
   stretch). Nearby care = fixed links (NPI Registry lookup is a stretch).
 - **Contracts v0.2** (separate PR: models + fixtures + `SCHEMA_VERSION` together):
@@ -364,8 +379,8 @@ How this log works:
   coaching-tips idea (not decided).
 
 ### D34. Ovulation dates look back only; a next-period window is the likely window
-- **Date:** 2026-11-20 · **Status:** proposed (pending team). Updates D28's "likely window".
-- **Proposal:**
+- **Date:** 2026-11-20, decided 2026-11-22 (team) · **Status:** decided. Updates D28's "likely window".
+- **Decision:**
   - All four phases stay, `ovulatory` included. "You're in your ovulatory phase" describes today.
   - **No future ovulation dates.** `ovulation_window` is filled only when all its days are past, i.e.
     after her next period starts ("ovulation likely happened Oct 17–19"). Roughly 11–14 days before
@@ -381,17 +396,21 @@ How this log works:
     3 days (mcPHASES), but the time from ovulation to the next period is steadier (fertile window
     ends 9–12 days before it in the middle half of cycles).
   - A next-period window keeps D4/D28's "show a range, not a number" on something safe and useful.
-- **Considered:** keep both fields as they are (conflicts with D25/D27). Remove both (simplest, but
-  loses the look-back that explains wearable patterns).
+- **Considered:**
+  - Keep a future ovulation window: works as a fertile-window calendar (D25/D27), and it's the least
+    reliable estimate.
+  - Remove the ovulation fields, keep a next-period window: simplest safe option, but the app can't
+    say when ovulation likely happened when explaining her temperature or heart-rate patterns.
+  - Look-back only, no next-period window: smallest change, but the Today card usually has no range
+    to show (weakens D28) and users get no "when's my next period".
 - **Changes (one contracts PR):** `PhaseEstimate` gets `next_period_window`, loses
   `ovulation_est_date`; `OvulationWindow` becomes a general `DateWindow`. Fixture + `SCHEMA_VERSION`.
-  Signals computes both windows. App: the Today card is driven by the phase, not the ovulation
-  window (today a real user always sees "Not enough data yet"), and shows "Next period likely …".
-  Agent: describes a look-back window only as past.
+  Signals computes both windows. App: shows "Next period likely …" (the Today card is already
+  driven by the phase, PR #12). Agent: describes a look-back window only as past.
 
 ### D35. Birth control method, asked at onboarding and editable in settings
-- **Date:** 2026-11-20 · **Status:** proposed (pending team). Touches D5 (check-in questions).
-- **Proposal:**
+- **Date:** 2026-11-20, decided 2026-11-22 (team) · **Status:** decided. Touches D5 (check-in questions).
+- **Decision:**
   - Onboarding asks "Which birth control do you use, if any?". Settings lets her change it when she
     starts, stops or switches.
   - Stored as a history: each method with the date it started. Cycles before a start still count

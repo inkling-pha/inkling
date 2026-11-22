@@ -19,18 +19,18 @@ In short:
 
 | # | Topic | Proposal | Status | Decision |
 |---|---|---|---|---|
-| 1 | Offline vs runtime | Build and evaluate offline. Run on demand at app load | Proposed | D15 |
-| 2 | Phase estimate v1 | Rules over her baseline, anchored on check-in period starts. Calendar fallback | Proposed | D15 |
-| 3 | Storage | SQLite (built into Python), owned by signals. Raw Fitbit JSON stays in the file cache | Proposed | D13 |
-| 4 | Answering a question | One fixed pipeline, one LLM call. No router, no tool calling | Proposed | D30 |
+| 1 | Offline vs runtime | Build and evaluate offline. Run on demand at app load | Decided | D15 |
+| 2 | Phase estimate v1 | Rules over her baseline, anchored on check-in period starts. Calendar fallback. Then an ML model | Decided | D15 |
+| 3 | Storage | SQLite (built into Python), owned by signals. Raw Fitbit JSON stays in the file cache | Decided | D13 |
+| 4 | Answering a question | One fixed pipeline, one LLM call. No router, no tool calling | Decided | D30 |
 | 5 | Red flags | Rules before the LLM. Rule list still open | Proposed / Open | D5 |
-| 6 | What reaches the LLM | Opt-in context card of facts computed in code | Proposed | D14 |
-| 7 | Output checks | Option 1 code checks, or Option 2 code checks + LLM judge | Team choice | D31 |
-| 8 | Retrieval method | A BM25, B embeddings, C hybrid | Team choice | D12 |
-| 9 | App | New Trends tab. Changes to Check-in and Ask | Proposed | D32 |
-| 10 | Fallbacks | One per dependency. Red flags never need the LLM | Proposed | D6 |
-| 11 | Escalation | On-screen clinician summary, fixed care links | Proposed (briefly discussed) | D33 |
-| 12 | Contracts v0.2 | `response_type`, `decline_reason`, `CycleHistory` (separate PR) | Proposed | D33 |
+| 6 | What reaches the LLM | Opt-in context card of facts computed in code | Decided | D14 |
+| 7 | Output checks | Option 1: code checks at runtime. LLM judge only in the offline eval | Decided | D31 |
+| 8 | Retrieval method | A: BM25. Hybrid only if time after feature freeze | Decided | D12 |
+| 9 | App | New Trends tab. Changes to Check-in and Ask | Decided | D32 |
+| 10 | Fallbacks | One per dependency. Red flags never need the LLM | Decided | D6 |
+| 11 | Escalation | On-screen clinician summary, fixed care links | Decided | D33 |
+| 12 | Contracts v0.2 | `response_type`, `decline_reason`, `CycleHistory` (separate PR) | Decided | D33 |
 
 ## 1–3. Data side
 
@@ -54,7 +54,7 @@ Built offline from mcPHASES. Runs on her own data each time the app loads.
 - To build: log a past period, or ask "when did your last period start?" at onboarding. Without it, phase = `unknown`.
 - Ovulation dates only look back; the likely window is a next-period window (D34).
 - Birth control method from onboarding/settings decides whether phases apply (D35).
-- *Stretch:* ML model. Only if it beats the rules on held-out participants.
+- *Planned:* ML model trained on mcPHASES. Ships only if it beats the rules on held-out participants, and once the DUA question on trained weights is settled (D15, D18).
 - *Stretch:* per-user numbers updated each cycle (cycle length, shift size). Test by replaying mcPHASES cycle by cycle.
 
 **Storage**
@@ -151,9 +151,10 @@ How an answer uses it, for "Why am I so tired this week?":
 - The answer cites fact ids like chunk ids. Cited facts become "From your data" chips.
 - A question that needs a fact not on the menu → decline with `not_enough_data`. These declines show what to add next.
 
-## 7. Team choice: output checks
+## 7. Output checks (decided: Option 1, D31)
 
-Pick one. Both options:
+The team chose Option 1 at runtime. An LLM judge runs only in the offline answer eval. The comparison
+is kept below. Both options:
 - Regenerate once on a fail, then show a safe fallback.
 - Can only make answers stricter.
 - Grade the eval with a different model or by hand, so it isn't circular.
@@ -176,10 +177,10 @@ Pick one. Both options:
 | Pros | No extra API call (no added delay or cost) · Same result every run, easy to unit-test · Works when the LLM is down · Clear why it failed | Checks meaning: paraphrase, groundedness, coaching tone · One prompt covers many rules · Closer to what the answer eval measures |
 | Cons | Only catches what's written as a rule · Can't tell if a sentence is backed by its snippet · Phrase lists need upkeep · Can wrongly flag quoted source text | Extra LLM call per answer · Results vary run to run, harder to test · A judge error counts as a fail, so an LLM outage hits twice · A same-model judge may share blind spots · Wrong fails → more fallbacks |
 
-## 8. Team choice: retrieval method
+## 8. Retrieval method (decided: A, BM25, D12)
 
-Pick one.
-- BM25 stays for the Nov 19 integration either way.
+The team chose BM25 for the mock demo and the showcase. Hybrid (C) only if there's time after feature
+freeze, measured on dev. The comparison is kept below.
 - All three are RAG. Only how chunks are found differs.
 - Compare on the dev set (Hit@5, capped Recall@5). Never on test.
 - Any option: "I don't know" = a retrieval-score cutoff (tuned on dev) + an LLM decline.
@@ -270,9 +271,8 @@ Every contract carries a `source` (real, synthetic or mixed) so the UI can label
 
 | Kind | Items |
 |---|---|
-| Team choice | Output checks: Option 1 or 2 · Retrieval: A, B or C |
-| Open | D5 red-flag rule list and check-in fields · D8 LLM model · D12 embedding model (B or C only) · D16 scope cuts · Chat memory across visits · Coaching-tips idea |
-| Stretch | ML phase model · Per-user numbers · Query rewriting · LLM red-flag fact extraction · Decline review · Clinician summary PDF · NPI care lookup |
+| Open | D5 red-flag rule list and check-in fields · D8 LLM model · D16 scope cuts · Chat memory across visits · Coaching-tips idea |
+| Stretch | Per-user numbers · Query rewriting · LLM red-flag fact extraction · Decline review · Clinician summary PDF · NPI care lookup |
 
 ## Stubbed vs real
 
@@ -290,7 +290,7 @@ Update at each integration gate (Nov 15, Nov 19, Dec 4).
 | signals: Google Health client | real | Pulls and caches raw Fitbit data |
 | rag: retrieve | real, not wired | `rag.retriever`: BM25 over all 60 docs (1,314 chunks), real citations. The agent still uses `rag.stub` until the fertility guard (D25) exists |
 | agent: respond | stub | Wires stubs. No LLM, no pipeline, no safety checks yet |
-| app | partial | Today (Cycle Clock, source, coverage, limit), check-in with Undo, Ask, and failure/red-flag previews. The demo user shows synthetic Maya with a calendar phase; the Today card is driven by the phase (D34 proposal), and the nights chart shows the last 7 nights. Check-ins last one session (D13). Red-flag, sync and fallback states are demo previews until the router and fallbacks exist. |
+| app | partial | Today (Cycle Clock, source, coverage, limit), check-in with Undo, Ask, and failure/red-flag previews. The demo user shows synthetic Maya with a calendar phase; the Today card is driven by the phase (D34), and the nights chart shows the last 7 nights. Check-ins last one session (D13). Red-flag, sync and fallback states are demo previews until the router and fallbacks exist. |
 | evals: rag | partial | 56 questions, 32 dev references. `python -m evals.rag.run` gives Hit@5 and capped Recall@5. Answer metrics wait for generation (see `evals/rag/README.md`) |
 | evals: signals | partial | `python -m evals.signals.run`: held-out balanced accuracy 0.64, 95% CI 0.55–0.73 (luteal vs not, Mira labels), coverage 0.61, median lag 2 days. Ovulation-day error and calibration not yet. See `evals/signals/README.md` |
 | evals: agent | not started | Planned in the timeline's Sprint 2 |
