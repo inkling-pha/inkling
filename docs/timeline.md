@@ -124,7 +124,7 @@ Build a thin end-to-end slice first, then make each layer real. A polished UI ov
 **Signals**
 - [x] Baselines + temperature-shift / RHR-rise detector (`signals/detector.py`, PR #11)
 - [ ] Phase rules v1 tuned on mcPHASES (D15: rules first)
-- [ ] ML phase model on mcPHASES, held-out eval vs the rules; check the DUA on trained weights first (D15)
+- [ ] ML phase model on mcPHASES, held-out eval vs the rules; check the DUA on trained weights first (D15). Model + eval drafted (`signals/phase_model.py`, `evals/signals/run_phase_model.py`, `signals-phase-model-ml` branch) — needs someone with mcPHASES access to actually run `python -m evals.signals.run_phase_model` and share the numbers back
 - [ ] Cycle history (`CycleHistory`): feeds the Trends tab and the context card (D32, D14)
 - [ ] Cycle Clock with a narrowing range
 

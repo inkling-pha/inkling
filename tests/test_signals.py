@@ -948,3 +948,67 @@ def test_eval_bootstrap_intervals_resample_people():
     mixed = {"good": {"all": [9, 1, 9, 1, 0]}, "poor": {"all": [5, 5, 5, 5, 0]}}
     low, high = signals_eval.bootstrap(mixed, n=500)["balanced_accuracy_95ci"]["all"]
     assert low == 0.5 and high == 0.9  # a resample can draw the same person twice
+
+
+# --- phase_model: the ML alternative, and its eval's helpers (D15) -------------------------
+
+from evals.signals import run_phase_model as pm_eval  # noqa: E402
+from signals import phase_model as pm  # noqa: E402
+
+
+def test_deltas_by_day_matches_the_detectors_windows():
+    """Same baseline/recent math as detector.py, so the two approaches see the same information."""
+    rows = detector.detect(_cycles())
+    deltas = pm.deltas_by_day(_cycles())
+    for s in rows:
+        if s.deltas:  # detector had enough nights that day
+            for field, value in s.deltas.items():
+                assert deltas[s.date][field] == pytest.approx(value)
+        else:
+            assert all(v is None for v in deltas[s.date].values())
+
+
+def test_featurize_flags_missing_signals():
+    vec = pm.featurize({"skin_temp_dev_c": 0.2, "rhr_bpm": None, "hrv_rmssd_ms": -3.0})
+    assert vec == [0.2, 0.0, 0.0, 1.0, -3.0, 0.0]
+
+
+def test_model_round_trips_through_json():
+    model = pm.Model(weights=[0.5, -0.3], bias=0.1, means=[1.0, 2.0], scales=[0.5, 1.5])
+    again = pm.Model.from_json(model.to_json())
+    assert again == model
+
+
+def test_train_separates_an_easy_synthetic_split():
+    """Sanity check, not an eval: the model should at least beat chance on well-separated data."""
+    records = _cycles()
+    X, y = [], []
+    for day, row in pm.deltas_by_day(records).items():
+        if all(v is None for v in row.values()):
+            continue
+        X.append(pm.featurize(row))
+        y.append(1 if _is_luteal(day) else 0)
+    model = pm.train(X, y)
+    correct = sum(
+        (model.predict_proba(x) >= 0.5) == bool(label) for x, label in zip(X, y, strict=True)
+    )
+    assert correct / len(y) > 0.8
+
+
+def test_predict_days_says_not_enough_data_with_no_signal_at_all():
+    model = pm.Model(weights=[0.0] * 6, bias=0.0, means=[0.0] * 6, scales=[1.0] * 6)
+    predictions = pm.predict_days(_cycles(temp=False, rhr=False, hrv=False), model)
+    assert all(p == (None, None) for p in predictions.values())
+
+
+def test_phase_model_eval_training_rows_skip_unlabeled_and_no_signal_days():
+    records = {"u": _cycles(n_cycles=2)}
+    late_day = DAY0 + timedelta(days=40)  # well past the baseline window: has a delta
+    early_day = DAY0 + timedelta(days=5)  # before MIN_BASELINE_NIGHTS: no delta at all
+    labels = {
+        ("u", late_day): "luteal",
+        ("u", early_day): "follicular",  # labeled, but too early to have any signal
+        # DAY0 + 41 has a delta but no label, and is skipped by not being in `labels`.
+    }
+    X, y = pm_eval._training_rows(records, labels)
+    assert len(X) == 1 and y == [1]
