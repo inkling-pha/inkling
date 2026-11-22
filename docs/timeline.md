@@ -104,7 +104,7 @@ Build a thin end-to-end slice first, then make each layer real. A polished UI ov
 
 ### Nov 12–15 · Sprint 0: walking skeleton
 **Signals**
-- [ ] Synthetic Maya: 4 cycles of 27–36 days with matching RHR and temperature patterns (`data/synthetic/`) (PR #12, in review)
+- [x] Synthetic Maya: 4 cycles of 27–36 days with matching RHR and temperature patterns (`data/synthetic/`, PR #12)
 - [x] Stub PhaseEstimate (`signals/stub.py`)
 - [ ] mcPHASES → `DailyRecord`s: apply the cleaning rules in [data.md](data.md#cleaning) (one row per participant-day, 2024 RHR and steps excluded), after contracts v0.1 settle D25
 
