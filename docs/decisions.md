@@ -45,6 +45,7 @@ How this log works:
 | D33 | Escalation + contracts v0.2 | proposed | On-screen clinician summary. New response fields |
 | D34 | Ovulation dates and the likely window | proposed | Ovulation only looks back. A next-period window is the likely window |
 | D35 | Birth control method | proposed | Asked at onboarding, editable in settings, kept with start dates |
+| D36 | Hero question | decided (for now) | "My period is late again and I'm exhausted", asked by synthetic Maya |
 
 ---
 
@@ -411,3 +412,16 @@ How this log works:
 - **Open:** where the history lives in the contracts (a new profile model, or a `CheckIn` field).
   The corpus doesn't say which IUDs and implants stop ovulation: the RAG corpus needs CDC US SPR
   pages for those before answers can rely on it.
+
+### D36. Hero question: "My period is late again and I'm exhausted"
+- **Date:** 2026-11-22 · **Status:** decided (for now). Revisit if the demo story changes.
+- **Decision:** The demo is built around synthetic Maya asking "My period is late again and I'm
+  exhausted." Maya (20, hard-to-predict periods, wears a Fitbit) has 4 finished cycles of 27–36 days
+  and a current cycle running past her usual (`signals/synthetic.py`, PR #12).
+- **Why:** It exercises every layer at once: cycle history (late vs her usual), wearable signals
+  (temperature, sleep), check-ins (fatigue), cited education, and the red-flag rules (a few days
+  late is not a red flag; 90+ days without a period is).
+- **Follow-up:** the calendar estimate calls a cycle "later than usual" only after usual + 7 days, so
+  at Maya's day 34 (usual ~31) it shows "likely luteal". A soft "past your usual" flag on `signals`
+  would let the app and agent say she's late.
+- **Open:** the persona's source. `signals/synthetic.py` cites PRODUCT.md, which isn't in the repo yet.

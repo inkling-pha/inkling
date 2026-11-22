@@ -45,7 +45,7 @@ Other class dates: Quiz 2 on Fri Nov 20; no class on Fri Nov 27 (Thanksgiving).
 
 ### Oct 26–30 · Week 8 design studio
 **All**
-- [ ] Pick the hero question: the one question the demo is built around
+- [x] Pick the hero question: the one question the demo is built around. For now: "My period is late again and I'm exhausted" (D36)
 - [ ] Agree on contracts v0.1, including the check-in fields (see D5) and the mcPHASES questions (see D25)
 
 **Signals**
