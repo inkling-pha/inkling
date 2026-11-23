@@ -16,13 +16,14 @@ if str(ROOT) not in sys.path:
 
 import streamlit as st  # noqa: E402
 
-from agent.stub import respond  # noqa: E402
+from agent.router import respond  # noqa: E402
 from app.cycle_clock import cycle_clock_svg, nights_svg  # noqa: E402
 from app.summary import LIMIT, coverage_line, long_date, short_date, today_summary  # noqa: E402
 from contracts import AgentResponse, CheckIn, DailyRecord, Escalation, PhaseEstimate  # noqa: E402
 from signals.stub import estimate_phase, get_daily_records  # noqa: E402
 
 USER_ID = "synthetic-maya"
+NIGHTS_SHOWN = 7  # one 32-px column per night in a 320-px chart: a week fits
 VIEWS = ["Today", "Check-in", "Ask"]
 DEMO_STATES = [
     "Normal",
@@ -92,7 +93,8 @@ def load_data(demo: str) -> tuple[PhaseEstimate, list[DailyRecord]]:
 
 
 def red_flag_response() -> AgentResponse:
-    """Preview only. The real trigger is the rule router (D5), which isn't built yet."""
+    """Preview only, for the demo selector. The real router (agent.router, D5) fires the same way
+    from the chat input itself now — try asking about soaking a pad hourly."""
     return AgentResponse(
         mode="summary",
         text="Soaking a pad every hour is something a clinician should look at. "
@@ -143,9 +145,10 @@ def today_view(est: PhaseEstimate, records: list[DailyRecord], demo: str) -> Non
         st.write(body)
         st.markdown(f"**{coverage_line(est, records)}**")
         st.caption(LIMIT)
-        with st.expander(f"See the last {len(records)} nights"):
+        recent = records[-NIGHTS_SHOWN:]
+        with st.expander(f"See the last {len(recent)} nights"):
             st.markdown("**Skin temp vs. your usual (°C)**")
-            st.markdown(nights_svg(records), unsafe_allow_html=True)
+            st.markdown(nights_svg(recent), unsafe_allow_html=True)
             latest = next((r for r in reversed(records) if r.rhr_bpm is not None), None)
             if latest:
                 st.caption(f"Resting HR {latest.rhr_bpm:.0f} bpm on {short_date(latest.date)}")
@@ -240,11 +243,14 @@ def ask_view(demo: str) -> None:
             "I’ve been soaking through a pad every hour since this morning"
         )
         render_response(red_flag_response())
-        st.caption("Preview of the red-flag state. The rule router isn’t built yet (D5).")
+        st.caption("Preview of the red-flag state, forced here for the demo.")
         st.button("Back to chat", on_click=reset_demo)
         return
 
-    st.info("Prototype: answers come from a stub agent. No LLM yet, and no red-flag rules yet.")
+    st.info(
+        "Prototype: the fertility guard and red-flag/caution rules (D5, D25) are live. "
+        "No LLM yet, so education answers are retrieval plus a template, not generated prose."
+    )
     mode = st.radio(
         "What are you asking about?",
         ["General question", "My own data"],

@@ -1,8 +1,8 @@
 """Agent layer stub: wires the signals and rag stubs into an AgentResponse.
 
-Two modes (see docs/decisions.md): "education" answers from the trusted corpus with
-citations; "summary" talks about the user's own data. Routing between them is TBD,
-so the caller picks the mode for now.
+agent.router now handles "education" for real (fertility guard + red-flag rules, D5/D25) and
+calls this stub only as retrieval's canned fallback. "summary" mode still comes from here
+unchanged: a real summary agent needs D7 (routing) and D14 (what reaches the LLM) settled first.
 """
 
 from typing import Literal
