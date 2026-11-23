@@ -454,8 +454,12 @@ How this log works:
 - **Interim (on `signals`):** `bc_taken=True` in the last 35 days makes the phase `unknown`.
 - **Considered:** keep `bc_taken` only (can't tell methods apart). Ask daily (more questions than needed).
 - **Open:** where the history lives in the contracts (a new profile model, or a `CheckIn` field).
-  The corpus doesn't say which IUDs and implants stop ovulation: the RAG corpus needs CDC US SPR
-  pages for those before answers can rely on it.
+  The corpus now has the CDC US SPR pages on IUDs and implants (bleeding changes), NICHD's and
+  FDA's birth control pages, and an implant review (2026-11-23). The implant "stops the ovaries from
+  releasing eggs" and the copper IUD "does not stop the ovaries from making an egg (ovulating) each
+  month" (FDA), which supports the phase rules for both. The hormonal IUD is only "may prevent the
+  ovaries from releasing eggs" (NICHD), so how often it stops ovulation is still unsourced;
+  `unknown` fits that.
 
 ### D36. Hero question: "My period is late again and I'm exhausted"
 - **Date:** 2026-11-22 · **Status:** decided (for now). Revisit if the demo story changes.

@@ -230,8 +230,18 @@ named constants there, set from mcPHASES (see [Cycles and periods](#cycles-and-p
     hormone-free days is a withdrawal bleed that follows the pack (CDC US SPR, pmid-34367655).
   - Progestin-only pills: norethindrone/norgestrel stop ovulation in about half of cycles, varying
     widely by person; drospirenone pills mainly stop it (CDC US SPR).
-  - Shot, implant and IUDs list missed, irregular or lighter periods as expected effects (OWH). The
-    corpus doesn't say which LARC methods stop ovulation.
+  - Shot, implant and IUDs list missed, irregular or lighter periods as expected effects (OWH).
+  - Hormonal IUD: "may prevent the ovaries from releasing eggs" (NICHD); FDA mentions only mucus and
+    lining effects, so the corpus doesn't say how often it stops ovulation. Bleeding: "Spotting or
+    light bleeding is expected during the first 3–6 months"; "Approximately half of LNG-IUD users
+    are likely to experience amenorrhea or oligomenorrhea by 2 years of use" (CDC US SPR).
+  - Implant: "It stops the ovaries from releasing eggs" (FDA). A systematic review found "a full
+    inhibition of ovulation in the first 24 months" in Nexplanon users, "whereas ovarian activity
+    rarely occurs in the third year of use" (pmid-34201123). Bleeding: "Spotting or light bleeding is common with implant use, and certain implant
+    users experience amenorrhea"; in pooled trials "22% of women experienced amenorrhea" (CDC US SPR).
+  - Copper IUD: "It does not stop the ovaries from making an egg (ovulating) each month" (FDA).
+    Bleeding: "Spotting or light bleeding and heavy or prolonged bleeding is common during
+    the first 3–6 months of Cu-IUD use … and generally decreases with continued Cu-IUD use" (CDC US SPR).
   - Copper IUD and barrier methods have no hormones, so phases apply.
   - On combined pills, HRV and resting heart rate follow the pill pack, not a natural cycle
     (pmid-34367655, pmid-41545627). mcPHASES excludes hormonal contraception, so the eval can't test this.

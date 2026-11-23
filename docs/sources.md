@@ -37,8 +37,14 @@ never health claims.
 - Research is phrased as "studies found, on average", never applied to one person as a diagnosis.
 - Each paper's manifest row says who was studied (`population`). Answers that cite a paper say so
   and note when it may not fit the user (e.g. a study of medical students only).
-- Fertility-review decisions are recorded in the manifest `notes`, as text to exclude, not chunk ids.
+- Fertility-review decisions are recorded in the manifest `notes`. Passages to exclude are listed in
+  `rag/corpus.py` (`EXCLUDE`, verbatim first and last words) and cut out before chunking. If a
+  re-fetched page no longer has a listed passage, indexing prints a warning: review it again.
 - At indexing time, chunks mainly about fertility timing are flagged for review by a person.
+- Known limitation: the runtime guard (`agent/fertility_guard.py`) drops any retrieved snippet the
+  `FERTILITY_TIMING` regex matches, including passages a person reviewed and kept (e.g. the
+  fertility-awareness descriptions). Safe direction, but it can turn those answers into "I don't
+  know". Narrowing the regex is proposed for the team.
 - Only documents in the manifest are indexed; links found on pages are never followed.
 
 ## Access notes

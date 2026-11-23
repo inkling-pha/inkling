@@ -10,10 +10,12 @@ from contracts import Evidence
 from evals.rag.run import capped_recall, hit
 from rag import corpus
 from rag.corpus import (
+    EXCLUDE,
     MAX_WORDS,
     Chunk,
     Skipped,
     chunk_text,
+    cut_passages,
     extract,
     extract_blocks,
     fertility_flags,
@@ -120,6 +122,33 @@ def test_only_manifest_documents_are_indexed(tmp_path):
         doc = {"doc_id": name, "source_org": "X", "title": "T", "url": "u", "text": "words"}
         (tmp_path / f"{name}.json").write_text(json.dumps(doc), encoding="utf-8")
     assert {c.doc_id for c in load_chunks(tmp_path)} == {doc_id}
+
+
+def test_cut_passages_removes_the_span_and_keeps_its_neighbours():
+    text = "Ovulation varies. You can tell by LH tests and Mittelschmerz. Periods last 5 days."
+    kept, missing = cut_passages(text, [("You can tell", "Mittelschmerz.")])
+    assert kept.split() == ["Ovulation", "varies.", "Periods", "last", "5", "days."]
+    assert missing == []
+
+
+def test_cut_passages_reports_a_span_the_page_no_longer_has():
+    assert cut_passages("New wording.", [("Old wording", "end.")]) == (
+        "New wording.",
+        ["Old wording"],
+    )
+
+
+def test_excluded_passages_are_not_indexed(tmp_path, monkeypatch):
+    doc_id = manifest()[0]["doc_id"]
+    text = "Keep this. Cut from here to there. Keep that."
+    doc = {"doc_id": doc_id, "source_org": "X", "title": "T", "url": "u", "text": text}
+    (tmp_path / f"{doc_id}.json").write_text(json.dumps(doc), encoding="utf-8")
+    monkeypatch.setattr(corpus, "EXCLUDE", {doc_id: [("Cut from", "there.")]})
+    assert [c.text for c in load_chunks(tmp_path)] == ["Keep this. Keep that."]
+
+
+def test_exclusions_name_manifest_docs():
+    assert set(EXCLUDE) <= {r["doc_id"] for r in manifest()}
 
 
 def test_fertility_timing_chunks_are_flagged():
