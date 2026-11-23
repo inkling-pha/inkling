@@ -74,6 +74,74 @@ DEVICE_DOC_SECTIONS = {
         "Daily Sleep Temperature Derivations",
     },
 }
+# Passages cut out before chunking, as (first words, last words), both verbatim and inclusive.
+# Why each one is cut is in the manifest notes (fertility review D25, outdated or off-topic text).
+EXCLUDE: dict[str, list[tuple[str, str]]] = {
+    "cdc-spr-intrauterine-contraception": [
+        ("If the day of ovulation can be estimated", "not occur >5 days after ovulation."),
+        ("Switching from a Cu-IUD:", "to address the potential for residual sperm."),
+    ],
+    "cdc-spr-combined-hormonal-contraceptives": [
+        (
+            "Switching from an intrauterine device (IUD):",
+            "CHCs may be started no sooner than 5 days after use of UPA. If it has been >5 days"
+            " since menstrual bleeding started, the patient needs to abstain from sexual"
+            " intercourse or use barrier methods (e.g., condoms) for the next 7 days.",
+        ),
+    ],
+    "cdc-spr-progestin-only-pills": [
+        (
+            "Switching from an intrauterine device (IUD):",
+            "All POPs may be started no sooner than 5 days after use of UPA. The patient should"
+            " also follow the back-up contraception recommendations for either norethindrone or"
+            " norgestrel POPs or for DRSP POPs.",
+        ),
+    ],
+    "cdc-spr-implants": [
+        (
+            "Switching from an IUD:",
+            "(with the exception of UPA) at the time of IUD removal. If it has been >5 days since"
+            " menstrual bleeding started, the patient needs to abstain from sexual intercourse or"
+            " use barrier methods (e.g., condoms) for the next 7 days.",
+        ),
+    ],
+    "fda-birth-control": [
+        (
+            "A medical software application (app) that can be used as a method of contraception",
+            "hormonal treatments that prevent ovulation (release of egg).",
+        ),
+    ],
+    "nichd-contraception-types": [
+        ("A sterilization implant is a nonsurgical", "show that the tubes are fully blocked."),
+    ],
+    "nichd-menstruation-and-menstrual-problems": [
+        ("A woman can tell when she has begun ovulating", "may be a signal of ovulation."),
+    ],
+    "owh-polycystic-ovary-syndrome": [
+        ("You can also use our Ovulation Calculator", "you are most likely to be fertile."),
+    ],
+    "pmid-40909206": [
+        (
+            "The monitoring of fertile windows",
+            "has been reported using the Oura ring more recently118.",
+        ),
+    ],
+    "pmid-32442161": [
+        (
+            "For more than 30 years, the notion",
+            "the fertile window extends before and after ovulation [1].",
+        ),
+        ("Comparatively, calendar-based apps", "the menstrual records of the past 6 cycles [6]."),
+        ("An app estimating ovulation", "may be limited in its effectiveness."),
+    ],
+    "pmid-39008822": [
+        (
+            "Exercise interventions directed for weight loss",
+            "which may influence energy intake.12,13",
+        ),
+        ("; however, variable and best detected using", "predict the onset of ovulation"),
+    ],
+}
 
 
 class Skipped(Exception):
@@ -314,6 +382,19 @@ def fetch_all(corpus_dir: Path = CORPUS_DIR) -> dict[str, str]:
     return status
 
 
+def cut_passages(text: str, spans: list[tuple[str, str]]) -> tuple[str, list[str]]:
+    """Remove each (first words, last words) span. Returns the text and spans not found."""
+    missing = []
+    for first, last in spans:
+        start = text.find(first)
+        end = text.find(last, start) if start >= 0 else -1
+        if end < 0:
+            missing.append(first)
+            continue
+        text = text[:start] + text[end + len(last) :]
+    return text, missing
+
+
 def load_chunks(corpus_dir: Path = CORPUS_DIR) -> list[Chunk]:
     chunks = []
     for row in manifest():
@@ -321,7 +402,11 @@ def load_chunks(corpus_dir: Path = CORPUS_DIR) -> list[Chunk]:
         if not path.exists():
             continue
         doc = json.loads(path.read_text(encoding="utf-8"))
-        for i, text in enumerate(chunk_text(doc["text"])):
+        text, missing = cut_passages(doc["text"], EXCLUDE.get(row["doc_id"], []))
+        for first in missing:
+            # The page changed since review: the passage may now be indexed. Re-review it.
+            print(f"EXCLUDE not found in {row['doc_id']}: {first!r}", file=sys.stderr)
+        for i, chunk in enumerate(chunk_text(text)):
             chunks.append(
                 Chunk(
                     doc_id=doc["doc_id"],
@@ -329,7 +414,7 @@ def load_chunks(corpus_dir: Path = CORPUS_DIR) -> list[Chunk]:
                     source_org=doc["source_org"],
                     title=doc["title"],
                     url=doc["url"],
-                    text=text,
+                    text=chunk,
                 )
             )
     return chunks

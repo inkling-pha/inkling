@@ -137,6 +137,8 @@ Build a thin end-to-end slice first, then make each layer real. A polished UI ov
 - [ ] Birth control content + missed-log follow-up
   - [x] IUD and implant pages indexed (CDC US SPR, NICHD): bleeding changes covered
   - [x] Source on whether the implant and copper IUD affect ovulation (FDA, pmid-34201123)
+  - [x] Apply manifest exclusions in code (`EXCLUDE` in `rag/corpus.py`)
+  - [ ] Team: narrow `FERTILITY_TIMING` so the runtime guard stops dropping reviewed-and-kept passages
 
 **All**
 - [x] Team picks: output checks (D31: code checks at runtime, LLM judge offline only) and retrieval method (D12: BM25)
