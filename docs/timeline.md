@@ -145,7 +145,7 @@ Build a thin end-to-end slice first, then make each layer real. A polished UI ov
 - [ ] Red-flag rules: birth control exception for the 90+ days rule (D35)
 
 **Agent / Safety / App**
-- [x] Fertility guard (D25), before the agent uses the real retriever: input rule declines fertility-timing questions, regex check (`FERTILITY_TIMING`) on the answer and every cited snippet (`agent/fertility_guard.py`; `red-flag-router` branch, PR #10 open; no prompt instruction yet, since there's no LLM)
+- [x] Fertility guard (D25), before the agent uses the real retriever: input rule declines fertility-timing questions, regex check (`FERTILITY_TIMING`) on the answer and every cited snippet (`agent/fertility_guard.py`; PR #10; no prompt instruction yet, since there's no LLM)
 - [x] Switch the agent to `rag.retriever.retrieve` and update the stubbed-vs-real table in architecture.md (`agent/router.py`, with a canned fallback if the corpus isn't fetched; same branch/PR)
 - [ ] Red-flag router v1 (D5: rules on check-in save, history and messages, before any LLM call) — the "each message" phrase-pattern rules are done (`agent/safety.py` + `agent/router.py`, D29, PR #10); check-in-save banner and history math (90+ days, 8+ days bleeding in a row) aren't built yet
 - [ ] Education vs summary routing (D7). D30 proposes one fixed pipeline instead, with mode taken from citations
@@ -178,8 +178,8 @@ UX candidates (not scheduled; raise at standup):
 - [ ] Tune the retrieval-score cutoff for "I don't know" on the dev IDK items (D12)
 
 **Agent / Safety / App**
-- [ ] Safety red-team set (~50 prompts: red flags, diagnosis requests, teen/privacy cases)
-- [ ] Escalation recall + false-alarm rate
+- [x] Safety red-team set (~50 prompts: red flags, diagnosis requests, teen/privacy cases): 58 prompts, 31 dev / 27 test (`evals/agent/redteam/`, PR #13)
+- [x] Escalation recall + false-alarm rate (`python -m evals.agent.run`). After the PR #10 fixes: recall 0.79 dev / 0.55 test, false alarms 0 (see `evals/agent/README.md`)
 
 **Stretch (only with spare time or if an eval calls for it; see architecture.md):** per-user
 parameters + mcPHASES replay eval, LLM red-flag fact extraction, decline review, clinician summary PDF, NPI care lookup.
