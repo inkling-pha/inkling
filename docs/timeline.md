@@ -60,7 +60,8 @@ Other class dates: Quiz 2 on Fri Nov 20; no class on Fri Nov 27 (Thanksgiving).
 
 **Agent / Safety / App**
 - [x] Architecture diagram v0.2, pending team review (Lucid, linked from [architecture.md](architecture.md))
-- [ ] Red-flag list from ACOG guidance, with citations (D5)
+- [x] Red-flag list from ACOG guidance, with citations (D5) (sourced from D26's whitelist instead
+  of ACOG — CDC/FDA/OWH/NICHD; see [safety_rules.md](safety_rules.md), D29)
 - [ ] Storyboard + lo-fi prototype for the studio
 
 ### Oct 31 – Nov 2 · Slides (5 min total)
@@ -144,9 +145,9 @@ Build a thin end-to-end slice first, then make each layer real. A polished UI ov
 - [ ] Red-flag rules: birth control exception for the 90+ days rule (D35)
 
 **Agent / Safety / App**
-- [ ] Fertility guard (D25), before the agent uses the real retriever: input rule declines fertility-timing questions, prompt instruction, regex check (`FERTILITY_TIMING`) on the answer and every cited snippet
-- [ ] Switch the agent to `rag.retriever.retrieve` and update the stubbed-vs-real table in architecture.md
-- [ ] Red-flag router v1 (D5: rules on check-in save, history and messages, before any LLM call)
+- [x] Fertility guard (D25), before the agent uses the real retriever: input rule declines fertility-timing questions, regex check (`FERTILITY_TIMING`) on the answer and every cited snippet (`agent/fertility_guard.py`; `red-flag-router` branch, PR #10 open; no prompt instruction yet, since there's no LLM)
+- [x] Switch the agent to `rag.retriever.retrieve` and update the stubbed-vs-real table in architecture.md (`agent/router.py`, with a canned fallback if the corpus isn't fetched; same branch/PR)
+- [ ] Red-flag router v1 (D5: rules on check-in save, history and messages, before any LLM call) — the "each message" phrase-pattern rules are done (`agent/safety.py` + `agent/router.py`, D29, PR #10); check-in-save banner and history math (90+ days, 8+ days bleeding in a row) aren't built yet
 - [ ] Education vs summary routing (D7). D30 proposes one fixed pipeline instead, with mode taken from citations
 - [ ] Past-period logging / "last period start" onboarding, so the phase estimate has a cycle day 1 (D15)
 - [ ] Context card + "Use my data in answers" opt-in (D14)
